@@ -88,7 +88,8 @@ class OrderController extends Controller
                 'nome' => $order->user->name,
                 'cnpjCpf' => preg_replace('/\D/', '', $order->user->cpf ?? ''),
                 'email' => $order->user->email,
-                'telefone' => preg_replace('/\D/', '', $order->user->phone ?? ''),
+                'phone' => preg_replace('/\D/', '', $order->user->phone ?? ''), // Changed from telefone to phone
+                'telefone' => preg_replace('/\D/', '', $order->user->phone ?? ''), // Keep for compatibility
                 'endereco' => $addr['street'] ?? '',
                 'numero' => $addr['number'] ?? '',
                 'bairro' => $addr['neighborhood'] ?? '',
@@ -96,6 +97,7 @@ class OrderController extends Controller
                 'uf' => $addr['state'] ?? '',
                 'cep' => preg_replace('/\D/', '', $addr['zip'] ?? $addr['zip_code'] ?? ''),
                 'complemento' => $addr['complement'] ?? '',
+                'complement' => $addr['complement'] ?? '', // Added complement alias
             ]
         ];
 
