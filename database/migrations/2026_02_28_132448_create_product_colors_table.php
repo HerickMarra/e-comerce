@@ -10,13 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('product_colors', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->string('hex_code');
-            $table->string('color_name')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('product_colors')) {
+            Schema::create('product_colors', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('product_id')->constrained()->onDelete('cascade');
+                $table->string('hex_code');
+                $table->string('color_name')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

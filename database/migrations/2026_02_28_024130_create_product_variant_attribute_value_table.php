@@ -10,12 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('product_variant_attribute_value', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('product_variant_id')->constrained('product_variants')->onDelete('cascade');
-            $table->foreignId('attribute_value_id')->constrained('attribute_values')->onDelete('cascade');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('product_variant_attribute_value')) {
+            Schema::create('product_variant_attribute_value', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('product_variant_id')->constrained('product_variants')->onDelete('cascade');
+                $table->foreignId('attribute_value_id')->constrained('attribute_values')->onDelete('cascade');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
