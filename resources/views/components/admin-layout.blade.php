@@ -125,6 +125,11 @@
                             <span class="material-symbols-outlined text-xl">group</span>
                             <span class="font-medium text-sm">Usuários</span>
                         </a>
+                        <a href="{{ route('admin.emails.index') }}"
+                            class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all {{ request()->routeIs('admin.emails.*') ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-slate-700/50 hover:text-white' }}">
+                            <span class="material-symbols-outlined text-xl">mark_email_read</span>
+                            <span class="font-medium text-sm">Modelos de E-mail</span>
+                        </a>
                         <a href="{{ route('admin.newsletters.index') }}"
                             class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all {{ request()->routeIs('admin.newsletters.*') ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-slate-700/50 hover:text-white' }}">
                             <span class="material-symbols-outlined text-xl">mail</span>

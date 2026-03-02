@@ -68,14 +68,33 @@
 
                 {{-- Descrição do Produto (Movida para a esquerda para não empurrar os botões) --}}
                 @if($product->description)
-                    <div class="pt-10 mt-6 border-t border-slate-100 dark:border-slate-800">
+                    <div class="pt-10 mt-6 border-t border-slate-100 dark:border-slate-800"
+                         x-data="{ expanded: false, isClamped: true }"
+                         x-init="setTimeout(() => { if($refs.desc) isClamped = $refs.desc.scrollHeight > 200 }, 1500)">
                         <span
                             class="block text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-[0.15em]">Sobre
                             o Produto</span>
                         <div
-                            class="prose prose-sm dark:prose-invert text-slate-600 dark:text-slate-400 leading-relaxed max-w-none">
-                            {!! nl2br(e($product->description)) !!}
+                            class="relative overflow-hidden transition-all duration-500 ease-in-out"
+                            :class="!expanded ? 'max-h-48' : 'max-h-[2000px]'">
+                            <div
+                                x-ref="desc"
+                                class="prose prose-sm dark:prose-invert text-slate-600 dark:text-slate-400 leading-relaxed max-w-none">
+                                {!! nl2br(e($product->description)) !!}
+                            </div>
+                            
+                            <div x-show="isClamped && !expanded" 
+                                 class="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white dark:from-slate-900 to-transparent pointer-events-none">
+                            </div>
                         </div>
+                        
+                        <button x-show="isClamped" 
+                                @click="expanded = !expanded" 
+                                class="mt-4 text-primary font-bold text-xs uppercase tracking-[0.2em] flex items-center gap-2 hover:gap-3 transition-all"
+                                type="button">
+                            <span x-text="expanded ? 'Ver menos' : 'Ver mais completo'">Ver mais completo</span>
+                            <span class="material-symbols-outlined text-sm transition-transform duration-300" :class="expanded ? 'rotate-180' : ''">expand_more</span>
+                        </button>
                     </div>
                 @endif
             </div>

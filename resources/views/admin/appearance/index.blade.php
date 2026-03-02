@@ -83,12 +83,14 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">URL Embed do
-                            Vídeo (YouTube)</label>
-                        <textarea name="home_hero_video_url" rows="3"
-                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all font-mono text-xs">{{ old('home_hero_video_url', $settings['home_hero_video_url']) }}</textarea>
-                        <p class="text-xs text-slate-500 mt-1">Cole a URL do `src` inteiro do Iframe com todos os
-                            parâmetros desejados.</p>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">URL do Vídeo
+                            (YouTube)</label>
+                        <input type="text" name="home_hero_video_url"
+                            value="{{ old('home_hero_video_url', $settings['home_hero_video_url']) }}"
+                            class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all font-mono text-sm"
+                            placeholder="Ex: https://www.youtube.com/watch?v=uFZRqTRk8-o">
+                        <p class="text-xs text-slate-500 mt-1">Basta colar o link normal do vídeo do YouTube. O sistema
+                            cuidará da formatação para o fundo do site.</p>
                     </div>
 
                     <div>

@@ -47,6 +47,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+    Route::resource('emails', App\Http\Controllers\Admin\EmailTemplateController::class);
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update']);
     Route::get('/configuracoes', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
     Route::put('/configuracoes', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');

@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB; // Added for DB facade
 use App\Models\Order; // Added for Order model
 use App\Gateways\AsaasGateway; // Added for AsaasGateway
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DynamicEmail;
+use App\Models\EmailTemplate;
 
 class CheckoutController extends Controller
 {
@@ -115,6 +118,22 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            // Send New Order Email
+            try {
+                $template = EmailTemplate::where('slug', 'new-order')->first();
+                if ($template && Auth::check()) {
+                    $user = Auth::user();
+                    $content = str_replace(
+                        ['{name}', '{order_number}', '{status}'],
+                        [$user->name, $order->order_number, $order->status],
+                        $template->content
+                    );
+                    Mail::to($user->email)->send(new DynamicEmail($template->subject, $content));
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error sending new order email: ' . $e->getMessage());
+            }
+
             // Process Payment
             $paymentResult = $gateway->createPayment($order, $request->all());
 
@@ -156,6 +175,22 @@ class CheckoutController extends Controller
         if ($payment && in_array($payment['status'], ['RECEIVED', 'CONFIRMED'])) {
             if ($order->status !== 'paid' && $order->status !== 'completed') {
                 $order->update(['status' => 'paid']);
+
+                // Send Payment Confirmed Email
+                try {
+                    $template = EmailTemplate::where('slug', 'payment-confirmed')->first();
+                    if ($template && $order->user) {
+                        $user = $order->user;
+                        $content = str_replace(
+                            ['{name}', '{order_number}', '{status}'],
+                            [$user->name, $order->order_number, $order->status],
+                            $template->content
+                        );
+                        Mail::to($user->email)->send(new DynamicEmail($template->subject, $content));
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error sending payment confirmed email: ' . $e->getMessage());
+                }
             }
             return response()->json(['paid' => true]);
         }

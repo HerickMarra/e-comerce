@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             CategorySeeder::class,
+            EmailTemplateSeeder::class,
         ]);
 
         // User::factory(10)->create();
