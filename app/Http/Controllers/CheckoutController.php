@@ -51,6 +51,25 @@ class CheckoutController extends Controller
         $shippingLabel = $request->input('shipping_label', 'Retirada na Loja');
         $total = $subtotal + $shippingAmount;
 
+        // Validate and save user info if missing
+        if (Auth::check()) {
+            $user = Auth::user();
+            $rules = [];
+            if (!$user->cpf)
+                $rules['user_cpf'] = 'required|string|min:11';
+            if (!$user->phone)
+                $rules['user_phone'] = 'required|string';
+
+            if (!empty($rules)) {
+                $request->validate($rules);
+
+                $user->update([
+                    'cpf' => $user->cpf ?: $request->user_cpf,
+                    'phone' => $user->phone ?: $request->user_phone,
+                ]);
+            }
+        }
+
         // Start Transaction
         DB::beginTransaction();
 

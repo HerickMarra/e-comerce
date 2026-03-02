@@ -24,6 +24,48 @@
                             </div>
                         @endif
 
+                        @auth
+                            @if(!Auth::user()->cpf || !Auth::user()->phone)
+                                <div
+                                    class="bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/20 rounded-2xl p-6 md:p-8 mb-8 space-y-6">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="material-symbols-outlined text-amber-600">person_edit</span>
+                                        <h3
+                                            class="text-sm font-bold text-amber-900 dark:text-amber-400 uppercase tracking-wider">
+                                            Dados Obrigatórios</h3>
+                                    </div>
+                                    <p class="text-xs text-amber-800 dark:text-amber-500 font-medium leading-relaxed">
+                                        Para processar sua entrega e nota fiscal, precisamos que você complete seu cadastro com
+                                        CPF e Telefone abaixo:
+                                    </p>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        @if(!Auth::user()->cpf)
+                                            <div>
+                                                <label
+                                                    class="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400 mb-2 block">CPF</label>
+                                                <input name="user_cpf"
+                                                    class="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 font-bold text-sm focus:ring-primary focus:border-primary outline-none transition-all"
+                                                    placeholder="000.000.000-00" type="text" x-model="userCpf"
+                                                    x-mask="999.999.999-99" required />
+                                            </div>
+                                        @endif
+                                        @if(!Auth::user()->phone)
+                                            <div>
+                                                <label
+                                                    class="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400 mb-2 block">Telefone
+                                                    / WhatsApp</label>
+                                                <input name="user_phone"
+                                                    class="w-full bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 font-bold text-sm focus:ring-primary focus:border-primary outline-none transition-all"
+                                                    placeholder="(00) 00000-0000" type="text" x-model="userPhone"
+                                                    x-mask="(99) 99999-9999" required />
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                        @endauth
+
                         <div
                             class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl p-6 md:p-10 space-y-10 overflow-hidden">
                             @auth
@@ -436,8 +478,9 @@
                                     10x sem juros</p>
                             </div>
 
-                            <button type="submit" :disabled="!selectedShipping"
-                                :class="selectedShipping ? 'bg-primary shadow-primary/10' : 'bg-slate-300 cursor-not-allowed shadow-none'"
+                            <button type="submit"
+                                :disabled="!selectedShipping || (needsUserInfo && (!userCpf || !userPhone))"
+                                :class="(selectedShipping && (!needsUserInfo || (userCpf && userPhone))) ? 'bg-primary shadow-primary/10' : 'bg-slate-300 cursor-not-allowed shadow-none'"
                                 class="w-full mt-10 text-white font-bold py-5 rounded-xl transition-all uppercase text-[11px] tracking-[0.2em] flex items-center justify-center gap-3 group">
                                 Finalizar Pedido
                                 <span
@@ -488,6 +531,11 @@
                 selectedAddressId: {{ (Auth::check() && $addresses->where('is_default', true)->first()) ? $addresses->where('is_default', true)->first()->id : ($addresses->first()?->id ?? 'null') }},
                 loadingCep: false,
                 paymentMethod: 'credit_card',
+
+                // User Info mandate
+                needsUserInfo: {{ (Auth::check() && (!Auth::user()->cpf || !Auth::user()->phone)) ? 'true' : 'false' }},
+                userCpf: '{{ Auth::user()->cpf ?? '' }}',
+                userPhone: '{{ Auth::user()->phone ?? '' }}',
 
                 // Shipping Logic
                 shippingLoading: false,
