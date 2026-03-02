@@ -199,13 +199,53 @@
                                         {{ $order->address_info['neighborhood'] ?? '' }}<br>
                                         {{ $order->address_info['city'] ?? '' }} -
                                         {{ $order->address_info['state'] ?? '' }}<br>
-                                        CEP: {{ $order->address_info['zip'] ?? '' }}
+                                        CEP: {{ $order->address_info['zip'] ?? $order->address_info['zip_code'] ?? '' }}
                                     </span>
                                 </div>
                             </div>
                         </div>
                     @else
                         <p class="text-sm text-slate-400 italic">Informações de endereço não encontradas.</p>
+                    @endif
+                </div>
+
+                <!-- Shipping Status & Recruitment -->
+                <div
+                    class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-4">
+                    <h3 class="font-bold text-lg">Frete de Envio</h3>
+                    
+                    @if($order->shipping_id)
+                        <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/20">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="material-symbols-outlined text-emerald-600">local_shipping</span>
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Status</span>
+                                    <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">Contratado</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">Serviço: <strong>{{ $order->shipping_service_name }}</strong></p>
+                            @if($order->shipping_tracking_url)
+                                <a href="{{ $order->shipping_tracking_url }}" target="_blank"
+                                    class="inline-flex items-center gap-2 text-xs font-bold text-primary hover:underline">
+                                    <span class="material-symbols-outlined text-sm">print</span>
+                                    Imprimir Etiqueta / Rastreio
+                                </a>
+                            @endif
+                        </div>
+                    @else
+                        <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/20">
+                            <p class="text-xs text-amber-800 dark:text-amber-500 font-medium mb-3">
+                                Frete ainda não foi contratado na EnviaMais para este pedido.
+                            </p>
+                            <form action="{{ route('admin.orders.recruit-shipping', $order) }}" method="POST">
+                                @csrf
+                                <button type="submit" 
+                                    class="w-full py-3 bg-white dark:bg-slate-800 border-2 border-amber-200 dark:border-amber-800/50 hover:bg-amber-50 dark:hover:bg-amber-900/20 text-amber-800 dark:text-amber-500 font-bold rounded-2xl transition-all text-sm flex items-center justify-center gap-2">
+                                    <span class="material-symbols-outlined text-lg">smart_button</span>
+                                    Contratar Frete Manualmente
+                                </button>
+                            </form>
+                        </div>
                     @endif
                 </div>
 

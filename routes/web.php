@@ -49,6 +49,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     Route::resource('emails', App\Http\Controllers\Admin\EmailTemplateController::class);
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update']);
+    Route::post('orders/{order}/recruit-shipping', [App\Http\Controllers\Admin\OrderController::class, 'recruitShipping'])->name('orders.recruit-shipping');
     Route::get('/configuracoes', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
     Route::put('/configuracoes', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
     Route::post('/configuracoes/test-enviamais', [\App\Http\Controllers\Admin\SettingsController::class, 'testEnviaMais'])->name('settings.test-enviamais');

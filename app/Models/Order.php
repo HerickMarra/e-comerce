@@ -17,6 +17,9 @@ class Order extends Model
         'payment_id',
         'address_info',
         'notes',
+        'shipping_id',
+        'shipping_service_name',
+        'shipping_tracking_url',
     ];
 
     protected $casts = [
