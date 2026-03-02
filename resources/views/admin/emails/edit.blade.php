@@ -1,16 +1,43 @@
 <x-admin-layout>
 
     <head>
-        <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+        <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+        <style>
+            .ck-editor__editable {
+                min-height: 400px;
+                border-radius: 0 0 1.5rem 1.5rem !important;
+                border: 2px solid #e2e8f0 !important;
+                background-color: #f8fafc !important;
+            }
+
+            .ck-toolbar {
+                border-radius: 1.5rem 1.5rem 0 0 !important;
+                border: 2px solid #e2e8f0 !important;
+                border-bottom: none !important;
+                background-color: #ffffff !important;
+                padding: 0.5rem !important;
+            }
+
+            .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+                border-color: #e2e8f0 !important;
+            }
+
+            .ck.ck-editor__main>.ck-editor__editable.ck-focused {
+                border-color: var(--primary-color, #10b981) !important;
+                box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+                outline: none !important;
+            }
+        </style>
         <script>
-            tinymce.init({
-                selector: 'textarea[name="content"]',
-                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
-                language: 'pt_BR',
-                promotion: false,
-                branding: false,
-                height: 500,
+            document.addEventListener('DOMContentLoaded', () => {
+                ClassicEditor
+                    .create(document.querySelector('textarea[name="content"]'), {
+                        toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo'],
+                        language: 'pt-br'
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
             });
         </script>
     </head>
