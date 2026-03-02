@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Checkout Premium VerveHome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Public+Sans:wght@200;300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981",
+                        "primary-dark": "#059669",
+                        "corporate-blue": "#0f172a",
+                        "surface-light": "#fafafa",
+                        "border-soft": "#e2e8f0",
+                    },
+                    fontFamily: {
+                        "sans": ["Public Sans", "sans-serif"],
+                        "condensed": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body { 
+                @apply bg-[#fcfcfc] text-slate-800 antialiased font-sans;
+            }
+            label {
+                @apply text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400 mb-2 block font-condensed;
+            }
+            input[type="text"], input[type="email"], input[type="tel"], select {
+                @apply w-full px-4 py-3 rounded-none border-b border-slate-200 border-t-0 border-x-0 bg-transparent focus:ring-0 focus:border-primary transition-all text-sm placeholder:text-slate-300;
+            }
+            .payment-tile {
+                @apply flex flex-col items-center justify-center p-6 border border-slate-200 bg-white cursor-pointer transition-all gap-3 grayscale opacity-60 hover:opacity-100 hover:grayscale-0;
+            }
+            .payment-tile.active {
+                @apply border-primary bg-emerald-50/30 grayscale-0 opacity-100 ring-1 ring-primary;
+            }
+        }
+        .material-symbols-outlined { 
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24; 
+        }
+        .enterprise-card { @apply bg-white border border-slate-100 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.05)] rounded-xl overflow-hidden mb-8; }
+        @media (max-width: 1024px) {
+            .mobile-sticky-summary {
+                @apply fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 z-[100] shadow-[0_-10px_30px_rgba(0,0,0,0.05)];
+            }
+            main { @apply pb-32; }
+        }
+    </style>
+</head>
+<body>
+<header class="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50">
+<div class="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
+<div class="flex items-center gap-16">
+<div class="flex items-center gap-2 text-corporate-blue">
+<div class="size-7 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path></svg>
+</div>
+<h1 class="text-xl font-bold tracking-[-0.03em] uppercase">VerveHome</h1>
+</div>
+<nav class="hidden lg:flex items-center gap-2">
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-300">Cesto</span>
+<span class="material-symbols-outlined text-slate-200 text-lg">chevron_right</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary border-b border-primary pb-1">Pagamento &amp; Entrega</span>
+<span class="material-symbols-outlined text-slate-200 text-lg">chevron_right</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-300">Confirmação</span>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden sm:flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined !text-xl">lock</span>
+<span class="text-[9px] font-bold uppercase tracking-[0.15em] leading-tight">Checkout<br/>Seguro</span>
+</div>
+<div class="size-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400">
+<span class="material-symbols-outlined">person</span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 md:px-8 py-10 lg:py-16">
+<div class="flex flex-col lg:flex-row gap-12">
+<div class="flex-1 order-2 lg:order-1">
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<span class="text-xs font-medium text-slate-300 font-condensed tracking-tighter">01</span>
+<h2 class="text-xs font-bold uppercase tracking-[0.2em] text-corporate-blue">Entrega</h2>
+<div class="h-[1px] flex-1 bg-slate-100"></div>
+</div>
+<div class="enterprise-card p-6 md:p-10 space-y-10">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+<div class="md:col-span-1">
+<label>CEP</label>
+<div class="relative group">
+<input class="!bg-slate-50 !border-slate-300 !px-4 !py-4 font-bold text-lg focus:!bg-white" placeholder="00000-000" type="text"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-primary font-bold uppercase tracking-widest hover:text-primary-dark">Buscar</button>
+</div>
+</div>
+<div class="hidden md:block"></div>
+<div class="md:col-span-2">
+<label>Endereço Completo</label>
+<input placeholder="Ex: Av. Brigadeiro Faria Lima" type="text"/>
+</div>
+<div>
+<label>Número e Complemento</label>
+<input placeholder="Ex: 1234, Ap 52" type="text"/>
+</div>
+<div>
+<label>Bairro</label>
+<input placeholder="Bairro" type="text"/>
+</div>
+<div>
+<label>Cidade</label>
+<input placeholder="Cidade" type="text"/>
+</div>
+<div>
+<label>Estado</label>
+<select>
+<option>São Paulo (SP)</option>
+<option>Rio de Janeiro (RJ)</option>
+<option>Minas Gerais (MG)</option>
+</select>
+</div>
+</div>
+<div class="pt-6 border-t border-slate-50">
+<label class="mb-6">Modalidade de Frete</label>
+<div class="grid grid-cols-1 gap-4">
+<label class="relative flex items-center p-5 border border-slate-200 rounded-lg cursor-pointer hover:border-primary transition-all group">
+<input checked="" class="text-primary focus:ring-primary size-5 border-slate-300" name="shipping" type="radio"/>
+<div class="ml-5 flex-1">
+<span class="text-xs font-bold text-slate-900 block uppercase tracking-wider">Transportadora Premium</span>
+<span class="text-[11px] text-slate-400">Montagem inclusa • 5 a 8 dias úteis</span>
+</div>
+<span class="text-sm font-bold text-slate-900">R$ 149,00</span>
+</label>
+</div>
+</div>
+</div>
+</section>
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<span class="text-xs font-medium text-slate-300 font-condensed tracking-tighter">02</span>
+<h2 class="text-xs font-bold uppercase tracking-[0.2em] text-corporate-blue">Pagamento</h2>
+<div class="h-[1px] flex-1 bg-slate-100"></div>
+</div>
+<div class="enterprise-card p-6 md:p-10">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+<div class="payment-tile active rounded-xl">
+<span class="material-symbols-outlined !text-3xl">credit_card</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-center">Cartão de Crédito</span>
+</div>
+<div class="payment-tile rounded-xl">
+<span class="material-symbols-outlined !text-3xl">qr_code_2</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-center">PIX <span class="text-primary block mt-1">-5% OFF</span></span>
+</div>
+<div class="payment-tile rounded-xl">
+<span class="material-symbols-outlined !text-3xl">receipt_long</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-center">Boleto Bancário</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+<div class="md:col-span-2">
+<label>Número do Cartão</label>
+<div class="relative">
+<input placeholder="0000 0000 0000 0000" type="text"/>
+<div class="absolute right-0 top-1/2 -translate-y-1/2 flex gap-2 opacity-30 grayscale h-6">
+<img alt="Visa" class="h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwmOaEK4D-MGY4ELuTVC_zGiJRIxAcatETpCt7FHFShuPnzzbPX2aY2s51R_LBCZWt4sgCFVdVnW0_upq5brG49wgxMjN_hYCAvEALFkYmNhSJSlBgXOxsx-ngFtgmRAYZlA5FHVBXyLgccBL45OCF0YBLAab44Jyqe89t0uTwhd6DB7GzK5VSTB99Fs1_rKaRWZ_ZuimhztvYCmYNvDYfRzHNu26nRs9WAwEg0Huc8yddi-eLy0F03bKyNDHqnCpP5qSvR7cTBXc"/>
+<img alt="Mastercard" class="h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOkYGGucnYUwFZXnIsRm3OO71klhKEsgIc1c9BSW1vvUSB47Ns7vC2OB4CDYal4vrm9zK6azGnm6he3dPyZ-Kpr8a6PIXPXtSN2-xFEVlPKfpgOywR1g0JYdP3LcpMHvx51CpTvULI2HqcXPbNCDqj7FENuwRi3k-fHKHfe80bwOBNT7oox9m5q-CBGDZnWKC69u0OSLKHKzb-235PKPfKcRlnMnuWOoOWxoo8gSGY_Y_y-BwBdqOwnR6qP7nheJsRT1QJxbdidRc"/>
+</div>
+</div>
+</div>
+<div>
+<label>Validade</label>
+<input placeholder="MM/AA" type="text"/>
+</div>
+<div>
+<label>Cód. Segurança (CVV)</label>
+<input placeholder="123" type="text"/>
+</div>
+<div class="md:col-span-2">
+<label>Parcelamento</label>
+<select>
+<option>Até 10x de R$ 654,90 sem juros</option>
+<option>1x de R$ 6.549,00 à vista</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+</div>
+<aside class="lg:w-[420px] order-1 lg:order-2">
+<div class="lg:sticky lg:top-28 space-y-6">
+<div class="enterprise-card !mb-0">
+<div class="p-8">
+<h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-8">Resumo do Pedido</h3>
+<div class="space-y-6 mb-8">
+<div class="flex gap-5 items-center">
+<div class="size-16 bg-slate-50 rounded flex-shrink-0 overflow-hidden border border-slate-100">
+<img alt="Sofá de Veludo Nórdico" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQ6m_voicQbaqfpx2kw36Xuubp-SGtSQdbZqkq4AUSj4lAmWIKdOx2GG8nqkRbhKaWMv3WfuDtpgHMBARNe63ZTvJjnLvZsxjFJiJxUSylCxleY4Ydv92o0h7fKZg94RTmNeXjDjOgVPpNfAh_eZWv7w4xkRWvrCQlk7o1wWsK1XEAGt6nkAFesVH3UdZVmOU5IfgvqU8Zu_9z0rsr6fAUr3EJH53ojbL-xrbbKMOr-l1sp1TB3Gfb4Odnz1a-vmhaq9WOlOZM5IE"/>
+</div>
+<div class="flex-1 min-w-0">
+<h4 class="text-[11px] font-bold text-slate-900 uppercase tracking-tight truncate">Sofá Veludo Nórdico</h4>
+<p class="text-[10px] text-slate-400 uppercase mt-1">Verde Esmeralda • Qtd: 1</p>
+<p class="text-xs font-semibold text-slate-900 mt-1">R$ 6.400,00</p>
+</div>
+</div>
+</div>
+<div class="space-y-3 py-6 border-y border-slate-50">
+<div class="flex justify-between text-[11px] uppercase tracking-wider">
+<span class="text-slate-400">Subtotal</span>
+<span class="font-medium">R$ 6.400,00</span>
+</div>
+<div class="flex justify-between text-[11px] uppercase tracking-wider">
+<span class="text-slate-400">Frete</span>
+<span class="font-medium">R$ 149,00</span>
+</div>
+</div>
+<div class="pt-8 flex flex-col gap-1">
+<div class="flex justify-between items-baseline">
+<span class="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">Total</span>
+<span class="text-4xl font-light text-corporate-blue font-condensed tracking-tighter">R$ 6.549,00</span>
+</div>
+<p class="text-[9px] text-slate-400 text-right uppercase tracking-widest mt-2">em até 10x sem juros</p>
+</div>
+<button class="w-full mt-10 bg-primary hover:bg-primary-dark text-white font-bold py-5 rounded-none shadow-xl shadow-primary/10 transition-all uppercase text-[11px] tracking-[0.2em] flex items-center justify-center gap-3 group">
+                            Finalizar Compra
+                            <span class="material-symbols-outlined !text-lg transition-transform group-hover:translate-x-1">arrow_right_alt</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1">
+<div class="bg-white border border-slate-100 p-6 rounded-xl flex items-start gap-4">
+<span class="material-symbols-outlined text-primary !text-2xl">verified_user</span>
+<div>
+<h5 class="text-[10px] font-bold uppercase tracking-widest text-slate-900">Segurança Total</h5>
+<p class="text-[10px] text-slate-400 mt-1 leading-relaxed">Seus dados bancários são processados com criptografia de 256 bits.</p>
+</div>
+</div>
+<div class="bg-white border border-slate-100 p-6 rounded-xl flex items-start gap-4">
+<span class="material-symbols-outlined text-slate-400 !text-2xl">workspace_premium</span>
+<div>
+<h5 class="text-[10px] font-bold uppercase tracking-widest text-slate-900">Garantia VerveHome</h5>
+<p class="text-[10px] text-slate-400 mt-1 leading-relaxed">Suporte executivo e 5 anos de garantia estrutural para sua peça.</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<div class="mobile-sticky-summary lg:hidden">
+<div class="flex items-center justify-between gap-4">
+<div>
+<span class="text-[9px] font-bold uppercase text-slate-400 tracking-widest block">Total do Pedido</span>
+<span class="text-xl font-bold text-corporate-blue">R$ 6.549,00</span>
+</div>
+<button class="bg-primary px-8 py-3.5 text-white font-bold text-[10px] uppercase tracking-[0.2em] rounded-lg">Pagar Agora</button>
+</div>
+</div>
+<footer class="bg-white border-t border-slate-100 py-16 mt-12">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-10">
+<div class="flex items-center gap-2 opacity-30 grayscale">
+<div class="size-5 text-corporate-blue">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path></svg>
+</div>
+<p class="text-[9px] uppercase tracking-[0.3em] font-bold">VerveHome Design Group • 2024</p>
+</div>
+<div class="flex gap-10">
+<a class="text-slate-300 hover:text-primary transition-colors text-[9px] font-bold uppercase tracking-[0.15em]" href="#">Políticas de Entrega</a>
+<a class="text-slate-300 hover:text-primary transition-colors text-[9px] font-bold uppercase tracking-[0.15em]" href="#">Termos &amp; Condições</a>
+<a class="text-slate-300 hover:text-primary transition-colors text-[9px] font-bold uppercase tracking-[0.15em]" href="#">Suporte Premium</a>
+</div>
+</div>
+</footer>
+
+</body></html>

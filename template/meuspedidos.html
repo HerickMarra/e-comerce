@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Histórico de Pedidos - VerveHome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#10b981", 
+              "background-light": "#fcfcfc",
+              "background-dark": "#101622",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col">
+<header class="sticky top-0 z-50 w-full bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-20 gap-8">
+<div class="flex items-center gap-2 shrink-0">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
+<span class="material-symbols-outlined">chair</span>
+</div>
+<span class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white uppercase">Verve<span class="text-primary">Home</span></span>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Salas</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Quartos</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Jantar</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Escritório</a>
+</nav>
+<div class="flex-1 max-w-sm hidden lg:block">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary" placeholder="Buscar móveis..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="absolute top-1 right-1 w-4 h-4 bg-primary text-[10px] font-bold text-white rounded-full flex items-center justify-center">2</span>
+</button>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-700 ml-2">
+<img alt="Perfil" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh-3wGBLU0E_fpjsHilheXq3KOp58AGcK5_r4cuNTjcPNzp43Dkot2LqoNK_1WWimNA3ftUv6RKmggQCBGLSBomAs-zjfHQFufR_snFpuj3a6kkaJ08RXeCRn2cb1PJwvL36eCrOUyfceYTVF_N61mLix45-jqX-1MrQAML7MP_02Ifqi7b8yd2OUQBEM58yoy1l8QjaRZwlyEuSivSeDYwHhTAhZdnR2K5cP0rZBCB9QvSxtA9jqMjGHkeO7zI4jOK1-XvlxafbU"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+<nav aria-label="Breadcrumb" class="flex text-sm text-slate-500 mb-6">
+<ol class="flex items-center space-x-2">
+<li><a class="hover:text-primary" href="#">Home</a></li>
+<li><span class="material-symbols-outlined text-xs">chevron_right</span></li>
+<li><a class="hover:text-primary" href="#">Minha Conta</a></li>
+<li><span class="material-symbols-outlined text-xs">chevron_right</span></li>
+<li class="font-semibold text-slate-900 dark:text-white">Meus Pedidos</li>
+</ol>
+</nav>
+<div class="flex flex-col lg:flex-row gap-10">
+<aside class="w-full lg:w-64 shrink-0">
+<div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 shadow-sm">
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+                        Painel
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-bold text-primary bg-primary/5 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">shopping_bag</span>
+                        Meus Pedidos
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">location_on</span>
+                        Endereços
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">person</span>
+                        Dados Pessoais
+                    </a>
+<hr class="my-2 border-slate-100 dark:border-slate-800"/>
+<a class="flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">logout</span>
+                        Sair
+                    </a>
+</nav>
+</div>
+</aside>
+<div class="flex-1">
+<div class="mb-8">
+<h1 class="text-3xl font-bold text-slate-900 dark:text-white">Meus Pedidos</h1>
+<p class="text-slate-500 mt-1">Acompanhe o status e detalhes de suas compras recentes.</p>
+</div>
+<div class="space-y-4">
+<div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+<div class="p-5 flex flex-wrap items-center justify-between gap-6">
+<div class="flex items-center gap-5">
+<div class="w-20 h-20 rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
+<img alt="Sofa" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp-vKwmZUNl4j-Bs_p174ltRvS0vYVlEcH41tXbTvEVxmlgXOWFumnPzsmVEnhdqt4C2IlCuX7vEGDYW88lWsDCiY3fA6FxwapaL6mx2NViP4W8cHkDQ2005mT6_gjJbw8fVvBN8AIcjhW8qXHEUsI1EHKZRxNJJcSOKYFeEKujXXh-4PjgiFQnS1dacobjcZsAuja2LkfDidVMlv4nIX0zETR_cmPCLZmObMl3OO82e9-rjfJUOLubQ_cFJ5DGCW1QVN_XhdODXw"/>
+</div>
+<div>
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pedido</div>
+<div class="font-bold text-slate-900 dark:text-white">#VH-82931</div>
+</div>
+</div>
+<div class="hidden sm:block">
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Data</div>
+<div class="font-semibold text-slate-700 dark:text-slate-300">12 Mai, 2024</div>
+</div>
+<div class="hidden sm:block">
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total</div>
+<div class="font-bold text-primary">R$ 6.495,00</div>
+</div>
+<div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                                Enviado
+                            </span>
+</div>
+<button class="px-5 py-2.5 border border-slate-200 dark:border-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                            Ver Detalhes
+                        </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+<div class="p-5 flex flex-wrap items-center justify-between gap-6">
+<div class="flex items-center gap-5">
+<div class="w-20 h-20 rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
+<img alt="Mesa" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnYFD5ammlz-xFG3U9Ado13yQdR3gYUgFe_dVQAdKufJD9GlEtlr7DpGHXxDuAS25BmdmOr6d-PoxjSMQsqD5zviqXwtmBzNE_leUB-o9-1prFUCCAlQ7D7tJwtDQ-0eXrrWrC5qA4IjHoleXJ8sEJBL6j3J8nzo4Oy5ewUR_BW3waFnXhOwZpxQU5gBazyFm46Jijx_vxMd-mRz7My_PZMgjJKUFUWmcbUQk8sA0B3_gcA9RlEIKabetwqtC_kd14scIrv3I2jI8"/>
+</div>
+<div>
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pedido</div>
+<div class="font-bold text-slate-900 dark:text-white">#VH-82710</div>
+</div>
+</div>
+<div class="hidden sm:block">
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Data</div>
+<div class="font-semibold text-slate-700 dark:text-slate-300">08 Mai, 2024</div>
+</div>
+<div class="hidden sm:block">
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total</div>
+<div class="font-bold text-primary">R$ 4.250,00</div>
+</div>
+<div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                Em processamento
+                            </span>
+</div>
+<button class="px-5 py-2.5 border border-slate-200 dark:border-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                            Ver Detalhes
+                        </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+<div class="p-5 flex flex-wrap items-center justify-between gap-6">
+<div class="flex items-center gap-5">
+<div class="w-20 h-20 rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
+<img alt="Cadeira" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALfyS5pSu_2Ugtj1TWcHXAHpEMeyRa8GHhz66JlPwQLYAopUbi4BqKtt73q8NavjGypAjNn-lqa16BudtzBgPbT1O_8AfPDE_0BU6eJNIFCSl04XPTG542TggRzeXiCI9gBiIDe5N2mFWlnAHZfUNgTjrYHD5eFPMYO9XDZ7wdu8862iP3edKdNLTGOM98swHNKO6lff76b0oo4Ucv7bJKkoZTmupvRSx5Q1bvIVfvkk8eVQPAROQqhF2LAl8mCaIVxeoRCsvCCro"/>
+</div>
+<div>
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pedido</div>
+<div class="font-bold text-slate-900 dark:text-white">#VH-81522</div>
+</div>
+</div>
+<div class="hidden sm:block">
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Data</div>
+<div class="font-semibold text-slate-700 dark:text-slate-300">22 Abr, 2024</div>
+</div>
+<div class="hidden sm:block">
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total</div>
+<div class="font-bold text-primary">R$ 1.795,00</div>
+</div>
+<div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                Entregue
+                            </span>
+</div>
+<button class="px-5 py-2.5 border border-slate-200 dark:border-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                            Ver Detalhes
+                        </button>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+<div class="p-5 flex flex-wrap items-center justify-between gap-6">
+<div class="flex items-center gap-5">
+<div class="w-20 h-20 rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
+<img alt="Luminaria" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSheahAu_C383ROC8p53gdsH_QZZpbB0YZ74ECMQCAH1LMl43QZ7H-6eQgUKy0XmEcVke6WcDM1SJfx9-m0sPBz8CmKzy7L_yIPznXso6H1cXVSTiXk85Cee7q1NNVk-mQdUG7JN3-yVh2d-61ZKD9Wr9rUoXMqgw_kaYM3H9-joZE10uoePSnDUPwcpxbWFeVVcEHL5n7VxobALDhFQXpq4Z3Cqd9b06bClA8B2XvXWz8y66LF-E_uoM1rsHKk9yjAixsycU7kIM"/>
+</div>
+<div>
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Pedido</div>
+<div class="font-bold text-slate-900 dark:text-white">#VH-80291</div>
+</div>
+</div>
+<div class="hidden sm:block">
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Data</div>
+<div class="font-semibold text-slate-700 dark:text-slate-300">15 Mar, 2024</div>
+</div>
+<div class="hidden sm:block">
+<div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total</div>
+<div class="font-bold text-primary">R$ 995,00</div>
+</div>
+<div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                Cancelado
+                            </span>
+</div>
+<button class="px-5 py-2.5 border border-slate-200 dark:border-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                            Ver Detalhes
+                        </button>
+</div>
+</div>
+</div>
+<div class="mt-10 flex items-center justify-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-xl">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-white font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800">3</button>
+<span class="text-slate-400 px-2">...</span>
+<button class="flex items-center gap-1 px-4 h-10 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-bold">
+                    Próximo
+                    <span class="material-symbols-outlined text-xl">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 pt-16 pb-10">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+<div class="lg:col-span-4">
+<div class="flex items-center gap-2 mb-6">
+<div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl">chair</span>
+</div>
+<span class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white uppercase">Verve<span class="text-primary">Home</span></span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 leading-relaxed mb-8 max-w-sm">
+                    Design de alta qualidade para o seu dia a dia. Conforto e sofisticação para sua casa.
+                </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-lg">camera</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-lg">movie</span>
+</a>
+</div>
+</div>
+<div class="lg:col-span-2">
+<h5 class="font-bold text-slate-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Empresa</h5>
+<ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
+<li><a class="hover:text-primary transition-colors" href="#">Sobre Nós</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Sustentabilidade</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Showrooms</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Carreiras</a></li>
+</ul>
+</div>
+<div class="lg:col-span-2">
+<h5 class="font-bold text-slate-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Suporte</h5>
+<ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
+<li><a class="hover:text-primary transition-colors" href="#">Entrega e Frete</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Devoluções</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Garantia</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contato</a></li>
+</ul>
+</div>
+<div class="lg:col-span-4">
+<h5 class="font-bold text-slate-900 dark:text-white mb-6 uppercase text-xs tracking-widest">Fique Inspirado</h5>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Assine nossa newsletter para novidades e dicas de decoração.</p>
+<form class="flex flex-col gap-3">
+<div class="relative">
+<input class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="seu@email.com" type="email"/>
+</div>
+<button class="bg-primary hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20">
+                        Inscrever-se
+                    </button>
+</form>
+</div>
+</div>
+<div class="pt-10 border-t border-slate-100 dark:border-slate-900 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col md:flex-row items-center gap-4 text-xs font-medium text-slate-400">
+<p>© 2024 VerveHome Furniture Inc.</p>
+<div class="hidden md:block w-1 h-1 bg-slate-300 rounded-full"></div>
+<a class="hover:text-primary" href="#">Política de Privacidade</a>
+<div class="hidden md:block w-1 h-1 bg-slate-300 rounded-full"></div>
+<a class="hover:text-primary" href="#">Termos de Serviço</a>
+</div>
+<div class="flex items-center gap-5 opacity-40 hover:opacity-100 transition-opacity">
+<img alt="Visa" class="h-4 w-auto grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoskV5j8pMVorl-dprzX0-4JpxCS1KDCwIkXt8giuqhdn5LmsxOz_vIcC5JXPwOvNPxtkGRg5wZx0ktTfNwcqbQhmYGtV2Z5RGdKoRRt1bUNrlRDxkRLRfFsF3HJh2k694UTtmn1_fNOpWE0LEVnRocO0TuFIuJBPTaHZcmaGsTpIb4Hag_e0WikykQg6IcWT_RoaRqwIE4CixIbca5lP3FHBloApf2vlbCnevvauFqZiBsq3OZP4hm6L_VwB3uY3mIW45ws3Hsgo"/>
+<img alt="Mastercard" class="h-6 w-auto grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHqlQE5BHXsJ1Hk_ScNbCUDHSQlAUFKnUwaKffPcs2Rbloby-K6Ik_snAQv9EI7OjF9BkZQdhCneu__ybkbsxbgKnEx1KTH2MHPhCneQsKVaOLk8s3jQVH_HEwCgrvtldQ_-K6ILojeEQSs4nXTFkv80X2uqDZBMYr96uyy-Xoks7IugLb05AK2ZzuF-eEkws2S7Z72BFVwzB8NlZ9MQ6eEP-dYWG5zDEaMBXCLvjlCpfeMePV9Mcgp-ODU2xOIxViLEUAbnjxjrA"/>
+<img alt="PayPal" class="h-4 w-auto grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZb-logpN9kIi44djkJz56WoOfNVlGnZwzhkNX0aOB58nRiSxlL1leeBI0QibTGzD5btjEQyuQ6usfMyv7GCvtQEF0lGmFg4bI6ys11cYjdQQx52v2KBOHW0wQ2gpoWSEamjQEx5GWmMFy3_HzOkjgXNpP-8LyVdSJovojLjmYFkGy-PfeP7fztNB4fQo32B2QMDCetv_X88o3Wh1G4OxOUSbnRphYvTV36i45QWyeGV6fR_51Q315qL3Z_lUcPpJWQ7nzTvJmGgo"/>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>

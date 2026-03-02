@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Busca de Produtos | VerveHome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#10b981", 
+              "background-light": "#fcfcfc",
+              "background-dark": "#101622",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-1 { font-variation-settings: 'FILL' 1; }input[type='range']::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<header class="sticky top-0 z-50 w-full bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-20 gap-8">
+<div class="flex items-center gap-2 shrink-0">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
+<span class="material-symbols-outlined">chair</span>
+</div>
+<span class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white uppercase">Verve<span class="text-primary">Home</span></span>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Sala de Estar</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Quarto</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Jantar</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Escritório</a>
+</nav>
+<div class="flex-1 max-w-sm hidden lg:block">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+<input class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary" placeholder="Buscar móveis..." type="text" value="Sofá"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="absolute top-1 right-1 w-4 h-4 bg-primary text-[10px] font-bold text-white rounded-full flex items-center justify-center">2</span>
+</button>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-700 ml-2">
+<img alt="Perfil" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh-3wGBLU0E_fpjsHilheXq3KOp58AGcK5_r4cuNTjcPNzp43Dkot2LqoNK_1WWimNA3ftUv6RKmggQCBGLSBomAs-zjfHQFufR_snFpuj3a6kkaJ08RXeCRn2cb1PJwvL36eCrOUyfceYTVF_N61mLix45-jqX-1MrQAML7MP_02Ifqi7b8yd2OUQBEM58yoy1l8QjaRZwlyEuSivSeDYwHhTAhZdnR2K5cP0rZBCB9QvSxtA9jqMjGHkeO7zI4jOK1-XvlxafbU"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<nav aria-label="Breadcrumb" class="flex mb-2 text-xs font-medium text-slate-400">
+<ol class="flex items-center space-x-2">
+<li><a class="hover:text-primary" href="#">Home</a></li>
+<li class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span>Busca</span>
+</li>
+</ol>
+</nav>
+<h1 class="text-3xl font-bold text-slate-900 dark:text-white">Resultados para "Sofá"</h1>
+<p class="text-slate-500 text-sm mt-1">Encontramos 48 itens que combinam com sua busca</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center border border-slate-200 dark:border-slate-800 rounded-lg p-1 bg-white dark:bg-slate-900">
+<button class="p-1.5 rounded bg-slate-100 dark:bg-slate-800 text-primary">
+<span class="material-symbols-outlined text-xl">grid_view</span>
+</button>
+<button class="p-1.5 rounded text-slate-400 hover:text-slate-600 transition-colors">
+<span class="material-symbols-outlined text-xl">view_list</span>
+</button>
+</div>
+<div class="relative min-w-[200px]">
+<select class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg py-2 pl-4 pr-10 text-sm focus:ring-primary focus:border-primary appearance-none">
+<option>Mais Relevantes</option>
+<option>Menor Preço</option>
+<option>Maior Preço</option>
+<option>Mais Vendidos</option>
+<option>Lançamentos</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10">
+<aside class="space-y-8">
+<div class="border-b border-slate-100 dark:border-slate-800 pb-6">
+<button class="flex items-center justify-between w-full font-bold text-slate-900 dark:text-white uppercase tracking-wider text-xs mb-4">
+                    Categoria
+                    <span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded border-slate-300 text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">Sofás de Veludo (12)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-slate-300 text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">Sofás de Couro (8)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-slate-300 text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">Sofás Retráteis (15)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="rounded border-slate-300 text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">Poltronas (13)</span>
+</label>
+</div>
+</div>
+<div class="border-b border-slate-100 dark:border-slate-800 pb-6">
+<button class="flex items-center justify-between w-full font-bold text-slate-900 dark:text-white uppercase tracking-wider text-xs mb-4">
+                    Faixa de Preço
+                    <span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<div class="px-2">
+<input class="w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-primary" max="20000" min="1000" type="range" value="8000"/>
+<div class="flex items-center justify-between mt-4">
+<div class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-2 py-1 text-xs font-semibold">R$ 1.000</div>
+<div class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-2 py-1 text-xs font-semibold">R$ 20.000</div>
+</div>
+</div>
+</div>
+<div class="border-b border-slate-100 dark:border-slate-800 pb-6">
+<button class="flex items-center justify-between w-full font-bold text-slate-900 dark:text-white uppercase tracking-wider text-xs mb-4">
+                    Cor
+                    <span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<div class="flex flex-wrap gap-2">
+<button class="w-8 h-8 rounded-full bg-[#10b981] border-2 border-primary ring-2 ring-primary/20 ring-offset-2" title="Esmeralda"></button>
+<button class="w-8 h-8 rounded-full bg-[#334155] border-2 border-transparent hover:scale-110 transition-transform" title="Cinza Grafite"></button>
+<button class="w-8 h-8 rounded-full bg-[#f5f5dc] border-2 border-transparent hover:scale-110 transition-transform" title="Bege"></button>
+<button class="w-8 h-8 rounded-full bg-[#78350f] border-2 border-transparent hover:scale-110 transition-transform" title="Caramelo"></button>
+<button class="w-8 h-8 rounded-full bg-white border border-slate-200 hover:scale-110 transition-transform" title="Branco"></button>
+</div>
+</div>
+<div class="border-b border-slate-100 dark:border-slate-800 pb-6">
+<button class="flex items-center justify-between w-full font-bold text-slate-900 dark:text-white uppercase tracking-wider text-xs mb-4">
+                    Material
+                    <span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="border-b border-slate-100 dark:border-slate-800 pb-6">
+<button class="flex items-center justify-between w-full font-bold text-slate-900 dark:text-white uppercase tracking-wider text-xs mb-4">
+                    Avaliação
+                    <span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-slate-300 text-primary" type="checkbox"/>
+<div class="flex items-center gap-0.5 text-amber-400">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+<span class="text-xs text-slate-500">ou mais</span>
+</label>
+</div>
+</div>
+<div class="pb-6">
+<button class="flex items-center justify-between w-full font-bold text-slate-900 dark:text-white uppercase tracking-wider text-xs mb-4">
+                    Disponibilidade
+                    <span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="rounded border-slate-300 text-primary" type="checkbox"/>
+<span class="text-sm text-slate-600 dark:text-slate-400">Pronta Entrega</span>
+</label>
+</div>
+</aside>
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+<div class="group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-slate-200/40 dark:hover:shadow-none transition-all duration-500">
+<div class="aspect-[4/5] overflow-hidden relative">
+<img alt="Sofá de Veludo Nórdico" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp-vKwmZUNl4j-Bs_p174ltRvS0vYVlEcH41tXbTvEVxmlgXOWFumnPzsmVEnhdqt4C2IlCuX7vEGDYW88lWsDCiY3fA6FxwapaL6mx2NViP4W8cHkDQ2005mT6_gjJbw8fVvBN8AIcjhW8qXHEUsI1EHKZRxNJJcSOKYFeEKujXXh-4PjgiFQnS1dacobjcZsAuja2LkfDidVMlv4nIX0zETR_cmPCLZmObMl3OO82e9-rjfJUOLubQ_cFJ5DGCW1QVN_XhdODXw"/>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/60 to-transparent">
+<button class="w-full bg-white text-slate-900 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all text-sm shadow-lg">
+<span class="material-symbols-outlined text-lg">visibility</span>
+                            Espiar Agora
+                        </button>
+</div>
+</div>
+<div class="p-5">
+<div class="flex items-center gap-1 text-amber-400 mb-2">
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="text-[10px] text-slate-400 ml-1">(128)</span>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1 mb-2">Sofá de Veludo Nórdico</h3>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold text-slate-900 dark:text-white">R$ 6.499,00</span>
+<button class="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<div class="group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-slate-200/40 dark:hover:shadow-none transition-all duration-500">
+<div class="aspect-[4/5] overflow-hidden relative">
+<img alt="Sofá Minimalista Cinza" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp-vKwmZUNl4j-Bs_p174ltRvS0vYVlEcH41tXbTvEVxmlgXOWFumnPzsmVEnhdqt4C2IlCuX7vEGDYW88lWsDCiY3fA6FxwapaL6mx2NViP4W8cHkDQ2005mT6_gjJbw8fVvBN8AIcjhW8qXHEUsI1EHKZRxNJJcSOKYFeEKujXXh-4PjgiFQnS1dacobjcZsAuja2LkfDidVMlv4nIX0zETR_cmPCLZmObMl3OO82e9-rjfJUOLubQ_cFJ5DGCW1QVN_XhdODXw"/>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/60 to-transparent">
+<button class="w-full bg-white text-slate-900 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all text-sm shadow-lg">
+<span class="material-symbols-outlined text-lg">visibility</span>
+                            Espiar Agora
+                        </button>
+</div>
+</div>
+<div class="p-5">
+<div class="flex items-center gap-1 text-amber-400 mb-2">
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs">star</span>
+<span class="text-[10px] text-slate-400 ml-1">(45)</span>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1 mb-2">Sofá Minimalista Charcoal</h3>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold text-slate-900 dark:text-white">R$ 5.200,00</span>
+<button class="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<div class="group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-slate-200/40 dark:hover:shadow-none transition-all duration-500">
+<div class="aspect-[4/5] overflow-hidden relative">
+<img alt="Sofá Design Moderno" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSD4vrexBCpi3IvEHC0tb-BI_I6PXacuq7AFgMMb-rLtVNjym1bcXhKoiQk5GlbnF-tBcynWB0VZUDEScFH-q_NxHTlRJtXQWbmEZOu1u4Eu8r0gK_UXWJDzerOC27oxv0LZ5MGyWmWjzHEAKbgWXd55wPwXdM4L9UtkIJzcBI8iXh-XEebho9lTbH7wD_QlCGKU0MYWT5GtG71cVi3QzMXRsyzZFrqyt-dP0RLgT3edD7Vx8qtu3AUkDmHkX79jWqpi6b0Pwut0w"/>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/60 to-transparent">
+<button class="w-full bg-white text-slate-900 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all text-sm shadow-lg">
+<span class="material-symbols-outlined text-lg">visibility</span>
+                            Espiar Agora
+                        </button>
+</div>
+</div>
+<div class="p-5">
+<div class="flex items-center gap-1 text-amber-400 mb-2">
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="text-[10px] text-slate-400 ml-1">(92)</span>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1 mb-2">Sofá Loft 3 Lugares</h3>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold text-slate-900 dark:text-white">R$ 4.890,00</span>
+<button class="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<div class="group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-slate-200/40 dark:hover:shadow-none transition-all duration-500">
+<div class="aspect-[4/5] overflow-hidden relative">
+<img alt="Poltrona Velvet" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXAbb-YpNrdVilc5FicVJQAhAL10xLWc16HLc_d4VUhLScLM3onRMWVWG_24L_0s6se48sIsIYXeFhMuvu34VP24HfaomrNXcQftR-JSHro9irc7479j26utfjE5qL7HeC1jdXbObHu3LO-bxb9O8iQCNUr4GPpbIrTfrBvW87sySUwsTYEJufaqOQza5Y6Ojo952qTsWtO7D9wcfgzX_SiwOYcCRBVFW5tn7-YqVQz7B1biAHGdetnMW02FlzCJe7TEOnFaYXy4A"/>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/60 to-transparent">
+<button class="w-full bg-white text-slate-900 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all text-sm shadow-lg">
+<span class="material-symbols-outlined text-lg">visibility</span>
+                            Espiar Agora
+                        </button>
+</div>
+</div>
+<div class="p-5">
+<div class="flex items-center gap-1 text-amber-400 mb-2">
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs">star</span>
+<span class="text-[10px] text-slate-400 ml-1">(21)</span>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1 mb-2">Poltrona Comfort Velvet</h3>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold text-slate-900 dark:text-white">R$ 2.150,00</span>
+<button class="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<div class="group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-slate-200/40 dark:hover:shadow-none transition-all duration-500">
+<div class="aspect-[4/5] overflow-hidden relative">
+<img alt="Sofá Couro Legítimo" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb42ZiGzWg1Wmf-5ssddSOZiGQ3Xy4ERHmmQVvlTnWwV8AauJrWItUGt7d5TLmxBvaaDtqVHBL5OIzq710lKeGI07J2SfDrrQLiQpau8F1XqV0TK4xM1IxZW0y_J7k5HpUdeD0xmChlfSoOciEd2d-QnzhiSRGohLVbTEBUklccBJu8jISiGG84kkjNMrqHaOP5_0QJKXAdQfUA1hwZEakvyfMrg3EQSND4nuYnYmWjDJWMV3zT1dUS6myt-0QiaMSLIvtuoy8Yx0"/>
+<button class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+<div class="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-black/60 to-transparent">
+<button class="w-full bg-white text-slate-900 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all text-sm shadow-lg">
+<span class="material-symbols-outlined text-lg">visibility</span>
+                            Espiar Agora
+                        </button>
+</div>
+</div>
+<div class="p-5">
+<div class="flex items-center gap-1 text-amber-400 mb-2">
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="material-symbols-outlined text-xs fill-1">star</span>
+<span class="text-[10px] text-slate-400 ml-1">(56)</span>
+</div>
+<h3 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1 mb-2">Sofá Master Couro Cognac</h3>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold text-slate-900 dark:text-white">R$ 12.900,00</span>
+<button class="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-lg flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-16 flex justify-center">
+<nav class="flex items-center gap-2">
+<button class="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-lg bg-primary text-white font-bold">1</button>
+<button class="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-semibold">2</button>
+<button class="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-semibold">3</button>
+<span class="text-slate-400 mx-1">...</span>
+<button class="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-semibold">8</button>
+<button class="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</nav>
+</div>
+</main>
+<footer class="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 pt-20 pb-10 mt-20">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-16">
+<div class="lg:col-span-4">
+<div class="flex items-center gap-2 mb-8">
+<div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl">chair</span>
+</div>
+<span class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white uppercase">Verve<span class="text-primary">Home</span></span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 leading-relaxed mb-8 max-w-sm">
+                    Criando conforto para a alma moderna. Móveis de alta qualidade que combinam estética com funcionalidade para o seu dia a dia.
+                </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-lg">camera</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary hover:text-white transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined text-lg">movie</span>
+</a>
+</div>
+</div>
+<div class="lg:col-span-2">
+<h5 class="font-bold text-slate-900 dark:text-white mb-8 uppercase text-xs tracking-widest">Empresa</h5>
+<ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
+<li><a class="hover:text-primary transition-colors" href="#">Sobre Nossa Marca</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Sustentabilidade</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Showrooms</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Artesanato</a></li>
+</ul>
+</div>
+<div class="lg:col-span-2">
+<h5 class="font-bold text-slate-900 dark:text-white mb-8 uppercase text-xs tracking-widest">Atendimento</h5>
+<ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
+<li><a class="hover:text-primary transition-colors" href="#">Envio e Entrega</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Trocas e Devoluções</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Garantia</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contato</a></li>
+</ul>
+</div>
+<div class="lg:col-span-4">
+<h5 class="font-bold text-slate-900 dark:text-white mb-8 uppercase text-xs tracking-widest">Fique Inspirado</h5>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Inscreva-se para dicas de design e novos lançamentos exclusivos.</p>
+<form class="flex flex-col gap-3">
+<div class="relative">
+<input class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="seu@email.com" type="email"/>
+</div>
+<button class="bg-primary hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20">
+                        Inscrever-se
+                    </button>
+</form>
+</div>
+</div>
+<div class="pt-10 border-t border-slate-100 dark:border-slate-900 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex flex-col md:flex-row items-center gap-4 text-xs font-medium text-slate-400">
+<p>© 2024 VerveHome Furniture Inc.</p>
+<div class="hidden md:block w-1 h-1 bg-slate-300 rounded-full"></div>
+<a class="hover:text-primary" href="#">Política de Privacidade</a>
+<div class="hidden md:block w-1 h-1 bg-slate-300 rounded-full"></div>
+<a class="hover:text-primary" href="#">Termos de Serviço</a>
+</div>
+<div class="flex items-center gap-5 opacity-40 grayscale hover:grayscale-0 transition-all duration-300">
+<img alt="Visa" class="h-3 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoskV5j8pMVorl-dprzX0-4JpxCS1KDCwIkXt8giuqhdn5LmsxOz_vIcC5JXPwOvNPxtkGRg5wZx0ktTfNwcqbQhmYGtV2Z5RGdKoRRt1bUNrlRDxkRLRfFsF3HJh2k694UTtmn1_fNOpWE0LEVnRocO0TuFIuJBPTaHZcmaGsTpIb4Hag_e0WikykQg6IcWT_RoaRqwIE4CixIbca5lP3FHBloApf2vlbCnevvauFqZiBsq3OZP4hm6L_VwB3uY3mIW45ws3Hsgo"/>
+<img alt="Mastercard" class="h-5 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHqlQE5BHXsJ1Hk_ScNbCUDHSQlAUFKnUwaKffPcs2Rbloby-K6Ik_snAQv9EI7OjF9BkZQdhCneu__ybkbsxbgKnEx1KTH2MHPhCneQsKVaOLk8s3jQVH_HEwCgrvtldQ_-K6ILojeEQSs4nXTFkv80X2uqDZBMYr96uyy-Xoks7IugLb05AK2ZzuF-eEkws2S7Z72BFVwzB8NlZ9MQ6eEP-dYWG5zDEaMBXCLvjlCpfeMePV9Mcgp-ODU2xOIxViLEUAbnjxjrA"/>
+<img alt="PayPal" class="h-3 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZb-logpN9kIi44djkJz56WoOfNVlGnZwzhkNX0aOB58nRiSxlL1leeBI0QibTGzD5btjEQyuQ6usfMyv7GCvtQEF0lGmFg4bI6ys11cYjdQQx52v2KBOHW0wQ2gpoWSEamjQEx5GWmMFy3_HzOkjgXNpP-8LyVdSJovojLjmYFkGy-PfeP7fztNB4fQo32B2QMDCetv_X88o3Wh1G4OxOUSbnRphYvTV36i45QWyeGV6fR_51Q315qL3Z_lUcPpJWQ7nzTvJmGgo"/>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Carrinho de Compras | VerveHome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#10b981", 
+              "background-light": "#ffffff",
+              "background-dark": "#0f172a",
+              "surface": "#f8fafc"
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style type="text/tailwindcss">
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .qty-btn:hover { @apply bg-slate-100; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen">
+<header class="sticky top-0 z-50 w-full bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-20">
+<div class="flex items-center gap-2 shrink-0">
+<span class="text-2xl font-bold tracking-tighter text-slate-900 dark:text-white uppercase">Verve<span class="text-primary">Home</span></span>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Móveis</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Decoração</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Coleções</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Outlet</a>
+</nav>
+<div class="flex items-center gap-6">
+<button class="p-2 hover:text-primary transition-colors"><span class="material-symbols-outlined">search</span></button>
+<button class="p-2 hover:text-primary transition-colors"><span class="material-symbols-outlined">person</span></button>
+<button class="p-2 hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="absolute top-1 right-1 w-4 h-4 bg-primary text-[10px] font-bold text-white rounded-full flex items-center justify-center">2</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="flex flex-col lg:flex-row gap-12">
+<div class="flex-1">
+<h1 class="text-3xl font-light mb-10 text-slate-900 dark:text-white">Seu Carrinho</h1>
+<div class="space-y-8">
+<div class="flex gap-6 pb-8 border-b border-slate-100 dark:border-slate-800">
+<div class="w-32 h-40 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden shrink-0">
+<img alt="Sofá" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXAbb-YpNrdVilc5FicVJQAhAL10xLWc16HLc_d4VUhLScLM3onRMWVWG_24L_0s6se48sIsIYXeFhMuvu34VP24HfaomrNXcQftR-JSHro9irc7479j26utfjE5qL7HeC1jdXbObHu3LO-bxb9O8iQCNUr4GPpbIrTfrBvW87sySUwsTYEJufaqOQza5Y6Ojo952qTsWtO7D9wcfgzX_SiwOYcCRBVFW5tn7-YqVQz7B1biAHGdetnMW02FlzCJe7TEOnFaYXy4A"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-lg font-medium text-slate-900 dark:text-white">Sofá de Veludo Nórdico</h3>
+<p class="text-sm text-slate-500 mt-1">Cor: Verde Musgo</p>
+</div>
+<p class="text-lg font-semibold">R$ 4.590,00</p>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+<button class="w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors">-</button>
+<span class="w-10 text-center text-sm font-medium">1</span>
+<button class="w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors">+</button>
+</div>
+<button class="text-xs text-slate-400 hover:text-red-500 uppercase tracking-widest font-bold transition-colors">Remover</button>
+</div>
+</div>
+</div>
+<div class="flex gap-6 pb-8 border-b border-slate-100 dark:border-slate-800">
+<div class="w-32 h-40 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden shrink-0">
+<img alt="Cadeira" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCw8YIRqbr5Fc_Cvxp5rQiKUIdlvqzcpt64JBL-NC1ioK_cK2J1oc3Fs3nuXEO1_Tk-kuIYn6FwhEJyChxBbfGxESxGv08lTvenV9wjvofB4sjdrbzBp36A37CJ7txH2vj5Mtbntgtk-AvEqJpVl_Ye_PpZUv6MTm7OBMvWZCqLYQNFcsptRMpVewx7dsXsW9bOWo4AWkgGldzD2W97n-dyf7mFJU17fItxxNh-EpbS4ysnaRXjybZHJV3cwv5Jq8S275umJJpIFIY"/>
+</div>
+<div class="flex-1 flex flex-col justify-between py-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-lg font-medium text-slate-900 dark:text-white">Poltrona Minimalista Eames</h3>
+<p class="text-sm text-slate-500 mt-1">Cor: Carvalho Natural</p>
+</div>
+<p class="text-lg font-semibold">R$ 2.150,00</p>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+<button class="w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors">-</button>
+<span class="w-10 text-center text-sm font-medium">1</span>
+<button class="w-10 h-10 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors">+</button>
+</div>
+<button class="text-xs text-slate-400 hover:text-red-500 uppercase tracking-widest font-bold transition-colors">Remover</button>
+</div>
+</div>
+</div>
+</div>
+<section class="mt-20">
+<h2 class="text-xl font-medium mb-8">Produtos Recomendados</h2>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+<div class="group cursor-pointer">
+<div class="aspect-square bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden mb-4 relative">
+<img alt="Almofada" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb42ZiGzWg1Wmf-5ssddSOZiGQ3Xy4ERHmmQVvlTnWwV8AauJrWItUGt7d5TLmxBvaaDtqVHBL5OIzq710lKeGI07J2SfDrrQLiQpau8F1XqV0TK4xM1IxZW0y_J7k5HpUdeD0xmChlfSoOciEd2d-QnzhiSRGohLVbTEBUklccBJu8jISiGG84kkjNMrqHaOP5_0QJKXAdQfUA1hwZEakvyfMrg3EQSND4nuYnYmWjDJWMV3zT1dUS6myt-0QiaMSLIvtuoy8Yx0"/>
+<button class="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-900">add</span>
+</button>
+</div>
+<h4 class="text-sm font-medium">Almofada de Linho Cru</h4>
+<p class="text-sm text-slate-500">R$ 189,00</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden mb-4 relative">
+<img alt="Mesa Lateral" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXAbb-YpNrdVilc5FicVJQAhAL10xLWc16HLc_d4VUhLScLM3onRMWVWG_24L_0s6se48sIsIYXeFhMuvu34VP24HfaomrNXcQftR-JSHro9irc7479j26utfjE5qL7HeC1jdXbObHu3LO-bxb9O8iQCNUr4GPpbIrTfrBvW87sySUwsTYEJufaqOQza5Y6Ojo952qTsWtO7D9wcfgzX_SiwOYcCRBVFW5tn7-YqVQz7B1biAHGdetnMW02FlzCJe7TEOnFaYXy4A"/>
+<button class="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-900">add</span>
+</button>
+</div>
+<h4 class="text-sm font-medium">Mesa Lateral Ébano</h4>
+<p class="text-sm text-slate-500">R$ 890,00</p>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden mb-4 relative">
+<img alt="Luminária" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp-vKwmZUNl4j-Bs_p174ltRvS0vYVlEcH41tXbTvEVxmlgXOWFumnPzsmVEnhdqt4C2IlCuX7vEGDYW88lWsDCiY3fA6FxwapaL6mx2NViP4W8cHkDQ2005mT6_gjJbw8fVvBN8AIcjhW8qXHEUsI1EHKZRxNJJcSOKYFeEKujXXh-4PjgiFQnS1dacobjcZsAuja2LkfDidVMlv4nIX0zETR_cmPCLZmObMl3OO82e9-rjfJUOLubQ_cFJ5DGCW1QVN_XhdODXw"/>
+<button class="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-slate-900">add</span>
+</button>
+</div>
+<h4 class="text-sm font-medium">Luminária de Piso Industrial</h4>
+<p class="text-sm text-slate-500">R$ 1.250,00</p>
+</div>
+</div>
+</section>
+</div>
+<aside class="lg:w-96">
+<div class="sticky top-32 bg-slate-50 dark:bg-slate-900 rounded-2xl p-8 border border-slate-100 dark:border-slate-800">
+<h2 class="text-xl font-medium mb-6">Resumo do Pedido</h2>
+<div class="space-y-4 mb-6 border-b border-slate-200 dark:border-slate-800 pb-6">
+<div class="flex justify-between text-sm">
+<span class="text-slate-500">Subtotal</span>
+<span>R$ 6.740,00</span>
+</div>
+<div class="space-y-3">
+<span class="text-sm text-slate-500">Calcular Frete</span>
+<div class="flex gap-2">
+<input class="flex-1 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-sm focus:ring-primary focus:border-primary" placeholder="00000-000" type="text"/>
+<button class="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-xs font-bold uppercase transition-colors hover:bg-slate-800">OK</button>
+</div>
+</div>
+</div>
+<div class="flex justify-between items-center mb-8">
+<span class="text-lg font-medium">Total</span>
+<span class="text-2xl font-bold text-slate-900 dark:text-white">R$ 6.740,00</span>
+</div>
+<button class="w-full bg-primary hover:bg-emerald-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 uppercase tracking-widest text-sm mb-4">
+                    Finalizar Compra
+                </button>
+<button class="w-full text-slate-500 hover:text-slate-900 transition-colors text-sm font-medium underline underline-offset-4">
+                    Continuar Comprando
+                </button>
+<div class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-4 justify-center grayscale opacity-50">
+<img alt="Visa" class="h-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoskV5j8pMVorl-dprzX0-4JpxCS1KDCwIkXt8giuqhdn5LmsxOz_vIcC5JXPwOvNPxtkGRg5wZx0ktTfNwcqbQhmYGtV2Z5RGdKoRRt1bUNrlRDxkRLRfFsF3HJh2k694UTtmn1_fNOpWE0LEVnRocO0TuFIuJBPTaHZcmaGsTpIb4Hag_e0WikykQg6IcWT_RoaRqwIE4CixIbca5lP3FHBloApf2vlbCnevvauFqZiBsq3OZP4hm6L_VwB3uY3mIW45ws3Hsgo"/>
+<img alt="Mastercard" class="h-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHqlQE5BHXsJ1Hk_ScNbCUDHSQlAUFKnUwaKffPcs2Rbloby-K6Ik_snAQv9EI7OjF9BkZQdhCneu__ybkbsxbgKnEx1KTH2MHPhCneQsKVaOLk8s3jQVH_HEwCgrvtldQ_-K6ILojeEQSs4nXTFkv80X2uqDZBMYr96uyy-Xoks7IugLb05AK2ZzuF-eEkws2S7Z72BFVwzB8NlZ9MQ6eEP-dYWG5zDEaMBXCLvjlCpfeMePV9Mcgp-ODU2xOIxViLEUAbnjxjrA"/>
+<img alt="Paypal" class="h-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZb-logpN9kIi44djkJz56WoOfNVlGnZwzhkNX0aOB58nRiSxlL1leeBI0QibTGzD5btjEQyuQ6usfMyv7GCvtQEF0lGmFg4bI6ys11cYjdQQx52v2KBOHW0wQ2gpoWSEamjQEx5GWmMFy3_HzOkjgXNpP-8LyVdSJovojLjmYFkGy-PfeP7fztNB4fQo32B2QMDCetv_X88o3Wh1G4OxOUSbnRphYvTV36i45QWyeGV6fR_51Q315qL3Z_lUcPpJWQ7nzTvJmGgo"/>
+<img alt="Apple Pay" class="h-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB28eUYyAMXg0GEiQ6vOS2GA1e5f9AlRqGaj_Q6HjW0BAVKyYVkd95XWZZkKuCs4eRmcRSpDeM4wx1FhUxEoREmwe5XwjtyMkKPI04azU3T6T_Rv4TFO2Z6orwempg4d_JZiIi-Wwo91eJYIsHQHBkLX37sM18qpThowyB-W_EDICjzuEu6DgmURrC0ZbLtbkmm3hNO8W69TCcvHnYoDP88tp3w0N4k1hxbGlX27CqYw71y6auJZ9weKDoks_OeEprOsWToqmNiVzw"/>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<footer class="bg-white dark:bg-background-dark border-t border-slate-100 dark:border-slate-800 pt-20 pb-10 mt-20">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16">
+<div class="col-span-2 md:col-span-1">
+<span class="text-xl font-bold tracking-tighter uppercase mb-6 block">Verve<span class="text-primary">Home</span></span>
+<p class="text-sm text-slate-400 max-w-xs">
+                    Mobiliário de luxo com curadoria contemporânea. Design que inspira o seu cotidiano.
+                </p>
+</div>
+<div>
+<h5 class="text-xs font-bold uppercase tracking-widest mb-6">Explore</h5>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Sobre Nós</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Showrooms</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Designers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Blog</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-xs font-bold uppercase tracking-widest mb-6">Ajuda</h5>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Rastrear Pedido</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Trocas e Devoluções</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Prazos de Entrega</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contato</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-xs font-bold uppercase tracking-widest mb-6">Social</h5>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-colors" href="#"><span class="material-symbols-outlined text-sm">social_leaderboard</span></a>
+<a class="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-colors" href="#"><span class="material-symbols-outlined text-sm">alternate_email</span></a>
+</div>
+</div>
+</div>
+<div class="pt-8 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-400 uppercase tracking-widest">
+<p>© 2024 VerveHome Interior Design. Todos os direitos reservados.</p>
+<div class="flex gap-8">
+<a href="#">Privacidade</a>
+<a href="#">Termos de Uso</a>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>
