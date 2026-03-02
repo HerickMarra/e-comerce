@@ -120,8 +120,8 @@
                     <div class="pt-6">
                         <p class="px-2 text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Configurações
                         </p>
-                        <a href="#"
-                            class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-slate-700/50 hover:text-white">
+                        <a href="{{ route('admin.users.index') }}"
+                            class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all {{ request()->routeIs('admin.users.*') ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-slate-700/50 hover:text-white' }}">
                             <span class="material-symbols-outlined text-xl">group</span>
                             <span class="font-medium text-sm">Usuários</span>
                         </a>
