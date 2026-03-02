@@ -13,7 +13,7 @@
         </div>
 
         <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data"
-            class="space-y-6" x-data="productForm()">
+            class="space-y-6" x-data="productForm()" @submit.prevent="validateAndSubmit()">
             @csrf
             @method('PUT')
 
@@ -330,18 +330,18 @@
                 return {
                     images: [
                         @foreach($product->images as $image)
-                                                                                        {
+                                                                                                {
                                 id: '{{ $image->id }}',
                                 preview: '{{ str_starts_with($image->path, "http") ? $image->path : asset("storage/" . $image->path) }}',
                                 type: '{{ str_starts_with($image->path, "http") ? "url" : "existing" }}'
                             },
                         @endforeach
-                                                    ],
+                                                        ],
                     colors: [
                         @foreach($product->colors as $color)
                             { hex: '{{ $color->hex_code }}', name: '{{ $color->color_name }}' },
                         @endforeach
-                                                    ],
+                                                        ],
 
                     addColor() {
                         this.colors.push({ hex: '#10B981', name: '' });
@@ -418,6 +418,26 @@
                             if (input) input.remove();
                         }
                         this.images.splice(index, 1);
+                    },
+
+                    validateAndSubmit() {
+                        const form = this.$el;
+                        const formData = new FormData(form);
+
+                        let errors = [];
+
+                        if (!formData.get('name')) errors.push("O nome do produto é obrigatório.");
+                        if (!formData.get('price')) errors.push("O preço é obrigatório.");
+                        if (!formData.get('stock')) errors.push("O estoque é obrigatório.");
+                        if (formData.getAll('categories[]').length === 0) errors.push("Selecione pelo menos uma categoria.");
+                        if (this.images.length === 0) errors.push("Adicione pelo menos uma imagem.");
+
+                        if (errors.length > 0) {
+                            alert("Por favor, preencha os campos obrigatórios:\n\n- " + errors.join("\n- "));
+                            return;
+                        }
+
+                        form.submit();
                     }
                 }
             }

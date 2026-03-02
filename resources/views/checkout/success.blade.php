@@ -44,36 +44,53 @@
 
         @if($paymentData)
             @if($order->payment_method === 'pix')
-                <div
-                    class="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 rounded-3xl p-8 mb-10">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6">Finalize seu pagamento via PIX</h3>
+                <div x-data="pixPaymentStatus('{{ route('checkout.status', $order->id) }}')"
+                    class="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 rounded-3xl p-8 mb-10 transition-all">
 
-                    @if(isset($paymentData['pix_qr_code']))
-                        <div class="bg-white p-4 rounded-2xl inline-block mb-6 border border-emerald-100 dark:border-slate-800">
-                            <img src="data:image/png;base64,{{ $paymentData['pix_qr_code'] }}" alt="QR Code PIX" class="size-48">
-                        </div>
-                    @endif
+                    <!-- Pix Pending State -->
+                    <div x-show="!isPaid" x-cloak>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6">Finalize seu pagamento via PIX</h3>
 
-                    @if(isset($paymentData['pix_copy_paste']))
-                        <div class="max-w-md mx-auto" x-data="{ copied: false, code: '{{ $paymentData['pix_copy_paste'] }}' }">
-                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Código Copia e Cola</p>
-                            <div class="flex gap-2">
-                                <input readonly type="text" :value="code"
-                                    class="flex-1 bg-white dark:bg-slate-800 border-emerald-100 dark:border-slate-700 rounded-xl px-4 py-3 text-xs font-mono truncate outline-none">
-                                <button
-                                    @click="navigator.clipboard.writeText(code); copied = true; setTimeout(() => copied = false, 2000)"
-                                    class="bg-emerald-500 text-white px-6 rounded-xl font-bold text-xs uppercase transition-all hover:bg-emerald-600">
-                                    <span x-show="!copied">Copiar</span>
-                                    <span x-show="copied">Copiado!</span>
-                                </button>
+                        @if(isset($paymentData['pix_qr_code']))
+                            <div class="bg-white p-4 rounded-2xl inline-block mb-6 border border-emerald-100 dark:border-slate-800">
+                                <img src="data:image/png;base64,{{ $paymentData['pix_qr_code'] }}" alt="QR Code PIX"
+                                    class="size-48">
                             </div>
-                        </div>
-                    @endif
+                        @endif
 
-                    <div
-                        class="mt-8 flex items-center justify-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                        <span class="material-symbols-outlined text-sm">schedule</span>
-                        Este código expira em 30 minutos
+                        @if(isset($paymentData['pix_copy_paste']))
+                            <div class="max-w-md mx-auto" x-data="{ copied: false, code: '{{ $paymentData['pix_copy_paste'] }}' }">
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">Código Copia e Cola
+                                </p>
+                                <div class="flex gap-2">
+                                    <input readonly type="text" :value="code"
+                                        class="flex-1 bg-white dark:bg-slate-800 border-emerald-100 dark:border-slate-700 rounded-xl px-4 py-3 text-xs font-mono truncate outline-none">
+                                    <button
+                                        @click="navigator.clipboard.writeText(code); copied = true; setTimeout(() => copied = false, 2000)"
+                                        class="bg-emerald-500 text-white px-6 rounded-xl font-bold text-xs uppercase transition-all hover:bg-emerald-600">
+                                        <span x-show="!copied">Copiar</span>
+                                        <span x-show="copied">Copiado!</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div
+                            class="mt-8 flex items-center justify-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                            <span class="material-symbols-outlined text-sm">schedule</span>
+                            Este código expira em 30 minutos
+                        </div>
+                    </div>
+
+                    <!-- Pix Paid State -->
+                    <div x-show="isPaid" x-cloak class="text-center py-6">
+                        <div
+                            class="size-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="material-symbols-outlined text-3xl">task_alt</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-emerald-700 dark:text-emerald-400 mb-2">Pagamento Aprovado!</h3>
+                        <p class="text-sm text-emerald-600 dark:text-emerald-500/80">Recebemos o seu Pix com sucesso. Seu pedido
+                            já está sendo processado.</p>
                     </div>
                 </div>
             @elseif($order->payment_method === 'boleto' && isset($paymentData['bank_slip_url']))
@@ -107,4 +124,44 @@
             </a>
         </div>
     </main>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.data('pixPaymentStatus', (statusUrl) => ({
+                    isPaid: false,
+                    interval: null,
+
+                    init() {
+                        // Check every 5 seconds
+                        this.interval = setInterval(() => this.checkStatus(), 5000);
+                    },
+
+                    checkStatus() {
+                        if (this.isPaid) {
+                            clearInterval(this.interval);
+                            return;
+                        }
+
+                        fetch(statusUrl, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.paid) {
+                                    this.isPaid = true;
+                                    clearInterval(this.interval);
+
+                                    // Optional: play a success sound or trigger confetti
+                                }
+                            })
+                            .catch(error => console.error('Error checking Pix status:', error));
+                    }
+                }));
+            });
+        </script>
+    @endpush
 </x-storefront-layout>

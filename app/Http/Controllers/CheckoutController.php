@@ -144,4 +144,22 @@ class CheckoutController extends Controller
     {
         return view('checkout.success', compact('order'));
     }
+
+    public function checkStatus(Order $order, AsaasGateway $gateway)
+    {
+        if (!$order->payment_id) {
+            return response()->json(['paid' => false]);
+        }
+
+        $payment = $gateway->getPayment($order->payment_id);
+
+        if ($payment && in_array($payment['status'], ['RECEIVED', 'CONFIRMED'])) {
+            if ($order->status !== 'paid' && $order->status !== 'completed') {
+                $order->update(['status' => 'paid']);
+            }
+            return response()->json(['paid' => true]);
+        }
+
+        return response()->json(['paid' => false]);
+    }
 }

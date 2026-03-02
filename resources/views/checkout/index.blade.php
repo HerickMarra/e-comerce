@@ -523,8 +523,19 @@
                         .then(res => res.json())
                         .then(data => {
                             this.shippingLoading = false;
-                            if (data.cotacoes) {
+                            if (data.cotacoes && data.cotacoes.length > 0) {
                                 this.shippingOptions = data.cotacoes;
+
+                                // Auto-select the cheapest shipping option
+                                let cheapest = data.cotacoes[0];
+                                data.cotacoes.forEach(opt => {
+                                    if (opt.valor < cheapest.valor) {
+                                        cheapest = opt;
+                                    }
+                                });
+                                this.selectShipping(cheapest);
+                            } else if (data.cotacoes && data.cotacoes.length === 0) {
+                                this.shippingError = 'Nenhuma opção de frete disponível para este CEP.';
                             } else {
                                 this.shippingError = data.error || 'Erro ao calcular frete.';
                             }

@@ -13,7 +13,7 @@
         </div>
 
         <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6"
-            x-data="productForm()">
+            x-data="productForm()" @submit.prevent="validateAndSubmit()">
             @csrf
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -406,6 +406,26 @@
                             if (input) input.remove();
                         }
                         this.images.splice(index, 1);
+                    },
+
+                    validateAndSubmit() {
+                        const form = this.$el;
+                        const formData = new FormData(form);
+
+                        let errors = [];
+
+                        if (!formData.get('name')) errors.push("O nome do produto é obrigatório.");
+                        if (!formData.get('price')) errors.push("O preço é obrigatório.");
+                        if (!formData.get('stock')) errors.push("O estoque é obrigatório.");
+                        if (formData.getAll('categories[]').length === 0) errors.push("Selecione pelo menos uma categoria.");
+                        if (this.images.length === 0) errors.push("Adicione pelo menos uma imagem.");
+
+                        if (errors.length > 0) {
+                            alert("Por favor, preencha os campos obrigatórios:\n\n- " + errors.join("\n- "));
+                            return;
+                        }
+
+                        form.submit();
                     }
                 }
             }

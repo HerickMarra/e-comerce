@@ -16,6 +16,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 });
 Route::get('/checkout/sucesso/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/status/{order}', [CheckoutController::class, 'checkStatus'])->name('checkout.status');
 
 Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
 Route::post('/carrinho/add/{product}', [CartController::class, 'add'])->name('cart.add');
