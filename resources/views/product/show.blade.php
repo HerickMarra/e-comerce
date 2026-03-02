@@ -70,7 +70,8 @@
                 @if($product->description)
                     <div class="pt-10 mt-6 border-t border-slate-100 dark:border-slate-800"
                          x-data="{ expanded: false, isClamped: true }"
-                         x-init="setTimeout(() => { if($refs.desc) isClamped = $refs.desc.scrollHeight > 200 }, 1500)">
+                         x-init="setTimeout(() => { if($refs.desc) isClamped = $refs.desc.scrollHeight > 192 }, 500); 
+                                 setTimeout(() => { if($refs.desc) isClamped = $refs.desc.scrollHeight > 192 }, 1500)">
                         <span
                             class="block text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-[0.15em]">Sobre
                             o Produto</span>
