@@ -20,6 +20,9 @@ class Order extends Model
         'shipping_id',
         'shipping_service_name',
         'shipping_tracking_url',
+        'shipping_simulacao_id',
+        'shipping_modalidade',
+        'shipping_descricao_conteudo',
     ];
 
     protected $casts = [

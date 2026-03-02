@@ -106,6 +106,9 @@ class CheckoutController extends Controller
                 'payment_method' => $request->payment_method,
                 'address_info' => $request->address,
                 'notes' => trim(($request->notes ?? '') . ' | Frete: ' . $shippingLabel),
+                'shipping_simulacao_id' => $request->shipping_simulacao_id,
+                'shipping_modalidade' => $shippingLabel,
+                'shipping_descricao_conteudo' => 'Artigos de Decoração', // Default description
             ]);
 
             foreach ($cart as $id => $item) {

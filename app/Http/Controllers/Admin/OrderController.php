@@ -77,20 +77,24 @@ class OrderController extends Controller
         $addr = $order->address_info;
 
         $payload = [
-            'cep_origem' => Setting::get('store_zip_code', '01310100'), // Fallback
-            'cep_destino' => preg_replace('/\D/', '', $addr['zip'] ?? $addr['zip_code'] ?? ''),
+            'simulacao_id' => $order->shipping_simulacao_id,
+            'modalidade' => $order->shipping_modalidade,
+            'declaracao_conteudo' => 1,
+            'descricao_conteudo' => $order->shipping_descricao_conteudo ?? 'Artigos de Decoração',
+            'cep_origem' => Setting::get('store_zip_code', '01310100'),
             'valor_carga' => (float) $order->total_amount,
             'volumes' => $volumes,
             'destinatario' => [
                 'nome' => $order->user->name,
-                'cpf_cnpj' => $order->user->cpf ?? '',
+                'cnpjCpf' => preg_replace('/\D/', '', $order->user->cpf ?? ''),
                 'email' => $order->user->email,
-                'telefone' => $order->user->phone ?? '',
+                'telefone' => preg_replace('/\D/', '', $order->user->phone ?? ''),
                 'endereco' => $addr['street'] ?? '',
                 'numero' => $addr['number'] ?? '',
                 'bairro' => $addr['neighborhood'] ?? '',
                 'cidade' => $addr['city'] ?? '',
                 'uf' => $addr['state'] ?? '',
+                'cep' => preg_replace('/\D/', '', $addr['zip'] ?? $addr['zip_code'] ?? ''),
                 'complemento' => $addr['complement'] ?? '',
             ]
         ];
