@@ -330,6 +330,11 @@
                 </div>
                 <div style="background: #f9f9f9; padding: 15px; border: 1px dashed #ccc;">
                     <h3 style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 10px; border-bottom: 1px solid #ccc;">Informações de Frete</h3>
+                    <div style="margin-bottom: 15px;">
+                        <span style="font-size: 10px; text-transform: uppercase; color: #666; display: block;">Status</span>
+                        <span style="font-size: 16px; font-weight: bold; color: #10b981;">Frete Contratado</span>
+                        <span style="font-size: 20px; font-weight: 900; display: block; margin-top: 5px;">ID: {{ $order->shipping_id }}</span>
+                    </div>
                     <p style="margin: 5px 0; font-size: 12px;">Serviço: <strong>{{ $order->shipping_service_name }}</strong></p>
                     @if($order->shipping_tracking_code)
                         <div style="margin-top: 20px; text-align: center; border: 1px solid #000; padding: 10px;">
