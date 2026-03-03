@@ -242,7 +242,7 @@
                                 </div>
                                 <div class="text-right">
                                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Cod. EnviaMais</span>
-                                    <span class="text-xl font-black text-slate-200 dark:text-slate-700 tracking-tighter leading-none">#{{ $order->shipping_id }}</span>
+                                    <span class="text-xl font-black text-slate-400 dark:text-slate-600 tracking-tighter leading-none">#{{ $order->shipping_id }}</span>
                                 </div>
                             </div>
 
