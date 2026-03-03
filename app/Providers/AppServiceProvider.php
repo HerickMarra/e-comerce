@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('components.storefront-layout', function ($view) {
             $topCategories = \App\Models\Category::withCount('products')
                 ->orderBy('products_count', 'desc')
-                ->take(4)
+                ->take(2)
                 ->get();
             $view->with('navCategories', $topCategories);
         });
