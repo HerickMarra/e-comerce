@@ -23,7 +23,15 @@
                 allowfullscreen>
             </iframe>
             <div class="relative z-20 h-full flex flex-col justify-center px-6 md:px-16 max-w-3xl">
-                <span class="text-primary font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4">{{ $heroSettings['tag'] }}</span>
+                @if($appSettings['store_logo'])
+                    <div class="mb-6">
+                        <img src="{{ str_starts_with($appSettings['store_logo'], 'http') ? $appSettings['store_logo'] : asset('storage/' . $appSettings['store_logo']) }}" 
+                             alt="{{ $appSettings['store_name'] }}"
+                             class="h-12 md:h-16 w-auto object-contain brightness-0 invert opacity-90 transition-transform hover:scale-105 duration-300" />
+                    </div>
+                @else
+                    <span class="text-primary font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4">{{ $heroSettings['tag'] }}</span>
+                @endif
                 <h1 class="text-4xl md:text-7xl font-bold text-white leading-tight mb-6">
                     {!! strip_tags($heroSettings['title'], '<br>') !!}
                 </h1>
