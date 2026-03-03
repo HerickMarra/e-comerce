@@ -25,6 +25,7 @@ class Order extends Model
         'shipping_descricao_conteudo',
         'shipping_label_url',
         'shipping_tracking_code',
+        'shipping_api_response',
     ];
 
     protected $casts = [
@@ -32,6 +33,7 @@ class Order extends Model
         'subtotal' => 'decimal:2',
         'shipping_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'shipping_api_response' => 'array',
     ];
 
     public function user()

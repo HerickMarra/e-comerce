@@ -112,6 +112,7 @@ class OrderController extends Controller
                 'shipping_tracking_url' => $result['rastreamento_url'] ?? $result['url_etiqueta'] ?? null,
                 'shipping_label_url' => $result['url_etiqueta'] ?? null,
                 'shipping_tracking_code' => $result['rastreamento'] ?? $result['codigo_rastreio'] ?? null,
+                'shipping_api_response' => $result,
             ]);
 
             return back()->with('success', 'Frete contratado com sucesso! ID: ' . $result['id']);

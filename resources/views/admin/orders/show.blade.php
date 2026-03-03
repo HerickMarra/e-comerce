@@ -337,8 +337,32 @@
                             <span style="font-size: 18px; font-weight: bold; font-family: monospace;">{{ $order->shipping_tracking_code }}</span>
                         </div>
                     @endif
+                    
+                    {{-- Full API Details --}}
+                    @if($order->shipping_api_response)
+                        <div style="margin-top: 15px; font-size: 9px; line-height: 1.4; border-top: 1px dashed #ccc; padding-top: 10px;">
+                            <h4 style="margin: 0 0 5px 0; font-size: 9px; text-transform: uppercase; color: #666;">Detalhes da Remessa</h4>
+                            @foreach($order->shipping_api_response as $key => $value)
+                                @if(!is_array($value) && !in_array($key, ['id', 'url_etiqueta', 'rastreamento', 'codigo_rastreio', 'rastreamento_url']) && $value)
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="font-weight: bold;">{{ ucwords(str_replace('_', ' ', $key)) }}:</span>
+                                        <span>{{ $value }}</span>
+                                    </div>
+                                @endif
+                            @endforeach
+                            
+                            {{-- Specific nested info if exists --}}
+                            @if(isset($order->shipping_api_response['cotacao']))
+                                <div style="margin-top: 5px; border-top: 1px dotted #eee; padding-top: 5px;">
+                                    <strong>Serviço:</strong> {{ $order->shipping_api_response['cotacao']['servico_nome'] ?? 'N/A' }}<br>
+                                    <strong>Prazo:</strong> {{ $order->shipping_api_response['cotacao']['prazo'] ?? 'N/A' }} dias
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
                     <div style="margin-top: 20px; font-size: 10px; text-align: center;">
-                        <p style="margin: 0;">Peso Estimado: {{ array_sum(array_column($order->items->toArray(), 'quantity')) * 0.5 }}kg</p>
+                        <p style="margin: 0;">Peso Total: {{ array_sum(array_column($order->items->toArray(), 'quantity')) * 0.5 }}kg</p>
                     </div>
                 </div>
             </div>
