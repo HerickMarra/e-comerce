@@ -27,11 +27,11 @@ class AppServiceProvider extends ServiceProvider
             'secondary_color' => Setting::get('secondary_color', '#0f172a'),
         ]);
 
-        // Share top 4 categories by product count
+        // Share top 2 categories by product count
         View::composer('components.storefront-layout', function ($view) {
             $topCategories = \App\Models\Category::withCount('products')
                 ->orderBy('products_count', 'desc')
-                ->take(4)
+                ->take(2)
                 ->get();
             $view->with('navCategories', $topCategories);
         });

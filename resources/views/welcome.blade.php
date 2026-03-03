@@ -54,7 +54,7 @@
                     Ver todas categorias <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-10 max-w-4xl mx-auto">
                 @forelse($categories as $category)
                     <div class="group cursor-pointer">
                         <a href="{{ route('search', ['categories' => [$category->id]]) }}" class="block">

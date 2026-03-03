@@ -16,7 +16,10 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $categories = Category::all();
+        $categories = Category::withCount('products')
+            ->orderBy('products_count', 'desc')
+            ->take(2)
+            ->get();
 
         // Produtos Aleatórios ("Estou com Sorte")
         $luckyProducts = Product::with(['categories', 'images'])
