@@ -230,15 +230,15 @@
                             @endif
 
                             <div class="flex flex-wrap gap-3 mt-4">
-                                @if($order->shipping_label_url || $order->shipping_tracking_url)
-                                    <a href="{{ $order->shipping_label_url ?? $order->shipping_tracking_url }}" target="_blank"
+                                @if($order->shipping_id)
+                                    <button @click="generateLabel()"
                                         class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-dark transition-all shadow-sm shadow-primary/20">
                                         <span class="material-symbols-outlined text-sm">print</span>
                                         Imprimir Etiqueta
-                                    </a>
+                                    </button>
                                 @endif
 
-                                @if($order->shipping_tracking_url && $order->shipping_tracking_url !== $order->shipping_label_url)
+                                @if($order->shipping_tracking_url)
                                     <a href="{{ $order->shipping_tracking_url }}" target="_blank"
                                         class="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
                                         <span class="material-symbols-outlined text-sm">monitoring</span>
@@ -296,4 +296,99 @@
             </div>
         </div>
     </div>
+
+    {{-- Printable Label Template (Hidden from screen) --}}
+    <div id="pdf-template" style="display: none; font-family: 'Helvetica', sans-serif; color: #000; padding: 40px; background: #fff;">
+        <div style="border: 2px solid #000; padding: 20px;">
+            {{-- Header --}}
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px;">
+                <div>
+                    <h1 style="margin: 0; font-size: 24px; text-transform: uppercase;">Etiqueta de Envio</h1>
+                    <p style="margin: 5px 0; font-size: 14px;">Pedido: <strong>#{{ $order->order_number }}</strong></p>
+                    <p style="margin: 0; font-size: 12px; color: #666;">Data: {{ $order->created_at->format('d/m/Y H:i') }}</p>
+                </div>
+                <div style="text-align: right;">
+                    <h2 style="margin: 0; font-size: 18px;">{{ config('app.name') }}</h2>
+                    <p style="margin: 5px 0; font-size: 12px;">Comprovante de Postagem</p>
+                </div>
+            </div>
+
+            {{-- Addresses --}}
+            <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 40px; margin-bottom: 30px;">
+                <div>
+                    <h3 style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 10px; border-bottom: 1px solid #ccc;">Destinatário</h3>
+                    <p style="margin: 0; font-size: 14px; font-weight: bold;">{{ $order->user->name }}</p>
+                    <p style="margin: 5px 0; font-size: 12px;">{{ $order->address_info['street'] ?? '' }}, {{ $order->address_info['number'] ?? '' }}</p>
+                    @if($order->address_info['complement'] ?? '')
+                        <p style="margin: 5px 0; font-size: 12px;">{{ $order->address_info['complement'] }}</p>
+                    @endif
+                    <p style="margin: 5px 0; font-size: 12px;">{{ $order->address_info['neighborhood'] ?? '' }}</p>
+                    <p style="margin: 5px 0; font-size: 12px;">{{ $order->address_info['city'] ?? '' }} - {{ $order->address_info['state'] ?? '' }}</p>
+                    <p style="margin: 10px 0; font-size: 14px; font-weight: bold;">CEP: {{ $order->address_info['zip'] ?? $order->address_info['zip_code'] ?? '' }}</p>
+                    <p style="margin: 5px 0; font-size: 11px;">CPF: {{ $order->user->cpf }}</p>
+                    <p style="margin: 5px 0; font-size: 11px;">Tel: {{ $order->user->phone }}</p>
+                </div>
+                <div style="background: #f9f9f9; padding: 15px; border: 1px dashed #ccc;">
+                    <h3 style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 10px; border-bottom: 1px solid #ccc;">Informações de Frete</h3>
+                    <p style="margin: 5px 0; font-size: 12px;">Serviço: <strong>{{ $order->shipping_service_name }}</strong></p>
+                    @if($order->shipping_tracking_code)
+                        <div style="margin-top: 20px; text-align: center; border: 1px solid #000; padding: 10px;">
+                            <span style="font-size: 10px; text-transform: uppercase; display: block;">Código de Rastreamento</span>
+                            <span style="font-size: 18px; font-weight: bold; font-family: monospace;">{{ $order->shipping_tracking_code }}</span>
+                        </div>
+                    @endif
+                    <div style="margin-top: 20px; font-size: 10px; text-align: center;">
+                        <p style="margin: 0;">Peso Estimado: {{ array_sum(array_column($order->items->toArray(), 'quantity')) * 0.5 }}kg</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Items Summary --}}
+            <div style="margin-top: 30px;">
+                <h3 style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 10px; border-bottom: 1px solid #ccc;">Resumo do Pedido</h3>
+                <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                    <thead>
+                        <tr style="background: #eee;">
+                            <th style="padding: 8px; text-align: left; border: 1px solid #ddd;">Item</th>
+                            <th style="padding: 8px; text-align: center; border: 1px solid #ddd; width: 60px;">Qtd</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($order->items as $item)
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">{{ $item->product->name ?? 'Produto' }} {{ $item->color_name ? '- ' . $item->color_name : '' }}</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">{{ $item->quantity }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Footer --}}
+            <div style="margin-top: 40px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #eee; padding-top: 20px;">
+                <p>Este é um documento de identificação para logística. Gerado automaticamente pelo sistema de gestão.</p>
+            </div>
+        </div>
+    </div>
+
+    {{-- Scripts --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function generateLabel() {
+            const element = document.getElementById('pdf-template');
+            element.style.display = 'block'; // Temporarily show for capture
+            
+            const opt = {
+                margin: 0,
+                filename: 'etiqueta-pedido-{{ $order->order_number }}.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none'; // Hide again
+            });
+        }
+    </script>
 </x-admin-layout>
