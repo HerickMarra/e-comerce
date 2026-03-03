@@ -73,8 +73,19 @@
                                     <tr>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center gap-4">
-                                                @if($item->product && $item->product->images->count() > 0)
-                                                    <img src="{{ asset('storage/' . $item->product->images->first()->image_path) }}"
+                                                @php
+                                                    $imagePath = null;
+                                                    if ($item->product) {
+                                                        if ($item->product->images->count() > 0) {
+                                                            $imagePath = $item->product->images->first()->path;
+                                                        } elseif ($item->product->image) {
+                                                            $imagePath = $item->product->image;
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                @if($imagePath)
+                                                    <img src="{{ str_starts_with($imagePath, 'http') ? $imagePath : asset('storage/' . $imagePath) }}"
                                                         class="w-12 h-12 rounded-xl object-cover" alt="">
                                                 @else
                                                     <div
