@@ -212,7 +212,10 @@
                 <!-- Shipping Status & Recruitment -->
                 <div
                     class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 space-y-4">
-                    <h3 class="font-bold text-lg">Frete de Envio</h3>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-bold text-lg">Frete de Envio</h3>
+                        <img src="{{ asset('img/logoEnviaMais.png') }}" class="h-6 object-contain" alt="EnviaMais">
+                    </div>
                     
                     @if($order->shipping_id)
                         <div class="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/20">
@@ -329,6 +332,20 @@
                     <p style="margin: 5px 0; font-size: 11px;">Tel: {{ $order->user->phone }}</p>
                 </div>
                 <div style="background: #f9f9f9; padding: 15px; border: 1px dashed #ccc;">
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        @php
+                            $logoPath = public_path('img/logoEnviaMais.png');
+                            $logoData = '';
+                            if (file_exists($logoPath)) {
+                                $logoData = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+                            }
+                        @endphp
+                        @if($logoData)
+                            <img src="{{ $logoData }}" style="height: 30px; object-fit: contain;" alt="EnviaMais">
+                        @else
+                            <span style="font-size: 10px; font-weight: bold; color: #666;">ENVIAMAIS</span>
+                        @endif
+                    </div>
                     <h3 style="font-size: 10px; text-transform: uppercase; color: #666; margin-bottom: 10px; border-bottom: 1px solid #ccc;">Informações de Frete</h3>
                     <div style="margin-bottom: 15px;">
                         <span style="font-size: 10px; text-transform: uppercase; color: #666; display: block;">Status</span>
