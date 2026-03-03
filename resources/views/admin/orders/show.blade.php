@@ -224,13 +224,28 @@
                                 </div>
                             </div>
                             <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">Serviço: <strong>{{ $order->shipping_service_name }}</strong></p>
-                            @if($order->shipping_tracking_url)
-                                <a href="{{ $order->shipping_tracking_url }}" target="_blank"
-                                    class="inline-flex items-center gap-2 text-xs font-bold text-primary hover:underline">
-                                    <span class="material-symbols-outlined text-sm">print</span>
-                                    Imprimir Etiqueta / Rastreio
-                                </a>
+                            
+                            @if($order->shipping_tracking_code)
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">Código de Rastreio: <strong class="text-primary">{{ $order->shipping_tracking_code }}</strong></p>
                             @endif
+
+                            <div class="flex flex-wrap gap-3 mt-4">
+                                @if($order->shipping_label_url || $order->shipping_tracking_url)
+                                    <a href="{{ $order->shipping_label_url ?? $order->shipping_tracking_url }}" target="_blank"
+                                        class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary-dark transition-all shadow-sm shadow-primary/20">
+                                        <span class="material-symbols-outlined text-sm">print</span>
+                                        Imprimir Etiqueta
+                                    </a>
+                                @endif
+
+                                @if($order->shipping_tracking_url && $order->shipping_tracking_url !== $order->shipping_label_url)
+                                    <a href="{{ $order->shipping_tracking_url }}" target="_blank"
+                                        class="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                                        <span class="material-symbols-outlined text-sm">monitoring</span>
+                                        Rastrear Pedido
+                                    </a>
+                                @endif
+                            </div>
                         </div>
                     @else
                         <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/20">

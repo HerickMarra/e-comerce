@@ -104,10 +104,14 @@ class OrderController extends Controller
         $result = $shippingService->makeOrder($payload);
 
         if ($result && isset($result['id'])) {
+            \Log::info('EnviaMais makeOrder success response:', $result);
+
             $order->update([
                 'shipping_id' => $result['id'],
                 'shipping_service_name' => $result['cotacao']['servico_nome'] ?? 'Frete Contratado',
-                'shipping_tracking_url' => $result['url_etiqueta'] ?? null,
+                'shipping_tracking_url' => $result['rastreamento_url'] ?? $result['url_etiqueta'] ?? null,
+                'shipping_label_url' => $result['url_etiqueta'] ?? null,
+                'shipping_tracking_code' => $result['rastreamento'] ?? $result['codigo_rastreio'] ?? null,
             ]);
 
             return back()->with('success', 'Frete contratado com sucesso! ID: ' . $result['id']);
