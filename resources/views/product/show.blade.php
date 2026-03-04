@@ -37,7 +37,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <!-- Galeria de Imagens -->
-            <div class="space-y-6">
+            <div class="space-y-6 max-w-md mx-auto lg:mx-0">
                 <div class="aspect-[3/4] rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-800 relative cursor-zoom-in"
                     @mouseenter="isZoomed = true" @mouseleave="isZoomed = false" @mousemove="handleMouseMove($event)">
                     <template x-if="activeImage">
