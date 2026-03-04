@@ -17,7 +17,10 @@
                 'opacity-60' => $product->stock <= 0
             ])>
                 <div class="aspect-[3/4] overflow-hidden relative">
-                    <img src="{{ $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? '') }}"
+                    @php 
+                        $imagePath = $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? '');
+                    @endphp
+                    <img src="{{ str_starts_with($imagePath, 'http') ? $imagePath : asset('storage/' . $imagePath) }}"
                         alt="{{ $product->name }}"
                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     <button
