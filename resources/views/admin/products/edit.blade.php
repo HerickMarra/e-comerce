@@ -152,7 +152,7 @@
                             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 min-h-[140px]">
                             <template x-for="(img, index) in images" :key="img.id">
                                 <div :data-id="img.id"
-                                    class="relative aspect-square rounded-2xl border-2 border-slate-100 overflow-hidden bg-slate-50 cursor-move group hover:border-emerald-500 transition-all shadow-sm">
+                                    class="relative aspect-[3/4] rounded-2xl border-2 border-slate-100 overflow-hidden bg-slate-50 cursor-move group hover:border-emerald-500 transition-all shadow-sm">
                                     <img :src="img.preview" class="w-full h-full object-cover">
 
                                     <!-- Badges -->
@@ -330,18 +330,18 @@
                 return {
                     images: [
                         @foreach($product->images as $image)
-                                                                                                {
+                                                                                                        {
                                 id: '{{ $image->id }}',
                                 preview: '{{ str_starts_with($image->path, "http") ? $image->path : asset("storage/" . $image->path) }}',
                                 type: '{{ str_starts_with($image->path, "http") ? "url" : "existing" }}'
                             },
                         @endforeach
-                                                        ],
+                                                            ],
                     colors: [
                         @foreach($product->colors as $color)
                             { hex: '{{ $color->hex_code }}', name: '{{ $color->color_name }}' },
                         @endforeach
-                                                        ],
+                                                            ],
 
                     addColor() {
                         this.colors.push({ hex: '#10B981', name: '' });

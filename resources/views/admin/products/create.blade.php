@@ -151,7 +151,7 @@
                             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 min-h-[140px]">
                             <template x-for="(img, index) in images" :key="img.id">
                                 <div :data-id="img.id"
-                                    class="relative aspect-square rounded-2xl border-2 border-slate-100 overflow-hidden bg-slate-50 cursor-move group hover:border-emerald-500 transition-all shadow-sm">
+                                    class="relative aspect-[3/4] rounded-2xl border-2 border-slate-100 overflow-hidden bg-slate-50 cursor-move group hover:border-emerald-500 transition-all shadow-sm">
                                     <img :src="img.preview" class="w-full h-full object-cover">
 
                                     <!-- Badges -->

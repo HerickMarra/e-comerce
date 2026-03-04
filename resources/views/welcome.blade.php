@@ -66,7 +66,7 @@
                 @forelse($categories as $category)
                     <div class="group cursor-pointer">
                         <a href="{{ route('search', ['categories' => [$category->id]]) }}" class="block">
-                            <div class="relative aspect-[4/5] rounded-2xl overflow-hidden mb-4 shadow-lg">
+                            <div class="relative aspect-[3/4] rounded-2xl overflow-hidden mb-4 shadow-lg">
                                 @if($category->image_path)
                                     <img alt="{{ $category->name }}"
                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -102,7 +102,7 @@
                 @forelse($products as $product)
                     <div class="group relative">
                         <a href="{{ route('product.show', $product->slug) }}" class="absolute inset-0 z-10" aria-label="Ver {{ $product->name }}"></a>
-                        <div class="relative aspect-square rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 mb-5 border border-slate-100 dark:border-slate-800">
+                        <div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 mb-5 border border-slate-100 dark:border-slate-800">
                             @php 
                                 $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
                             @endphp
@@ -166,7 +166,7 @@
                 @forelse($luckyProducts as $product)
                     <div class="group relative">
                         <a href="{{ route('product.show', $product->slug) }}" class="absolute inset-0 z-10" aria-label="Ver {{ $product->name }}"></a>
-                        <div class="relative aspect-[4/5] rounded-3xl overflow-hidden bg-slate-50 dark:bg-slate-800 mb-5 border border-slate-100 dark:border-slate-800">
+                        <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-slate-50 dark:bg-slate-800 mb-5 border border-slate-100 dark:border-slate-800">
                             @php 
                                 $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
                             @endphp
@@ -223,7 +223,7 @@
                         @foreach($category->section_products as $product)
                             <div class="group relative">
                                 <a href="{{ route('product.show', $product->slug) }}" class="absolute inset-0 z-10" aria-label="Ver {{ $product->name }}"></a>
-                                <div class="relative aspect-square rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 mb-5 border border-slate-100 dark:border-slate-800">
+                                <div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 mb-5 border border-slate-100 dark:border-slate-800">
                                     @php 
                                         $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
                                     @endphp

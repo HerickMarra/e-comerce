@@ -13,7 +13,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($categories as $category)
                 <a href="{{ route('search', ['categories[]' => $category->id]) }}"
-                    class="group relative aspect-[4/5] bg-slate-100 dark:bg-slate-900 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 border border-slate-100 dark:border-slate-800">
+                    class="group relative aspect-[3/4] bg-slate-100 dark:bg-slate-900 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-700 border border-slate-100 dark:border-slate-800">
 
                     {{-- Image Background --}}
                     @if($category->image_path)

@@ -16,7 +16,7 @@
                 'group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:shadow-slate-200/40 dark:hover:shadow-none transition-all duration-500',
                 'opacity-60' => $product->stock <= 0
             ])>
-                <div class="aspect-[4/5] overflow-hidden relative">
+                <div class="aspect-[3/4] overflow-hidden relative">
                     <img src="{{ $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? '') }}"
                         alt="{{ $product->name }}"
                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
