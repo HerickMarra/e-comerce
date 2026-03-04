@@ -103,8 +103,9 @@
             <!-- Detalhes do Produto -->
             <div class="flex flex-col">
                 <div class="mb-2">
-                    <span class="text-primary font-bold tracking-widest uppercase text-xs">Coleção Premium
-                        {{ date('Y') }}</span>
+                    <span class="text-primary font-bold tracking-widest uppercase text-xs">
+                        {{ $product->categories->first()?->name ?? 'Coleção Premium' }}
+                    </span>
                 </div>
                 <h1 class="text-4xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">{{ $product->name }}
                 </h1>
