@@ -74,8 +74,16 @@ class SearchController extends Controller
             ]);
         }
 
-        $categories = Category::withCount('products')->get();
-        $availableColors = ProductColor::select('hex_code', 'color_name')
+        $categories = Category::withCount([
+            'products' => function ($query) {
+                $query->where('is_active', true);
+            }
+        ])->get();
+
+        $availableColors = ProductColor::whereHas('product', function ($query) {
+            $query->where('is_active', true);
+        })
+            ->select('hex_code', 'color_name')
             ->distinct()
             ->get();
 
