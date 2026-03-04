@@ -76,7 +76,7 @@
                 <a href="/" class="flex items-center gap-2 shrink-0 group">
                     @if($appSettings['store_logo'])
                         <img src="{{ asset('storage/' . $appSettings['store_logo']) }}" class="w-auto object-contain"
-                            style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.4 }}px; max-height: 64px;"
+                            style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.4 }}px; max-height: 128px;"
                             alt="{{ $appSettings['store_name'] }}">
                     @else
                         <div
@@ -164,7 +164,7 @@
                     <div class="flex items-center gap-2 mb-8">
                         @if($appSettings['store_logo'])
                             <img src="{{ asset('storage/' . $appSettings['store_logo']) }}" class="w-auto object-contain"
-                                style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.35 }}px; max-height: 56px;"
+                                style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.35 }}px; max-height: 112px;"
                                 alt="{{ $appSettings['store_name'] }}">
                         @else
                             <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center text-white">

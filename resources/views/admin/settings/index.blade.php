@@ -174,7 +174,7 @@
                                                     class="text-[9px] text-primary font-bold">Resetar</button>
                                             </div>
                                             <input type="range" name="store_logo_size" x-model="logoSize" min="10"
-                                                max="100" step="5"
+                                                max="200" step="5"
                                                 class="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary">
                                         </div>
 

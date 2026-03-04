@@ -21,7 +21,7 @@
                 <div class="flex items-center gap-2 mb-6 lg:mb-8">
                     @if($appSettings['store_logo'])
                         <img src="{{ asset('storage/' . $appSettings['store_logo']) }}" class="h-8 w-auto object-contain"
-                            style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.3 }}px; max-height: 48px;"
+                            style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.3 }}px; max-height: 96px;"
                             alt="{{ $appSettings['store_name'] }}">
                     @else
                         <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">

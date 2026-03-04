@@ -74,7 +74,7 @@
                         @if($appSettings['store_logo'])
                             <img src="{{ asset('storage/' . $appSettings['store_logo']) }}"
                                 class="w-auto object-contain max-w-[150px]"
-                                style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.3 }}px; max-height: 48px;"
+                                style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.3 }}px; max-height: 96px;"
                                 alt="{{ $appSettings['store_name'] }}">
                         @else
                             <div

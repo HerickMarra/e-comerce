@@ -37,10 +37,10 @@ class ShippingController extends Controller
 
             for ($i = 0; $i < $quantity; $i++) {
                 $volumes[] = [
-                    'peso_carga' => (int) $product->weight,
-                    'altura_carga' => (int) $product->height,
-                    'largura_carga' => (int) $product->width,
-                    'comprimento_carga' => (int) $product->length,
+                    'peso_carga' => (float) $product->weight,
+                    'altura_carga' => (float) $product->height,
+                    'largura_carga' => (float) $product->width,
+                    'comprimento_carga' => (float) $product->length,
                 ];
             }
         } else {

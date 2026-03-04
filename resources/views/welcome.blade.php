@@ -59,7 +59,7 @@
                     <p class="text-slate-500">Mobiliário premium para cada ambiente</p>
                 </div>
                 <a class="text-primary font-bold text-sm hover:underline flex items-center gap-1" href="{{ route('categories.index') }}">
-                    Ver todas categorias <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    Ver todas<span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
