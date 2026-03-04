@@ -38,7 +38,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <!-- Galeria de Imagens -->
             <div class="space-y-6">
-                <div class="aspect-[4/3] rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-800 relative cursor-zoom-in"
+                <div class="aspect-[3/4] rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-800 relative cursor-zoom-in"
                     @mouseenter="isZoomed = true" @mouseleave="isZoomed = false" @mousemove="handleMouseMove($event)">
                     <template x-if="activeImage">
                         <img :alt="'{{ $product->name }}'"
@@ -58,7 +58,7 @@
                         @foreach($product->images as $image)
                             <button @click="activeImage = '{{ $image->path }}'"
                                 :class="activeImage === '{{ $image->path }}' ? 'border-primary ring-2 ring-primary/20' : 'border-transparent opacity-70 hover:opacity-100'"
-                                class="aspect-square rounded-xl overflow-hidden border-2 transition-all p-0">
+                                class="aspect-[3/4] rounded-xl overflow-hidden border-2 transition-all p-0">
                                 <img alt="Thumbnail" class="w-full h-full object-cover"
                                     src="{{ str_starts_with($image->path, 'http') ? $image->path : asset('storage/' . $image->path) }}" />
                             </button>
