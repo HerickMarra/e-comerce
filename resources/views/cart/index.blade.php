@@ -243,7 +243,7 @@
 
             @if($recommended->count() > 0)
                 <div class="lg:col-span-8">
-                    <section class="mt-20">
+                    <section class="">
                         <h2 class="text-xl font-medium mb-8">Produtos Recomendados</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             @foreach($recommended as $prod)
