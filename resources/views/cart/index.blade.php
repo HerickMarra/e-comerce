@@ -1,7 +1,7 @@
 <x-storefront-layout>
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" x-data="cartManager">
-        <div class="flex flex-col lg:flex-row gap-12">
-            <div class="flex-1">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-8">
                 <h1 class="text-3xl font-light mb-10 text-slate-900 dark:text-white">Seu Carrinho</h1>
 
                 <div x-show="status === 'item-removed'" x-transition x-cloak
@@ -117,33 +117,9 @@
                     </a>
                 </div>
 
-                @if($recommended->count() > 0)
-                    <section class="mt-20">
-                        <h2 class="text-xl font-medium mb-8">Produtos Recomendados</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            @foreach($recommended as $prod)
-                                <div class="group cursor-pointer"
-                                    onclick="window.location='{{ route('product.show', $prod->slug) }}'">
-                                    <div
-                                        class="aspect-square bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden mb-4 relative">
-                                        <img alt="{{ $prod->name }}"
-                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                            src="{{ $prod->images->where('is_main', true)->first()?->path ? (str_starts_with($prod->images->where('is_main', true)->first()->path, 'http') ? $prod->images->where('is_main', true)->first()->path : asset('storage/' . $prod->images->where('is_main', true)->first()->path)) : '' }}">
-                                        <button
-                                            class="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <span class="material-symbols-outlined text-slate-900">add</span>
-                                        </button>
-                                    </div>
-                                    <h4 class="text-sm font-medium text-slate-900 dark:text-white">{{ $prod->name }}</h4>
-                                    <p class="text-sm text-slate-500">R$ {{ number_format($prod->price, 2, ',', '.') }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-                    </section>
-                @endif
             </div>
 
-            <aside class="lg:w-96">
+            <aside class="lg:col-span-4">
                 <div
                     class="sticky top-32 bg-slate-50 dark:bg-slate-900 rounded-2xl p-8 border border-slate-100 dark:border-slate-800">
                     <h2 class="text-xl font-medium mb-6 text-slate-900 dark:text-white">Resumo do Pedido</h2>
@@ -264,6 +240,41 @@
                     </div>
                 </div>
             </aside>
+
+            @if($recommended->count() > 0)
+                <div class="lg:col-span-8">
+                    <section class="mt-20">
+                        <h2 class="text-xl font-medium mb-8">Produtos Recomendados</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                            @foreach($recommended as $prod)
+                                <div class="group cursor-pointer"
+                                    onclick="window.location='{{ route('product.show', $prod->slug) }}'">
+                                    <div
+                                        class="aspect-square bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden mb-4 relative text-slate-900 dark:text-white flex items-center justify-center">
+                                        @php
+                                            $mainImg = $prod->images->where('is_main', true)->first();
+                                            $imgPath = $mainImg ? ($mainImg->path ?? null) : null;
+                                        @endphp
+                                        @if($imgPath)
+                                            <img alt="{{ $prod->name }}"
+                                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                src="{{ str_starts_with($imgPath, 'http') ? $imgPath : asset('storage/' . $imgPath) }}">
+                                        @else
+                                            <span class="material-symbols-outlined text-4xl opacity-20">image</span>
+                                        @endif
+                                        <button
+                                            class="absolute bottom-4 right-4 w-10 h-10 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity border border-slate-100 dark:border-slate-800">
+                                            <span class="material-symbols-outlined text-slate-900 dark:text-white">add</span>
+                                        </button>
+                                    </div>
+                                    <h4 class="text-sm font-medium text-slate-900 dark:text-white">{{ $prod->name }}</h4>
+                                    <p class="text-sm text-slate-500">R$ {{ number_format($prod->price, 2, ',', '.') }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </section>
+                </div>
+            @endif
         </div>
     </main>
 
