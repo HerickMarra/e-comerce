@@ -67,13 +67,17 @@
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased">
+<body x-data="{ mobileMenuOpen: false }" :class="{ 'overflow-hidden': mobileMenuOpen }" class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased">
     <header
         class="sticky top-0 z-50 w-full bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20 gap-8">
-                <!-- Logo -->
-                <a href="/" class="flex items-center gap-2 shrink-0 group">
+                <div class="flex items-center gap-1 md:gap-2">
+                    <button @click="mobileMenuOpen = true" class="md:hidden p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors" aria-label="Abrir menu">
+                        <span class="material-symbols-outlined text-2xl">menu</span>
+                    </button>
+                    <!-- Logo -->
+                    <a href="/" class="flex items-center gap-2 shrink-0 group">
                     @if($appSettings['store_logo'])
                         <img src="{{ asset('storage/' . $appSettings['store_logo']) }}" class="w-auto object-contain"
                             style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.4 }}px; max-height: 128px;"
@@ -89,6 +93,7 @@
                         </span>
                     @endif
                 </a>
+            </div>
 
                 <!-- Navigation -->
                 <nav class="hidden md:flex items-center gap-10">
@@ -152,6 +157,116 @@
             </div>
         </div>
     </header>
+    
+    <!-- Mobile Menu Overlay -->
+    <template x-teleport="body">
+        <div x-show="mobileMenuOpen" 
+             x-cloak
+             class="fixed inset-0 z-[100] md:hidden"
+             role="dialog" 
+             aria-modal="true">
+            
+            <!-- Backdrop -->
+            <div x-show="mobileMenuOpen"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm" 
+                 @click="mobileMenuOpen = false"></div>
+            
+            <!-- Menu Content -->
+            <div x-show="mobileMenuOpen"
+                 x-transition:enter="transition ease-out duration-300 transform"
+                 x-transition:enter-start="-translate-x-full"
+                 x-transition:enter-end="translate-x-0"
+                 x-transition:leave="transition ease-in duration-200 transform"
+                 x-transition:leave-start="translate-x-0"
+                 x-transition:leave-end="-translate-x-full"
+                 class="relative w-4/5 max-w-sm h-full bg-white dark:bg-slate-900 shadow-2xl flex flex-col overflow-hidden">
+                
+                <div class="p-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+                    <a href="/" class="flex items-center gap-2" @click="mobileMenuOpen = false">
+                        @if($appSettings['store_logo'])
+                            <img src="{{ asset('storage/' . $appSettings['store_logo']) }}" class="h-8 w-auto object-contain" alt="{{ $appSettings['store_name'] }}">
+                        @else
+                            <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white">
+                                <span class="material-symbols-outlined text-xl">{{ $appSettings['store_icon'] ?? 'chair' }}</span>
+                            </div>
+                            <span class="text-lg font-bold tracking-tight text-slate-900 dark:text-white uppercase">
+                                {{ $appSettings['store_name'] ?? config('app.name') }}
+                            </span>
+                        @endif
+                    </a>
+                    <button @click="mobileMenuOpen = false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-500">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto py-8 px-6">
+                    <!-- Search inside mobile menu -->
+                    <div class="mb-10">
+                        <form action="{{ route('search') }}" method="GET" class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+                            <input name="q" value="{{ request('q') }}"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-xl py-3 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                placeholder="Buscar produtos..." type="text" />
+                        </form>
+                    </div>
+
+                    <nav class="space-y-1">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Navegação</p>
+                        <a href="/" class="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all group" @click="mobileMenuOpen = false">
+                            <span class="material-symbols-outlined text-xl text-slate-400 group-hover:text-primary">home</span>
+                            Início
+                        </a>
+                        <a href="{{ route('categories.index') }}" class="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all group" @click="mobileMenuOpen = false">
+                            <span class="material-symbols-outlined text-xl text-slate-400 group-hover:text-primary">category</span>
+                            Categorias
+                        </a>
+                        <a href="{{ route('customer.orders') }}" class="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all group" @click="mobileMenuOpen = false">
+                            <span class="material-symbols-outlined text-xl text-slate-400 group-hover:text-primary">package_2</span>
+                            Meus Pedidos
+                        </a>
+
+                        <div class="h-px bg-slate-100 dark:bg-slate-800 my-6"></div>
+                        
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Departamentos</p>
+                        @foreach($navCategories ?? [] as $navCat)
+                            <a href="{{ route('search', ['categories' => [$navCat->id]]) }}" 
+                               class="flex items-center justify-between px-4 py-3 text-slate-600 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all"
+                               @click="mobileMenuOpen = false">
+                                {{ $navCat->name }}
+                                <span class="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 transition-opacity">chevron_right</span>
+                            </a>
+                        @endforeach
+                    </nav>
+                </div>
+
+                <!-- Footer elements inside menu -->
+                <div class="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                    @auth
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-900 dark:text-white">{{ Auth::user()->name }}</p>
+                                <a href="{{ route('customer.dashboard') }}" class="text-xs text-primary font-semibold hover:underline" @click="mobileMenuOpen = false">Ver perfil</a>
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg shadow-primary/20 mb-4" @click="mobileMenuOpen = false">
+                            <span class="material-symbols-outlined text-xl">login</span>
+                            Entrar na Conta
+                        </a>
+                    @endauth
+                </div>
+            </div>
+        </div>
+    </template>
 
     <main>
         {{ $slot }}
