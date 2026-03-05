@@ -96,7 +96,7 @@
             <div class="flex items-center justify-between mb-10">
                 <div>
                     <h2 class="text-3xl font-bold text-slate-900 dark:text-white">Estou com Sorte</h2>
-                    <p class="text-slate-500 mt-1">Achados surpreendentes e aleatórios especialmente para o seu lar</p>
+                    <p class="text-slate-500 mt-1">Rótulos raros e artesanais para o seu paladar</p>
                 </div>
                 <div class="flex items-center justify-center size-12 rounded-2xl bg-amber-100 text-amber-600">
                     <span class="material-symbols-outlined text-2xl animate-bounce">casino</span>
@@ -151,13 +151,13 @@
         @foreach($randomSections as $category)
             @if($category->section_products->count() > 0)
                 <section class="mb-24">
-                    <div class="flex items-center justify-between mb-10">
+                    <div class="flex items-end justify-between mb-10">
                         <div>
-                            <h2 class="text-3xl font-bold text-slate-900 dark:text-white">{{ $category->name }}</h2>
-                            <p class="text-slate-500 mt-1 pb-1 border-b-2 border-primary/20 inline-block">Nossas melhores escolhas em {{ strtolower($category->name) }} para você</p>
+                            <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">{{ $category->name }}</h2>
+                            <p class="text-slate-500">Nossas melhores escolhas em {{ strtolower($category->name) }} para você</p>
                         </div>
-                        <a href="{{ route('search', ['categories' => [$category->id]]) }}" class="text-primary font-bold text-sm hover:underline flex items-center gap-1">
-                            Ver todos <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        <a href="{{ route('search', ['categories' => [$category->id]]) }}" class="text-primary font-bold text-sm hover:underline flex items-center gap-1 whitespace-nowrap">
+                            Ver todos<span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </a>
                     </div>
                     <div class="flex md:grid md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-6 md:pb-0 scrollbar-hide">

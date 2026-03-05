@@ -52,6 +52,11 @@ class HomeController extends Controller
         return view('welcome', compact('categories', 'luckyProducts', 'randomSections', 'heroSettings'));
     }
 
+    public function family()
+    {
+        return view('pages.family');
+    }
+
     private function formatYoutubeUrl($url)
     {
         if (empty($url))

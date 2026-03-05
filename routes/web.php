@@ -9,6 +9,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 
 Route::get('/', [HomeController::class, 'index']);
+Route::get('/nossa-historia', [HomeController::class, 'family'])->name('home.family');
 Route::get('/produto/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/categorias', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
 Route::middleware('auth')->group(function () {
