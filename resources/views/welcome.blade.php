@@ -1,6 +1,6 @@
 <x-storefront-layout>
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="relative h-[500px] md:h-[600px] w-full rounded-3xl overflow-hidden mb-16 shadow-2xl group"
+        <div class="relative h-[400px] md:h-[600px] w-full rounded-3xl overflow-hidden mb-16 shadow-2xl group"
              x-data="{ videoLoaded: false }"
              x-init="setTimeout(() => videoLoaded = true, 2000)">
             <div
@@ -24,23 +24,23 @@
             </iframe>
             <div class="relative z-20 h-full flex flex-col justify-center px-6 md:px-16 max-w-3xl">
                 @if($appSettings['store_logo'])
-                    <div class="mb-6">
+                    <div class="mb-6 hidden md:block">
                         <img src="{{ str_starts_with($appSettings['store_logo'], 'http') ? $appSettings['store_logo'] : asset('storage/' . $appSettings['store_logo']) }}" 
                              alt="{{ $appSettings['store_name'] }}"
                              class="h-12 md:h-16 w-auto object-contain brightness-0 invert opacity-90 transition-transform hover:scale-105 duration-300" />
                     </div>
                 @else
-                    <span class="text-primary font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4">{{ $heroSettings['tag'] }}</span>
+                    <span class="text-primary font-bold tracking-[0.2em] uppercase text-xs md:text-sm mb-4 hidden md:block">{{ $heroSettings['tag'] }}</span>
                 @endif
-                <h1 class="text-4xl md:text-7xl font-bold text-white leading-tight mb-6">
+                <h1 class="text-3xl md:text-7xl font-bold text-white leading-tight mb-6">
                     {!! strip_tags($heroSettings['title'], '<br>') !!}
                 </h1>
-                <p class="text-lg md:text-xl text-white/90 mb-8 md:mb-10 max-w-lg leading-relaxed">
+                <p class="text-base md:text-xl text-white/90 mb-8 md:mb-10 max-w-lg leading-relaxed">
                     {{ $heroSettings['subtitle'] }}
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 md:gap-5">
                     <a href="{{ route('search') }}"
-                        class="bg-primary text-white px-8 md:px-10 py-3 md:py-4 rounded-xl font-bold transition-all shadow-xl shadow-primary/30 inline-block text-center">
+                        class="bg-primary text-white px-8 md:px-10 py-3 md:py-4 rounded-xl font-bold transition-all shadow-xl shadow-primary/30 hidden md:inline-block text-center">
                         Explorar Agora
                     </a>
                     <a href="{{ $heroSettings['btn_link'] }}"
@@ -55,14 +55,14 @@
         <section class="mb-20">
             <div class="flex items-end justify-between mb-10">
                 <div>
-                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Compre por Categoria</h2>
-                    <p class="text-slate-500">Mobiliário premium para cada ambiente</p>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">Compre por Categoria</h2>
+                    <p class="text-slate-500">As melhores cachaças artesanais para você</p>
                 </div>
-                <a class="text-primary font-bold text-sm hover:underline flex items-center gap-1" href="{{ route('categories.index') }}">
+                <a class="text-primary font-bold text-sm hover:underline flex items-center gap-1 whitespace-nowrap" href="{{ route('categories.index') }}">
                     Ver todas<span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 @forelse($categories as $category)
                     <div class="group cursor-pointer">
                         <a href="{{ route('search', ['categories' => [$category->id]]) }}" class="block">
@@ -78,8 +78,8 @@
                                 @endif
                                 <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
                                 <div class="absolute bottom-6 left-6 text-white text-shadow">
-                                    <h3 class="text-xl font-bold">{{ $category->name }}</h3>
-                                    <p class="text-sm opacity-90">{{ $category->products->count() }} Itens</p>
+                                    <h3 class="text-lg md:text-xl font-bold">{{ $category->name }}</h3>
+                                    <p class="text-xs md:text-sm opacity-90">{{ $category->products->count() }} Itens</p>
                                 </div>
                             </div>
                         </a>
@@ -90,65 +90,6 @@
             </div>
         </section>
 
-        <!-- Best Sellers -->
-        <section class="mb-24">
-            <div class="flex items-center justify-between mb-10">
-                <div>
-                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white">Novidades</h2>
-                    <p class="text-slate-500 mt-1">Confira os últimos lançamentos que acabaram de chegar em nossa loja</p>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-                @forelse($products as $product)
-                    <div class="group relative">
-                        <a href="{{ route('product.show', $product->slug) }}" class="absolute inset-0 z-10" aria-label="Ver {{ $product->name }}"></a>
-                        <div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 mb-5 border border-slate-100 dark:border-slate-800">
-                            @php 
-                                $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
-                            @endphp
-                            @if($mainImage)
-                                <img alt="{{ $product->name }}"
-                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                    src="{{ str_starts_with($mainImage->path, 'http') ? $mainImage->path : asset('storage/' . $mainImage->path) }}" />
-                            @else
-                                <div class="w-full h-full flex items-center justify-center bg-slate-100">
-                                    <span class="material-symbols-outlined text-slate-300 text-6xl">image</span>
-                                </div>
-                            @endif
-                            <button
-                                class="absolute top-5 right-5 p-2.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-                                <span class="material-symbols-outlined text-xl text-slate-600">favorite</span>
-                            </button>
-                            <div
-                                class="absolute bottom-5 inset-x-5 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                <button
-                                    class="w-full bg-slate-900 dark:bg-primary text-white py-4 rounded-xl font-bold text-sm shadow-xl transition-colors">
-                                    Ver produto
-                                </button>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-start mb-1 px-1">
-                            <h4 class="font-semibold text-slate-900 dark:text-slate-200 line-clamp-1">{{ $product->name }}</h4>
-                            <p class="font-bold text-primary whitespace-nowrap">R$ {{ number_format($product->price, 2, ',', '.') }}</p>
-                        </div>
-                        <p class="text-sm text-slate-500 mb-3 px-1">{{ $product->categories->pluck('name')->implode(' • ') }}</p>
-                        <div class="flex items-center gap-1.5 px-1">
-                            <span class="material-symbols-outlined text-amber-400 text-lg fill-1">star</span>
-                            <span class="text-sm font-bold text-slate-700 dark:text-slate-300">5.0</span>
-                            <span class="text-xs text-slate-400">(Novo)</span>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-full py-20 text-center">
-                        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-100">
-                            <span class="material-symbols-outlined text-slate-300 text-4xl">inventory_2</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-900">Nenhum produto encontrado</h3>
-                        <p class="text-slate-500 mt-2">Estamos preparando novidades incríveis para você!</p>
-                    </div>
-                @endforelse
-            </div>
-        </section>
 
         <!-- Im Feeling Lucky -->
         <section class="mb-24 mt-40">
@@ -162,9 +103,9 @@
                 </div>
 
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div class="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-6 md:pb-0 scrollbar-hide">
                 @forelse($luckyProducts as $product)
-                    <div class="group relative">
+                    <div class="group relative min-w-[280px] md:min-w-0 snap-start">
                         <a href="{{ route('product.show', $product->slug) }}" class="absolute inset-0 z-10" aria-label="Ver {{ $product->name }}"></a>
                         <div class="relative aspect-[3/4] rounded-3xl overflow-hidden bg-slate-50 dark:bg-slate-800 mb-5 border border-slate-100 dark:border-slate-800">
                             @php 
@@ -219,9 +160,9 @@
                             Ver todos <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </a>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                    <div class="flex md:grid md:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-6 md:pb-0 scrollbar-hide">
                         @foreach($category->section_products as $product)
-                            <div class="group relative">
+                            <div class="group relative min-w-[280px] md:min-w-0 snap-start">
                                 <a href="{{ route('product.show', $product->slug) }}" class="absolute inset-0 z-10" aria-label="Ver {{ $product->name }}"></a>
                                 <div class="relative aspect-[3/4] rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 mb-5 border border-slate-100 dark:border-slate-800">
                                     @php 

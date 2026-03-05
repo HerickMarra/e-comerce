@@ -10,11 +10,6 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['categories', 'images'])
-            ->where('is_active', true)
-            ->latest()
-            ->take(4)
-            ->get();
 
         $categories = Category::all();
 
@@ -54,7 +49,7 @@ class HomeController extends Controller
             'image_fallback' => \App\Models\Setting::get('home_hero_image_fallback', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=2070'),
         ];
 
-        return view('welcome', compact('products', 'categories', 'luckyProducts', 'randomSections', 'heroSettings'));
+        return view('welcome', compact('categories', 'luckyProducts', 'randomSections', 'heroSettings'));
     }
 
     private function formatYoutubeUrl($url)
