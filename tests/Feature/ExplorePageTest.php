@@ -69,8 +69,8 @@ class ExplorePageTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee(route('explore'));
         $response->assertSee('Explorar');
-        $response->assertSee('Descubra todos os modelos na nova experiência');
-        $response->assertSee('Ir para o Explorar');
+        $response->assertSee('Feed Infinito de Descoberta');
+        $response->assertSee('Explorar Todos os Tênis');
     }
 
     public function test_explore_ajax_request_returns_valid_json_with_html_cards(): void

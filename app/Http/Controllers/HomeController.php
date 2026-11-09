@@ -68,7 +68,9 @@ class HomeController extends Controller
 
         $seo = SeoService::forHome();
 
-        return view('welcome', compact('categories', 'luckyProducts', 'randomSections', 'heroSettings', 'seo'));
+        $totalActiveProducts = Product::where('is_active', true)->count();
+
+        return view('welcome', compact('categories', 'luckyProducts', 'randomSections', 'heroSettings', 'seo', 'totalActiveProducts'));
     }
 
     public function family()

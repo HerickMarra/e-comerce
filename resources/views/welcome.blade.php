@@ -403,51 +403,172 @@
             @endif
         @endforeach
 
-        <!-- Card / Banner CTA Explorar -->
-        <section class="mt-12 sm:mt-16 mb-8">
-            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 dark:from-slate-900 dark:via-slate-950 dark:to-black text-white p-6 sm:p-10 lg:p-12 shadow-2xl border border-slate-800">
-                {{-- Elementos visuais de fundo (glow / gradiente) --}}
-                <div class="absolute -right-16 -top-16 w-64 h-64 sm:w-96 sm:h-96 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- Card / Banner CTA Explorar Premium -->
+        <section class="mt-14 sm:mt-20 mb-8 sm:mb-12">
+            <div class="relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white p-6 sm:p-10 lg:p-14 shadow-2xl border border-white/10 group">
+                {{-- Efeitos de iluminação de fundo (orbes com glow suave) --}}
+                <div class="absolute -right-20 -top-20 w-80 h-80 sm:w-[28rem] sm:h-[28rem] bg-primary/25 rounded-full blur-3xl pointer-events-none animate-pulse duration-1000"></div>
+                <div class="absolute -left-20 -bottom-20 w-72 h-72 sm:w-96 sm:h-96 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none"></div>
 
-                <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 sm:gap-8">
-                    <div class="max-w-2xl space-y-3 sm:space-y-4">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary border border-primary/30 text-xs font-bold uppercase tracking-wider">
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                    
+                    {{-- Coluna de Conteúdo (7 colunas no desktop) --}}
+                    <div class="lg:col-span-7 space-y-4 sm:space-y-6">
+                        {{-- Tag Badge Superior --}}
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/15 text-primary border border-primary/30 text-[11px] sm:text-xs font-black uppercase tracking-wider backdrop-blur-md shadow-xs">
+                            <span class="size-2 rounded-full bg-primary animate-ping"></span>
                             <span class="material-symbols-outlined text-sm">explore</span>
-                            Feed Infinito de Tênis
+                            Feed Infinito de Descoberta
                         </div>
 
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight text-white">
-                            Descubra todos os modelos na nova experiência <span class="text-primary">Explorar</span>
+                        {{-- Título Principal com Gradiente e Destaque --}}
+                        <h2 class="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-white">
+                            Descubra seu próximo tênis no feed que 
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-teal-300">
+                                nunca acaba.
+                            </span>
                         </h2>
 
-                        <p class="text-slate-300 text-xs sm:text-base leading-relaxed">
-                            Mergulhe em um feed contínuo com todos os tênis da loja em ordem dinâmica. Role sem parar, descubra novidades exclusivas e encontre seu próximo modelo favorito.
+                        {{-- Subtítulo --}}
+                        <p class="text-slate-300 text-xs sm:text-base leading-relaxed max-w-xl font-medium">
+                            Navegue por todos os modelos da loja em ordem dinâmica e aleatória a cada visita. Uma experiência imersiva com rolagem contínua, fotos reais, cores e estoque em tempo real.
                         </p>
 
-                        <div class="flex items-center gap-3 sm:gap-4 pt-1 flex-wrap text-xs text-slate-300">
-                            <span class="flex items-center gap-1.5 font-medium">
-                                <span class="material-symbols-outlined text-emerald-400 text-base">all_inclusive</span>
-                                Rolagem Infinita
-                            </span>
-                            <span class="flex items-center gap-1.5 font-medium">
-                                <span class="material-symbols-outlined text-amber-400 text-base">shuffle</span>
-                                Ordem Aleatória Dinâmica
-                            </span>
-                            <span class="flex items-center gap-1.5 font-medium">
-                                <span class="material-symbols-outlined text-primary text-base">verified</span>
-                                100% Originais
-                            </span>
+                        {{-- Badges de Recursos Exclusivos --}}
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-1">
+                            <div class="p-2.5 sm:p-3 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-xs flex items-center gap-2.5">
+                                <div class="size-8 rounded-xl bg-primary/20 text-primary flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-lg">all_inclusive</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-[11px] sm:text-xs font-bold text-white truncate">Rolagem Infinita</p>
+                                    <p class="text-[9px] sm:text-[10px] text-slate-400 truncate">Sem paginação</p>
+                                </div>
+                            </div>
+
+                            <div class="p-2.5 sm:p-3 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-xs flex items-center gap-2.5">
+                                <div class="size-8 rounded-xl bg-amber-400/20 text-amber-400 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-lg">shuffle</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-[11px] sm:text-xs font-bold text-white truncate">Ordem Dinâmica</p>
+                                    <p class="text-[9px] sm:text-[10px] text-slate-400 truncate">Aleatória a cada visita</p>
+                                </div>
+                            </div>
+
+                            <div class="col-span-2 sm:col-span-1 p-2.5 sm:p-3 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-xs flex items-center gap-2.5">
+                                <div class="size-8 rounded-xl bg-emerald-400/20 text-emerald-400 flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-lg">verified</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-[11px] sm:text-xs font-bold text-white truncate">100% Originais</p>
+                                    <p class="text-[9px] sm:text-[10px] text-slate-400 truncate">Estoque real</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Botão de Ação Principal e Contador --}}
+                        <div class="pt-2 sm:pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                            <a href="{{ route('explore') }}"
+                               class="group/btn relative inline-flex items-center justify-center gap-3 px-8 py-4 sm:py-4.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-black text-sm sm:text-base shadow-2xl shadow-primary/35 hover:shadow-primary/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] overflow-hidden text-center">
+                                <span class="relative z-10">Explorar Todos os Tênis</span>
+                                <span class="material-symbols-outlined text-xl transition-transform duration-300 group-hover/btn:translate-x-1 relative z-10">arrow_forward</span>
+                                {{-- Shimmer effect no hover --}}
+                                <div class="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                            </a>
+
+                            <div class="flex items-center gap-2 text-xs text-slate-400 justify-center sm:justify-start">
+                                <span class="size-2 rounded-full bg-emerald-400"></span>
+                                <span>+{{ $totalActiveProducts ?? 40 }} tênis disponíveis no catálogo</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="shrink-0 w-full lg:w-auto">
-                        <a href="{{ route('explore') }}"
-                           class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-sm sm:text-base shadow-xl shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
-                            <span>Ir para o Explorar</span>
-                            <span class="material-symbols-outlined text-lg sm:text-xl">arrow_forward</span>
-                        </a>
+                    {{-- Coluna Visual: Deck 3D de Tênis em Destaque (5 colunas no desktop) --}}
+                    <div class="lg:col-span-5 relative mt-4 lg:mt-0 flex items-center justify-center">
+                        <div class="relative w-full max-w-sm sm:max-w-md h-64 sm:h-80 flex items-center justify-center select-none">
+                            
+                            @php
+                                $previewProducts = $luckyProducts->take(3);
+                            @endphp
+
+                            @if($previewProducts->count() >= 2)
+                                {{-- Card 1 (Fundo inclinado à esquerda) --}}
+                                @php
+                                    $p1 = $previewProducts[0];
+                                    $img1 = $p1->images->where('is_main', true)->first() ?? $p1->images->first();
+                                    $src1 = $img1 ? (str_starts_with($img1->path, 'http') ? $img1->path : asset('storage/' . $img1->path)) : null;
+                                @endphp
+                                <div class="absolute w-44 sm:w-52 aspect-[3/4] -rotate-12 -translate-x-14 sm:-translate-x-16 -translate-y-4 rounded-3xl bg-slate-800/90 border border-white/10 p-3 shadow-2xl backdrop-blur-md opacity-70 group-hover:opacity-90 group-hover:-rotate-6 transition-all duration-700 pointer-events-none">
+                                    <div class="w-full h-3/4 rounded-2xl overflow-hidden bg-slate-900 mb-2">
+                                        @if($src1)
+                                            <img src="{{ $src1 }}" alt="{{ $p1->name }}" class="w-full h-full object-cover">
+                                        @endif
+                                    </div>
+                                    <p class="text-[10px] font-bold text-white truncate">{{ $p1->name }}</p>
+                                    <p class="text-[11px] font-black text-emerald-400">R$ {{ number_format($p1->price, 2, ',', '.') }}</p>
+                                </div>
+
+                                {{-- Card 2 (Fundo inclinado à direita) --}}
+                                @if(isset($previewProducts[1]))
+                                    @php
+                                        $p2 = $previewProducts[1];
+                                        $img2 = $p2->images->where('is_main', true)->first() ?? $p2->images->first();
+                                        $src2 = $img2 ? (str_starts_with($img2->path, 'http') ? $img2->path : asset('storage/' . $img2->path)) : null;
+                                    @endphp
+                                    <div class="absolute w-44 sm:w-52 aspect-[3/4] rotate-12 translate-x-14 sm:translate-x-16 translate-y-3 rounded-3xl bg-slate-800/90 border border-white/10 p-3 shadow-2xl backdrop-blur-md opacity-70 group-hover:opacity-90 group-hover:rotate-6 transition-all duration-700 pointer-events-none">
+                                        <div class="w-full h-3/4 rounded-2xl overflow-hidden bg-slate-900 mb-2">
+                                            @if($src2)
+                                                <img src="{{ $src2 }}" alt="{{ $p2->name }}" class="w-full h-full object-cover">
+                                            @endif
+                                        </div>
+                                        <p class="text-[10px] font-bold text-white truncate">{{ $p2->name }}</p>
+                                        <p class="text-[11px] font-black text-emerald-400">R$ {{ number_format($p2->price, 2, ',', '.') }}</p>
+                                    </div>
+                                @endif
+
+                                {{-- Card Central (Em destaque no meio) --}}
+                                @php
+                                    $pMain = $previewProducts[2] ?? $previewProducts[0];
+                                    $imgMain = $pMain->images->where('is_main', true)->first() ?? $pMain->images->first();
+                                    $srcMain = $imgMain ? (str_starts_with($imgMain->path, 'http') ? $imgMain->path : asset('storage/' . $imgMain->path)) : null;
+                                @endphp
+                                <a href="{{ route('explore') }}"
+                                   class="relative z-20 w-48 sm:w-56 aspect-[3/4] rounded-3xl bg-slate-900/95 border-2 border-primary/50 p-3.5 shadow-2xl backdrop-blur-xl group-hover:scale-105 group-hover:border-primary transition-all duration-500 block cursor-pointer">
+                                    <div class="relative w-full h-3/4 rounded-2xl overflow-hidden bg-slate-800 mb-2.5">
+                                        @if($srcMain)
+                                            <img src="{{ $srcMain }}" alt="{{ $pMain->name }}" class="w-full h-full object-cover">
+                                        @endif
+                                        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-primary text-white text-[9px] font-black uppercase tracking-wider shadow-md">
+                                            Explorar
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="min-w-0 pr-1">
+                                            <p class="text-[10px] text-slate-400 uppercase font-black truncate">{{ $pMain->brand ?: 'Tênis' }}</p>
+                                            <p class="text-xs font-bold text-white truncate">{{ $pMain->name }}</p>
+                                        </div>
+                                        <span class="text-xs font-black text-emerald-400 shrink-0">
+                                            R$ {{ number_format($pMain->price, 2, ',', '.') }}
+                                        </span>
+                                    </div>
+                                </a>
+                            @else
+                                {{-- Fallback decorativo com ícone dinâmico caso não haja produtos suficientes --}}
+                                <a href="{{ route('explore') }}"
+                                   class="w-56 h-72 rounded-3xl bg-slate-900 border border-white/10 p-6 flex flex-col items-center justify-center text-center shadow-2xl group-hover:scale-105 transition-all">
+                                    <div class="size-20 rounded-3xl bg-primary/20 text-primary flex items-center justify-center mb-4">
+                                        <span class="material-symbols-outlined text-4xl animate-bounce">explore</span>
+                                    </div>
+                                    <p class="text-sm font-bold text-white mb-1">Feed de Descoberta</p>
+                                    <p class="text-xs text-slate-400">Clique para navegar sem limites</p>
+                                </a>
+                            @endif
+
+                        </div>
                     </div>
+
                 </div>
             </div>
         </section>
