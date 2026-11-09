@@ -102,16 +102,18 @@ class AsaasService
             throw new \Exception('Erro ao criar cliente no Asaas.');
         }
 
+        $storeName = \App\Models\Setting::get('store_name', config('app.name', 'Denner Tênis'));
         $payload = [
             'customer' => $customer,
             'billingType' => $billingType,
             'value' => $order->total_amount,
             'dueDate' => now()->addDays(2)->format('Y-m-d'),
-            'description' => "Pedido #{$order->order_number} - Sisters Esportes",
+            'description' => "Pedido #{$order->order_number} - {$storeName}",
             'externalReference' => $order->id,
         ];
 
         if ($billingType === 'CREDIT_CARD' && $creditCardInfo) {
+            $addr = $creditCardInfo['addressInfo'] ?? [];
             $payload['creditCard'] = [
                 'holderName' => $creditCardInfo['holderName'],
                 'number' => $creditCardInfo['number'],
@@ -120,15 +122,15 @@ class AsaasService
                 'ccv' => $creditCardInfo['ccv']
             ];
             $payload['creditCardHolderInfo'] = [
-                'name' => $order->user->name,
-                'email' => $order->user->email,
-                'cpfCnpj' => $order->user->cpf,
-                'postalCode' => preg_replace('/\D/', '', $creditCardInfo['addressInfo']['zip_code'] ?? '00000000'),
-                'addressNumber' => $creditCardInfo['addressInfo']['address_number'] ?? '0',
-                'address' => $creditCardInfo['addressInfo']['address'] ?? '',
-                'province' => $creditCardInfo['addressInfo']['neighborhood'] ?? '',
-                'phone' => $order->user->phone ?? '00000000000',
-                'mobilePhone' => $order->user->phone ?? '00000000000',
+                'name' => $order->user?->name ?? 'Cliente',
+                'email' => $order->user?->email ?? ($addr['email'] ?? 'contato@loja.com.br'),
+                'cpfCnpj' => preg_replace('/\D/', '', $order->user?->cpf ?? ($addr['cpf'] ?? '')),
+                'postalCode' => preg_replace('/\D/', '', $addr['zip_code'] ?? $addr['zip'] ?? '00000000'),
+                'addressNumber' => $addr['number'] ?? $addr['address_number'] ?? 'S/N',
+                'address' => $addr['street'] ?? $addr['address'] ?? 'Rua Principal',
+                'province' => $addr['neighborhood'] ?? 'Centro',
+                'phone' => preg_replace('/\D/', '', $order->user?->phone ?? ($addr['phone'] ?? '61999999999')),
+                'mobilePhone' => preg_replace('/\D/', '', $order->user?->phone ?? ($addr['phone'] ?? '61999999999')),
             ];
         }
 

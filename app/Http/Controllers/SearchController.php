@@ -11,22 +11,24 @@ class SearchController extends Controller
 {
     public function index(Request $request)
     {
-        $query = $request->input('q');
-        $selectedCategories = $request->input('categories', []);
-        $minPrice = $request->input('min_price', 0);
-        $maxPrice = $request->input('max_price', 50000);
-        $selectedColors = $request->input('colors', []);
+        $rawQuery = $request->input('q');
+        $query = is_string($rawQuery) ? trim($rawQuery) : null;
+        $selectedCategories = (array) $request->input('categories', []);
+        $minPrice = max(0, (float) $request->input('min_price', 0));
+        $maxPrice = max($minPrice, (float) $request->input('max_price', 50000));
+        $selectedColors = (array) $request->input('colors', []);
         $inStockOnly = $request->has('in_stock');
         $sort = $request->input('sort', 'relevance');
 
         $baseQuery = Product::where('is_active', true);
 
         if ($query) {
-            $baseQuery->where(function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                    ->orWhere('brand', 'like', "%{$query}%")
-                    ->orWhere('model_line', 'like', "%{$query}%")
-                    ->orWhere('description', 'like', "%{$query}%");
+            $escapedQuery = addcslashes($query, '%_');
+            $baseQuery->where(function ($q) use ($escapedQuery) {
+                $q->where('name', 'like', "%{$escapedQuery}%")
+                    ->orWhere('brand', 'like', "%{$escapedQuery}%")
+                    ->orWhere('model_line', 'like', "%{$escapedQuery}%")
+                    ->orWhere('description', 'like', "%{$escapedQuery}%");
             });
         }
 

@@ -53,6 +53,22 @@ class CheckoutController extends Controller
         $shippingLabel = $request->input('shipping_label', 'Retirada na Loja');
         $total = $subtotal + $shippingAmount;
 
+        // Validate payment method and card inputs
+        $request->validate([
+            'payment_method' => 'required|string|in:pix,credit_card,boleto',
+            'card_holder' => 'required_if:payment_method,credit_card|nullable|string|max:100',
+            'card_number' => 'required_if:payment_method,credit_card|nullable|string',
+            'card_expiry' => 'required_if:payment_method,credit_card|nullable|string',
+            'card_cvv' => 'required_if:payment_method,credit_card|nullable|string|min:3|max:4',
+        ], [
+            'payment_method.required' => 'Selecione uma forma de pagamento.',
+            'payment_method.in' => 'Forma de pagamento inválida.',
+            'card_holder.required_if' => 'Informe o nome impresso no cartão.',
+            'card_number.required_if' => 'Informe o número do cartão de crédito.',
+            'card_expiry.required_if' => 'Informe a validade do cartão.',
+            'card_cvv.required_if' => 'Informe o código de segurança (CVV).',
+        ]);
+
         // Validate and save user info (Logged in or Guest)
         if (Auth::check()) {
             $user = Auth::user();
@@ -216,8 +232,9 @@ class CheckoutController extends Controller
                     OrderPaymentService::finalize($order);
                 }
 
-                // Clear Cart
+                // Clear Cart and remember this order for guest access to success screen
                 session()->forget('cart');
+                session()->put('checkout_order_id', $order->id);
 
                 DB::commit();
 
@@ -235,6 +252,14 @@ class CheckoutController extends Controller
 
     public function success(Order $order, \App\Services\AsaasService $asaasService)
     {
+        $isAuthorized = (Auth::check() && $order->user_id === Auth::id())
+            || (session('checkout_order_id') == $order->id)
+            || (Auth::check() && method_exists(Auth::user(), 'hasRole') && (Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Admin') || Auth::user()->hasRole('Manager')));
+
+        if (!$isAuthorized) {
+            abort(403, 'Acesso não autorizado a este pedido.');
+        }
+
         $paymentData = session('payment_data');
 
         if (!$paymentData && $order->payment_method === 'pix' && $order->payment_id) {
@@ -256,6 +281,14 @@ class CheckoutController extends Controller
 
     public function checkStatus(Order $order, AsaasGateway $gateway)
     {
+        $isAuthorized = (Auth::check() && $order->user_id === Auth::id())
+            || (session('checkout_order_id') == $order->id)
+            || (Auth::check() && method_exists(Auth::user(), 'hasRole') && (Auth::user()->hasRole('Super Admin') || Auth::user()->hasRole('Admin') || Auth::user()->hasRole('Manager')));
+
+        if (!$isAuthorized) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         // If already finalized in database, return immediately
         if (in_array($order->status, ['paid', 'completed', 'delivered', 'shipped'])) {
             return response()->json([

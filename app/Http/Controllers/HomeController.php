@@ -10,8 +10,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-
-        $categories = Category::all();
+        $categories = Category::withCount('products')->get();
 
         // Produtos Aleatórios ("Estou com Sorte")
         $luckyProducts = Product::with(['categories', 'images'])

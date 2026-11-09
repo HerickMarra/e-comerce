@@ -26,12 +26,18 @@ class AsaasGateway implements PaymentGatewayInterface
 
         $creditCardInfo = null;
         if ($billingType === 'CREDIT_CARD') {
+            $rawExpiry = trim($paymentData['card_expiry'] ?? '');
+            $expiryParts = preg_split('/[\/\s-]+/', $rawExpiry);
+            $month = str_pad($expiryParts[0] ?? '12', 2, '0', STR_PAD_LEFT);
+            $yearRaw = $expiryParts[1] ?? date('y');
+            $year = strlen($yearRaw) === 2 ? '20' . $yearRaw : $yearRaw;
+
             $creditCardInfo = [
-                'holderName' => $paymentData['card_holder'],
-                'number' => preg_replace('/\D/', '', $paymentData['card_number']),
-                'expiryMonth' => explode('/', $paymentData['card_expiry'])[0],
-                'expiryYear' => '20' . explode('/', $paymentData['card_expiry'])[1],
-                'ccv' => $paymentData['card_cvv'],
+                'holderName' => $paymentData['card_holder'] ?? ($order->user?->name ?? 'Cliente'),
+                'number' => preg_replace('/\D/', '', $paymentData['card_number'] ?? ''),
+                'expiryMonth' => $month,
+                'expiryYear' => $year,
+                'ccv' => $paymentData['card_cvv'] ?? '',
                 'addressInfo' => $order->address_info
             ];
         }

@@ -187,9 +187,9 @@
                                             <div class="flex items-center gap-3">
                                                 <div
                                                     class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center font-bold text-xs">
-                                                    {{ strtoupper(substr($order->user->name, 0, 2)) }}
+                                                    {{ strtoupper(substr($order->user?->name ?? ($order->address_info['recipient_name'] ?? 'CL'), 0, 2)) }}
                                                 </div>
-                                                <span class="text-sm font-medium">{{ $order->user->name }}</span>
+                                                <span class="text-sm font-medium">{{ $order->user?->name ?? ($order->address_info['recipient_name'] ?? 'Cliente') }}</span>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">

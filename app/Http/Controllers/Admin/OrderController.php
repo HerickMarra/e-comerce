@@ -45,11 +45,19 @@ class OrderController extends Controller
             'status' => 'required|string|in:pending,paid,processing,shipped,delivered,cancelled',
         ]);
 
-        if ($request->status === 'paid' && $order->status !== 'paid') {
+        $previousStatus = $order->status;
+        $newStatus = $request->status;
+
+        if ($newStatus === 'paid' && $previousStatus !== 'paid') {
             OrderPaymentService::finalize($order);
         } else {
+            // Restore inventory when cancelling order
+            if ($newStatus === 'cancelled' && $previousStatus !== 'cancelled') {
+                $order->restoreStock();
+            }
+
             $order->update([
-                'status' => $request->status
+                'status' => $newStatus
             ]);
         }
 

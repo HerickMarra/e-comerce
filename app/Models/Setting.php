@@ -20,16 +20,24 @@ class Setting extends Model
     {
         return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
             $map = [];
-            foreach (self::all() as $setting) {
-                if ($setting->is_encrypted && $setting->value) {
-                    try {
-                        $map[$setting->key] = Crypt::decryptString($setting->value);
-                    } catch (\Exception $e) {
-                        $map[$setting->key] = null;
-                    }
-                } else {
-                    $map[$setting->key] = $setting->value;
+            try {
+                if (!\Illuminate\Support\Facades\Schema::hasTable('settings')) {
+                    return [];
                 }
+
+                foreach (self::all() as $setting) {
+                    if ($setting->is_encrypted && $setting->value) {
+                        try {
+                            $map[$setting->key] = Crypt::decryptString($setting->value);
+                        } catch (\Exception $e) {
+                            $map[$setting->key] = null;
+                        }
+                    } else {
+                        $map[$setting->key] = $setting->value;
+                    }
+                }
+            } catch (\Throwable $e) {
+                return [];
             }
             return $map;
         });

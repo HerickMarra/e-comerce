@@ -26,6 +26,9 @@ class CartController extends Controller
                 $item['out_of_stock'] = false;
                 $item['insufficient_stock'] = false;
             }
+            if ($product) {
+                $item['price'] = (float) $product->price;
+            }
             $item['available_colors'] = $product ? $product->colors : [];
             $total += $item['price'] * $item['quantity'];
         }
@@ -106,8 +109,14 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
 
         if (isset($cart[$id])) {
+            $product = Product::find($cart[$id]['product_id'] ?? null);
+
             if ($request->has('quantity')) {
-                $cart[$id]['quantity'] = max(1, (int) $request->quantity);
+                $requestedQty = max(1, (int) $request->quantity);
+                if ($product && $product->stock > 0) {
+                    $requestedQty = min($product->stock, $requestedQty);
+                }
+                $cart[$id]['quantity'] = $requestedQty;
             }
 
             if ($request->has('color') && $request->has('color_name')) {
@@ -115,8 +124,9 @@ class CartController extends Controller
                 $newColor = $request->color;
                 $newColorName = $request->color_name;
 
-                // If color changed, we might need to merge with existing item of that color
-                $newId = $item['product_id'] . ($newColor ? '_' . str_replace('#', '', $newColor) : '');
+                // If color changed, compute new ID preserving size if present
+                $sizePart = !empty($item['size']) ? '_tam' . preg_replace('/[^a-zA-Z0-9]/', '', $item['size']) : '';
+                $newId = $item['product_id'] . ($newColor ? '_' . str_replace('#', '', $newColor) : '') . $sizePart;
 
                 if ($newId !== $id) {
                     unset($cart[$id]);
@@ -177,6 +187,9 @@ class CartController extends Controller
             } else {
                 $item['out_of_stock'] = false;
                 $item['insufficient_stock'] = false;
+            }
+            if ($product) {
+                $item['price'] = (float) $product->price;
             }
             $item['available_colors'] = $product ? $product->colors : [];
             $total += $item['price'] * $item['quantity'];

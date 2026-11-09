@@ -212,8 +212,8 @@ class MelhorEnvioService
 
         $storeZip = preg_replace('/\D/', '', Setting::get('store_zip', Setting::get('store_zip_code', '74003010')));
         $recipientZip = preg_replace('/\D/', '', $addr['zip'] ?? $addr['zip_code'] ?? '');
-        $recipientPhone = preg_replace('/\D/', '', $user->phone ?? '61999999999');
-        $recipientDoc = preg_replace('/\D/', '', $user->cpf ?? '');
+        $recipientPhone = preg_replace('/\D/', '', $user?->phone ?? ($addr['phone'] ?? '61999999999'));
+        $recipientDoc = preg_replace('/\D/', '', $user?->cpf ?? ($addr['cpf'] ?? ''));
 
         // If recipient document matches store document (common when admin/owner tests checkout with own CPF),
         // or if empty, Melhor Envio rejects with 422: "O CPF do remetente e do destinatário não podem ser iguais".
@@ -276,9 +276,9 @@ class MelhorEnvioService
                 'postal_code' => $storeZip,
             ],
             'to' => [
-                'name' => $user->name,
+                'name' => $user?->name ?? ($addr['recipient_name'] ?? 'Cliente Destinatário'),
                 'phone' => $recipientPhone,
-                'email' => $user->email,
+                'email' => $user?->email ?? ($addr['email'] ?? Setting::get('mail_from_address', 'contato@loja.com.br')),
                 'document' => $recipientDoc,
                 'address' => $addr['street'] ?? '',
                 'complement' => $addr['complement'] ?? '',

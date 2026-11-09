@@ -45,4 +45,16 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    /**
+     * Restore stock for all items in this order if cancelled or refunded.
+     */
+    public function restoreStock(): void
+    {
+        foreach ($this->items as $item) {
+            if ($item->product) {
+                $item->product->increment('stock', $item->quantity);
+            }
+        }
+    }
 }

@@ -98,6 +98,16 @@ class AsaasWebhookController extends Controller
             ]);
             OrderPaymentService::finalize($order);
         } else {
+            // If order was cancelled, refunded, or overdue, and was not previously cancelled, restore inventory
+            if (in_array($newStatus, ['cancelled', 'refunded', 'overdue']) && !in_array($previousStatus, ['cancelled', 'refunded', 'overdue'])) {
+                try {
+                    $order->restoreStock();
+                    Log::info("Asaas Webhook: Stock restored for cancelled/refunded order #{$order->order_number}");
+                } catch (\Throwable $e) {
+                    Log::error("Asaas Webhook: Failed to restore stock for order #{$order->order_number}: " . $e->getMessage());
+                }
+            }
+
             $order->update([
                 'status' => $newStatus,
                 'payment_id' => $paymentId ?? $order->payment_id,

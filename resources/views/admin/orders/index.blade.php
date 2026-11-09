@@ -60,8 +60,8 @@
                                 <td class="px-6 py-4">
                                     <div class="flex flex-col">
                                         <span
-                                            class="text-sm font-medium text-slate-900 dark:text-white">{{ $order->user->name }}</span>
-                                        <span class="text-xs text-slate-500">{{ $order->user->email }}</span>
+                                            class="text-sm font-medium text-slate-900 dark:text-white">{{ $order->user?->name ?? ($order->address_info['recipient_name'] ?? 'Cliente') }}</span>
+                                        <span class="text-xs text-slate-500">{{ $order->user?->email ?? ($order->address_info['email'] ?? 'Sem e-mail') }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">

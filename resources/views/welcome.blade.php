@@ -180,7 +180,7 @@
                                 <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
                                 <div class="absolute bottom-6 left-6 text-white text-shadow">
                                     <h3 class="text-lg md:text-xl font-bold">{{ $category->name }}</h3>
-                                    <p class="text-xs md:text-sm opacity-90">{{ $category->products->count() }} Itens</p>
+                                    <p class="text-xs md:text-sm opacity-90">{{ $category->products_count ?? $category->products->count() }} Itens</p>
                                 </div>
                             </div>
                         </a>

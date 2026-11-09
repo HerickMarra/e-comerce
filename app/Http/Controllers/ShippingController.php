@@ -13,10 +13,17 @@ class ShippingController extends Controller
     public function calculate(Request $request)
     {
         $request->validate([
-            'cep' => 'required|string|min:8|max:9',
+            'cep' => 'required|string|min:8|max:12',
+        ], [
+            'cep.required' => 'Informe o CEP para cálculo de frete.',
+            'cep.min' => 'CEP inválido.',
+            'cep.max' => 'CEP inválido.',
         ]);
 
         $cep = preg_replace('/\D/', '', $request->cep);
+        if (strlen($cep) !== 8) {
+            return response()->json(['error' => 'CEP inválido. Deve conter 8 dígitos numéricos.'], 422);
+        }
 
         $productsList = [];
         $volumes = [];

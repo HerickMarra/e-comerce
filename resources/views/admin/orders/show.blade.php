@@ -166,31 +166,35 @@
                     <div class="flex items-center gap-4 mb-4">
                         <div
                             class="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary font-bold text-lg">
-                            {{ strtoupper(substr($order->user->name, 0, 2)) }}
+                            {{ strtoupper(substr($order->user?->name ?? ($order->address_info['recipient_name'] ?? 'CL'), 0, 2)) }}
                         </div>
                         <div class="flex flex-col">
                             <span
-                                class="text-sm font-bold text-slate-900 dark:text-white">{{ $order->user->name }}</span>
-                            <span class="text-xs text-slate-500">{{ $order->user->email }}</span>
+                                class="text-sm font-bold text-slate-900 dark:text-white">{{ $order->user?->name ?? ($order->address_info['recipient_name'] ?? 'Cliente') }}</span>
+                            <span class="text-xs text-slate-500">{{ $order->user?->email ?? ($order->address_info['email'] ?? 'Não informado') }}</span>
                         </div>
                     </div>
                     <div class="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                        @if($order->user->phone)
+                        @php
+                            $customerPhone = $order->user?->phone ?? ($order->address_info['phone'] ?? null);
+                            $customerCpf = $order->user?->cpf ?? ($order->address_info['cpf'] ?? null);
+                        @endphp
+                        @if($customerPhone)
                             <div class="flex items-start gap-3">
                                 <span class="material-symbols-outlined text-slate-400 text-lg">phone</span>
                                 <div class="flex flex-col">
                                     <span
                                         class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Telefone</span>
-                                    <span class="text-sm">{{ $order->user->phone }}</span>
+                                    <span class="text-sm">{{ $customerPhone }}</span>
                                 </div>
                             </div>
                         @endif
-                        @if($order->user->cpf)
+                        @if($customerCpf)
                             <div class="flex items-start gap-3">
                                 <span class="material-symbols-outlined text-slate-400 text-lg">tag</span>
                                 <div class="flex flex-col">
                                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">CPF</span>
-                                    <span class="text-sm">{{ $order->user->cpf }}</span>
+                                    <span class="text-sm">{{ $customerCpf }}</span>
                                 </div>
                             </div>
                         @endif
@@ -452,7 +456,7 @@
                         <span style="font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;">DESTINATÁRIO</span>
                         <span style="font-size: 10px; background: #111; color: #fff; padding: 2px 6px; border-radius: 3px; font-weight: 700;">ENTREGA</span>
                     </div>
-                    <p style="margin: 0 0 6px; font-size: 15px; font-weight: 800; color: #000;">{{ $order->user->name }}</p>
+                    <p style="margin: 0 0 6px; font-size: 15px; font-weight: 800; color: #000;">{{ $order->user?->name ?? ($order->address_info['recipient_name'] ?? 'Destinatário') }}</p>
                     <p style="margin: 0 0 4px; font-size: 13px; color: #222;">
                         {{ $order->address_info['street'] ?? '' }}, {{ $order->address_info['number'] ?? 'S/N' }}
                         @if(!empty($order->address_info['complement']))
@@ -478,8 +482,8 @@
                     </div>
 
                     <div style="border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 8px; font-size: 11px; color: #475569;">
-                        <div>CPF: <strong>{{ $order->user->cpf }}</strong></div>
-                        <div>Telefone: <strong>{{ $order->user->phone }}</strong></div>
+                        <div>CPF: <strong>{{ $order->user?->cpf ?? ($order->address_info['cpf'] ?? '---') }}</strong></div>
+                        <div>Telefone: <strong>{{ $order->user?->phone ?? ($order->address_info['phone'] ?? '---') }}</strong></div>
                     </div>
                 </div>
 

@@ -248,7 +248,7 @@ class UserController extends Controller
                     'subtotal' => number_format((float)$order->subtotal, 2, ',', '.'),
                     'shipping_amount' => number_format((float)$order->shipping_amount, 2, ',', '.'),
                     'shipping_modalidade' => $order->shipping_modalidade ?: 'Retirada / Padrão',
-                    'tracking_code' => $order->tracking_code ?: null,
+                    'tracking_code' => $order->shipping_tracking_code ?: null,
                     'payment_method' => strtoupper($order->payment_method ?? 'PIX'),
                     'items_count' => $order->items->sum('quantity'),
                     'items' => $order->items->map(function ($item) {

@@ -19,35 +19,41 @@ class AdminDashboardController extends Controller
         $totalRevenue = Order::whereIn('status', $successStatuses)->sum('total_amount');
         $totalOrders = Order::whereIn('status', $successStatuses)->count();
 
-        // Active Customers: Exclude Admins
+        // Active Customers: Exclude Admins & Managers
         $totalCustomers = User::whereDoesntHave('roles', function ($q) {
-            $q->where('name', 'Admin');
+            $q->whereIn('name', ['Super Admin', 'Admin', 'Manager']);
         })->count();
 
         // Recent Orders
         $recentOrders = Order::with('user')->latest()->take(10)->get();
 
-        // Chart Data (Last 30 days)
+        // Chart Data (Last 30 days) - Single aggregated query instead of 60 individual queries in loop
+        $thirtyDaysAgo = Carbon::now()->subDays(29)->startOfDay();
+
+        $dailyStats = Order::where('created_at', '>=', $thirtyDaysAgo)
+            ->selectRaw("
+                DATE(created_at) as order_date,
+                COUNT(*) as total_count,
+                SUM(CASE WHEN status IN ('paid', 'processing', 'shipped', 'delivered') THEN 1 ELSE 0 END) as paid_count,
+                SUM(CASE WHEN status IN ('paid', 'processing', 'shipped', 'delivered') THEN total_amount ELSE 0 END) as daily_revenue
+            ")
+            ->groupBy('order_date')
+            ->get()
+            ->keyBy('order_date');
+
         $days = [];
-        $ordersMadeCounts = []; // Total orders (including pending/cancelled)
-        $ordersPaidCounts = []; // Success orders only
+        $ordersMadeCounts = [];
+        $ordersPaidCounts = [];
         $revenueData = [];
 
         for ($i = 29; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i)->format('Y-m-d');
             $days[] = Carbon::now()->subDays($i)->format('d/m');
 
-            // All orders count
-            $ordersMadeCounts[] = Order::whereDate('created_at', $date)->count();
-
-            // Paid orders count & Revenue
-            $dayPaidData = Order::whereIn('status', $successStatuses)
-                ->whereDate('created_at', $date)
-                ->select(DB::raw('count(*) as count'), DB::raw('sum(total_amount) as revenue'))
-                ->first();
-
-            $ordersPaidCounts[] = $dayPaidData->count ?? 0;
-            $revenueData[] = $dayPaidData->revenue ?? 0;
+            $stat = $dailyStats->get($date);
+            $ordersMadeCounts[] = (int) ($stat->total_count ?? 0);
+            $ordersPaidCounts[] = (int) ($stat->paid_count ?? 0);
+            $revenueData[] = (float) ($stat->daily_revenue ?? 0);
         }
 
         return view('admin.dashboard', compact(
