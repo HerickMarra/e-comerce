@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
     public function show(string $slug)
     {
-        $product = Product::with(['images', 'categories', 'colors'])
+        $product = Product::with(['images', 'categories', 'colors', 'variants'])
             ->where('slug', $slug)
             ->first();
 

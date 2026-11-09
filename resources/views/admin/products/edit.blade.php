@@ -263,6 +263,132 @@
                         </div>
                     </div>
 
+                    <!-- CARD: Controle de Estoque por Variação (Tamanho x Cor) -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
+                                        <span class="material-symbols-outlined">grid_view</span>
+                                    </div>
+                                    Controle de Estoque por Variação
+                                </h2>
+                                <p class="text-xs text-slate-400 mt-1">Gerencie a quantidade individual de pares disponíveis para cada combinação de Cor e Tamanho.</p>
+                            </div>
+                            
+                            <div class="flex items-center gap-2.5 flex-wrap">
+                                <div class="px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-sm">inventory_2</span>
+                                    <span>Estoque Total: <strong x-text="totalMatrixStock"></strong> pares</span>
+                                </div>
+                                <template x-if="totalOutOfStock > 0">
+                                    <span class="px-2.5 py-1 rounded-full bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400 text-[11px] font-bold">
+                                        <span x-text="totalOutOfStock"></span> esgotadas
+                                    </span>
+                                </template>
+                                <template x-if="totalLowStock > 0">
+                                    <span class="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 text-[11px] font-bold">
+                                        <span x-text="totalLowStock"></span> baixo estoque
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Barra de Ferramentas / Preenchimento Rápido -->
+                        <div class="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-500 uppercase tracking-wider text-[10px]">Ações Rápidas:</span>
+                                <button type="button" @click="bulkFillMatrixPrompt()"
+                                    class="px-2.5 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:border-primary text-slate-700 dark:text-slate-200 rounded-lg font-bold transition-all flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-xs">edit_note</span>
+                                    Preencher Todos
+                                </button>
+                                <button type="button" @click="clearAllMatrixStock()"
+                                    class="px-2.5 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:border-red-400 text-red-600 rounded-lg font-bold transition-all flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-xs">delete_sweep</span>
+                                    Zerar Matriz
+                                </button>
+                            </div>
+
+                            <div class="flex items-center gap-3 text-[11px] text-slate-400">
+                                <span class="flex items-center gap-1"><span class="size-2 rounded-full bg-red-500"></span> 0 = Esgotado</span>
+                                <span class="flex items-center gap-1"><span class="size-2 rounded-full bg-amber-500"></span> 1 a 3 = Baixo</span>
+                                <span class="flex items-center gap-1"><span class="size-2 rounded-full bg-emerald-500"></span> 4+ = Disponível</span>
+                            </div>
+                        </div>
+
+                        <!-- Matriz Vazia Alerta -->
+                        <template x-if="selectedSizes.length === 0 || colors.length === 0">
+                            <div class="text-center py-8 px-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+                                <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">warning</span>
+                                <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Selecione pelo menos 1 tamanho e adicione 1 cor acima para gerar a matriz de estoque.</p>
+                            </div>
+                        </template>
+
+                        <!-- Tabela Matriz Interativa -->
+                        <div x-show="selectedSizes.length > 0 && colors.length > 0" class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-100/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                                        <th class="py-3 px-4 font-black uppercase tracking-wider text-[11px] min-w-[200px]">Cor / Colorway</th>
+                                        <template x-for="size in selectedSizes" :key="'col_size_' + size">
+                                            <th class="py-3 px-2 font-black text-center text-slate-900 dark:text-white uppercase tracking-wider min-w-[75px]">
+                                                <div class="flex flex-col items-center">
+                                                    <span class="text-sm" x-text="size"></span>
+                                                    <span class="text-[9px] text-slate-400 font-bold">BR</span>
+                                                </div>
+                                            </th>
+                                        </template>
+                                        <th class="py-3 px-4 font-black text-right uppercase tracking-wider text-[11px] min-w-[90px]">Total Cor</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
+                                    <template x-for="(colorObj, cIndex) in colors" :key="'row_color_' + cIndex">
+                                        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                                            <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">
+                                                <div class="flex items-center gap-2.5">
+                                                    <div class="size-6 rounded-lg border border-slate-300 dark:border-slate-600 shadow-sm shrink-0"
+                                                         :style="`background-color: ${colorObj.hex}`"></div>
+                                                    <div class="truncate max-w-[170px]">
+                                                        <span class="block font-black text-xs truncate" x-text="colorObj.name || ('Cor ' + (cIndex + 1))"></span>
+                                                        <span class="block font-mono text-[9px] uppercase text-slate-400" x-text="colorObj.hex"></span>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <template x-for="size in selectedSizes" :key="'cell_' + cIndex + '_' + size">
+                                                <td class="py-2.5 px-1.5 text-center">
+                                                    <div class="relative inline-block w-full max-w-[70px]">
+                                                        <input type="number" min="0" step="1"
+                                                            :name="`matrix[${cIndex}][${size}]`"
+                                                            :value="getMatrixStock(cIndex, size)"
+                                                            @input="setMatrixStock(cIndex, size, $event.target.value)"
+                                                            class="w-full text-center font-black py-2 px-1 rounded-xl text-xs border transition-all focus:ring-2 focus:ring-primary focus:border-primary"
+                                                            :class="{
+                                                                'bg-red-50/60 dark:bg-red-950/30 border-red-300 dark:border-red-900 text-red-600 dark:text-red-400': isOutOfStock(cIndex, size),
+                                                                'bg-amber-50/60 dark:bg-amber-950/30 border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-400': hasLowStock(cIndex, size),
+                                                                'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white': !isOutOfStock(cIndex, size) && !hasLowStock(cIndex, size)
+                                                            }">
+                                                        <template x-if="isOutOfStock(cIndex, size)">
+                                                            <span class="text-[8px] font-black uppercase text-red-500 block -mt-0.5">Esgotado</span>
+                                                        </template>
+                                                        <template x-if="hasLowStock(cIndex, size)">
+                                                            <span class="text-[8px] font-bold uppercase text-amber-600 block -mt-0.5">Baixo</span>
+                                                        </template>
+                                                    </div>
+                                                </td>
+                                            </template>
+
+                                            <td class="py-3 px-4 font-black text-right text-xs text-slate-900 dark:text-white">
+                                                <span class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 font-mono" x-text="getColorTotalStock(cIndex)"></span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- CARD 4: Galeria de Fotos do Tênis -->
                     <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
                         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
@@ -422,11 +548,14 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
-                                    Estoque Total (Pares) <span class="text-red-500">*</span>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5 flex items-center justify-between">
+                                    <span>Estoque Total (Pares) <span class="text-red-500">*</span></span>
+                                    <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5">
+                                        <span class="material-symbols-outlined text-[11px]">sync</span> matriz ativa
+                                    </span>
                                 </label>
-                                <input type="number" name="stock" value="{{ old('stock', $product->stock) }}" required min="0"
-                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-bold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white">
+                                <input type="number" name="stock" :value="totalMatrixStock" readonly required min="0"
+                                    class="w-full bg-slate-100 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 rounded-2xl font-black py-3 px-4 border-2 text-base text-slate-900 dark:text-white cursor-not-allowed">
                                 @error('stock') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
                             </div>
 
@@ -552,6 +681,21 @@
                         )
                     ) !!},
 
+                    // Variation Inventory Matrix
+                    @php
+                        $initialMatrix = [];
+                        $savedColorsList = $product->colors->values();
+                        foreach ($savedColorsList as $cIdx => $cModel) {
+                            $initialMatrix[$cIdx] = [];
+                            foreach ($product->variants as $var) {
+                                if ($var->product_color_id == $cModel->id || $var->color_name == $cModel->color_name || $var->color_hex == $cModel->hex_code) {
+                                    $initialMatrix[$cIdx][$var->size] = (int) $var->stock;
+                                }
+                            }
+                        }
+                    @endphp
+                    matrixStock: {!! json_encode(old('matrix', $initialMatrix)) !!},
+
                     // Images
                     images: {!! json_encode(
                         $product->images->sortBy('position')->values()->map(function($img) {
@@ -568,6 +712,12 @@
                     toggleSize(size) {
                         const index = this.selectedSizes.indexOf(size);
                         if (index > -1) {
+                            const sizeStock = this.getSizeTotalStock(size);
+                            if (sizeStock > 0) {
+                                if (!confirm(`A numeração "${size}" possui ${sizeStock} pares cadastrados em estoque. Deseja realmente desativar este tamanho?`)) {
+                                    return;
+                                }
+                            }
                             this.selectedSizes.splice(index, 1);
                         } else {
                             this.selectedSizes.push(size);
@@ -621,7 +771,106 @@
                     },
 
                     removeColor(index) {
+                        const colorStock = this.getColorTotalStock(index);
+                        const colorName = this.colors[index]?.name || this.colors[index]?.hex || `Cor ${index + 1}`;
+                        if (colorStock > 0) {
+                            if (!confirm(`A cor "${colorName}" possui ${colorStock} pares cadastrados em estoque na matriz. Deseja realmente remover esta cor?`)) {
+                                return;
+                            }
+                        }
                         this.colors.splice(index, 1);
+                        delete this.matrixStock[index];
+                    },
+
+                    // Matrix Methods
+                    getMatrixStock(cIndex, size) {
+                        if (!this.matrixStock[cIndex]) return 0;
+                        const val = this.matrixStock[cIndex][size];
+                        return (typeof val !== 'undefined' && val !== null) ? val : 0;
+                    },
+
+                    setMatrixStock(cIndex, size, val) {
+                        if (!this.matrixStock[cIndex]) {
+                            this.matrixStock[cIndex] = {};
+                        }
+                        this.matrixStock[cIndex][size] = Math.max(0, parseInt(val) || 0);
+                    },
+
+                    getColorTotalStock(cIndex) {
+                        let sum = 0;
+                        for (const size of this.selectedSizes) {
+                            sum += this.getMatrixStock(cIndex, size);
+                        }
+                        return sum;
+                    },
+
+                    getSizeTotalStock(size) {
+                        let sum = 0;
+                        for (let i = 0; i < this.colors.length; i++) {
+                            sum += this.getMatrixStock(i, size);
+                        }
+                        return sum;
+                    },
+
+                    get totalMatrixStock() {
+                        let total = 0;
+                        for (let i = 0; i < this.colors.length; i++) {
+                            for (const size of this.selectedSizes) {
+                                total += this.getMatrixStock(i, size);
+                            }
+                        }
+                        return total;
+                    },
+
+                    isOutOfStock(cIndex, size) {
+                        return this.getMatrixStock(cIndex, size) === 0;
+                    },
+
+                    hasLowStock(cIndex, size) {
+                        const s = this.getMatrixStock(cIndex, size);
+                        return s > 0 && s <= 3;
+                    },
+
+                    get totalOutOfStock() {
+                        let count = 0;
+                        for (let i = 0; i < this.colors.length; i++) {
+                            for (const size of this.selectedSizes) {
+                                if (this.isOutOfStock(i, size)) count++;
+                            }
+                        }
+                        return count;
+                    },
+
+                    get totalLowStock() {
+                        let count = 0;
+                        for (let i = 0; i < this.colors.length; i++) {
+                            for (const size of this.selectedSizes) {
+                                if (this.hasLowStock(i, size)) count++;
+                            }
+                        }
+                        return count;
+                    },
+
+                    bulkFillMatrixPrompt() {
+                        const val = prompt('Informe a quantidade padrão para todas as variações:', '5');
+                        if (val !== null && !isNaN(parseInt(val))) {
+                            const qty = Math.max(0, parseInt(val));
+                            for (let i = 0; i < this.colors.length; i++) {
+                                for (const size of this.selectedSizes) {
+                                    this.setMatrixStock(i, size, qty);
+                                }
+                            }
+                        }
+                    },
+
+                    clearAllMatrixStock() {
+                        if (confirm('Deseja realmente zerar o estoque de todas as combinações da matriz?')) {
+                            for (let i = 0; i < this.colors.length; i++) {
+                                for (const size of this.selectedSizes) {
+                                    this.setMatrixStock(i, size, 0);
+                                }
+                            }
+                        }
                     },
 
                     init() {

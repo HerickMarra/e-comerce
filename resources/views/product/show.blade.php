@@ -3,9 +3,19 @@
         $availableSizes = $product->availableSizes();
         $hasSizes = !empty($availableSizes);
         $hasColors = $product->colors->count() > 0;
+        $variantsJson = $product->variants->map(function($v) {
+            return [
+                'id' => $v->id,
+                'size' => (string) $v->size,
+                'color_name' => $v->color_name,
+                'color_hex' => $v->color_hex,
+                'stock' => (int) $v->stock,
+            ];
+        })->values();
     @endphp
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 pb-24 sm:pb-10" x-data="{ 
+        variants: {!! json_encode($variantsJson) !!},
         activeImage: '{{ $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? '') }}',
         quantity: 1,
         selectedColor: '',
@@ -17,6 +27,60 @@
         hasColors: {{ $hasColors ? 'true' : 'false' }},
         errorField: '',
         errorMessage: '',
+
+        getVariant(size, colorName) {
+            if (!size) return null;
+            return this.variants.find(v => {
+                const matchSize = String(v.size) === String(size);
+                if (!colorName && !this.selectedColor) return matchSize;
+                const matchColor = (v.color_name && v.color_name === colorName) || (v.color_hex && v.color_hex === this.selectedColor);
+                return matchSize && matchColor;
+            });
+        },
+
+        getVariantStock(size, colorName) {
+            const v = this.getVariant(size, colorName);
+            return v ? v.stock : 0;
+        },
+
+        isSizeInStockForColor(size) {
+            if (!this.selectedName && !this.selectedColor) {
+                return this.variants.some(v => String(v.size) === String(size) && v.stock > 0);
+            }
+            return this.getVariantStock(size, this.selectedName) > 0;
+        },
+
+        isColorInStockForSize(colorName, colorHex) {
+            if (!this.selectedSize) {
+                return this.variants.some(v => (v.color_name === colorName || v.color_hex === colorHex) && v.stock > 0);
+            }
+            const v = this.variants.find(v => String(v.size) === String(this.selectedSize) && (v.color_name === colorName || v.color_hex === colorHex));
+            return v ? v.stock > 0 : false;
+        },
+
+        get currentVariant() {
+            if (!this.selectedSize) return null;
+            if (this.hasColors && !this.selectedName && !this.selectedColor) return null;
+            return this.getVariant(this.selectedSize, this.selectedName);
+        },
+
+        get currentStock() {
+            if (this.currentVariant) {
+                return this.currentVariant.stock;
+            }
+            if (this.selectedSize && (!this.hasColors || this.selectedName)) {
+                return 0;
+            }
+            return {{ $product->stock }};
+        },
+
+        get isCombinationOutOfStock() {
+            if (this.selectedSize && (!this.hasColors || this.selectedName || this.selectedColor)) {
+                return this.currentStock <= 0;
+            }
+            return false;
+        },
+
         validatePurchase(event) {
             this.errorField = '';
             this.errorMessage = '';
@@ -44,6 +108,12 @@
                         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 });
+                return false;
+            }
+
+            if (this.isCombinationOutOfStock) {
+                if (event) event.preventDefault();
+                this.errorMessage = `Desculpe, a numeração ${this.selectedSize} ${this.selectedName ? 'na cor ' + this.selectedName : ''} está esgotada!`;
                 return false;
             }
 
@@ -281,13 +351,17 @@
                                 @foreach($availableSizes as $sizeOption)
                                     <button type="button"
                                         @click="selectedSize = '{{ $sizeOption }}'; if(errorField === 'size') { errorField = ''; errorMessage = ''; }"
-                                        :class="selectedSize === '{{ $sizeOption }}' 
-                                            ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-md ring-2 ring-primary/30 scale-105' 
-                                            : (errorField === 'size' 
-                                                ? 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-red-300 dark:border-red-800 hover:border-red-500' 
-                                                : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-slate-400')"
-                                        class="py-3 px-2 rounded-2xl border-2 font-black text-sm transition-all flex items-center justify-center">
-                                        {{ $sizeOption }}
+                                        :class="{
+                                            'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-md ring-2 ring-primary/30 scale-105': selectedSize === '{{ $sizeOption }}',
+                                            'opacity-50 bg-slate-50 dark:bg-slate-800 text-slate-400 border-dashed border-slate-300 dark:border-slate-700': !isSizeInStockForColor('{{ $sizeOption }}') && selectedSize !== '{{ $sizeOption }}',
+                                            'border-red-300 dark:border-red-800 hover:border-red-500': errorField === 'size' && selectedSize !== '{{ $sizeOption }}',
+                                            'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-slate-400': isSizeInStockForColor('{{ $sizeOption }}') && selectedSize !== '{{ $sizeOption }}'
+                                        }"
+                                        class="py-3 px-2 rounded-2xl border-2 font-black text-sm transition-all flex flex-col items-center justify-center relative">
+                                        <span>{{ $sizeOption }}</span>
+                                        <template x-if="!isSizeInStockForColor('{{ $sizeOption }}')">
+                                            <span class="text-[8px] font-bold text-red-500 uppercase tracking-tighter -mt-0.5">Esgotado</span>
+                                        </template>
                                     </button>
                                 @endforeach
                             </div>
@@ -321,12 +395,20 @@
                                     <button
                                         type="button"
                                         @click="selectedColor = '{{ $color->hex_code }}'; selectedName = '{{ $color->color_name }}'; if(errorField === 'color') { errorField = ''; errorMessage = ''; }"
-                                        :class="selectedColor === '{{ $color->hex_code }}' 
-                                            ? 'ring-2 ring-primary ring-offset-2 scale-110 border-slate-900' 
-                                            : (errorField === 'color' ? 'border-red-400 hover:scale-105' : 'border-slate-200 dark:border-slate-700 hover:scale-105')"
-                                        class="size-9 rounded-2xl border-2 transition-all shadow-sm"
+                                        :class="{
+                                            'ring-2 ring-primary ring-offset-2 scale-110 border-slate-900': selectedColor === '{{ $color->hex_code }}',
+                                            'opacity-40 border-dashed': !isColorInStockForSize('{{ $color->color_name }}', '{{ $color->hex_code }}') && selectedColor !== '{{ $color->hex_code }}',
+                                            'border-red-400 hover:scale-105': errorField === 'color' && selectedColor !== '{{ $color->hex_code }}',
+                                            'border-slate-200 dark:border-slate-700 hover:scale-105': isColorInStockForSize('{{ $color->color_name }}', '{{ $color->hex_code }}') && selectedColor !== '{{ $color->hex_code }}'
+                                        }"
+                                        class="size-9 rounded-2xl border-2 transition-all shadow-sm relative"
                                         style="background-color: {{ $color->hex_code }}"
                                         title="{{ $color->color_name ?? $color->hex_code }}">
+                                        <template x-if="!isColorInStockForSize('{{ $color->color_name }}', '{{ $color->hex_code }}')">
+                                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                                <div class="w-full h-0.5 bg-red-500 -rotate-45"></div>
+                                            </div>
+                                        </template>
                                     </button>
                                 @endforeach
                             </div>
@@ -415,6 +497,29 @@
                         </div>
                     </div>
 
+                    {{-- Status de Disponibilidade em Tempo Real --}}
+                    <template x-if="selectedSize && (!hasColors || selectedName || selectedColor)">
+                        <div>
+                            <template x-if="!isCombinationOutOfStock">
+                                <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center justify-between shadow-sm">
+                                    <span class="flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-sm text-emerald-600">check_circle</span>
+                                        <span>Tamanho <strong x-text="selectedSize"></strong><span x-show="selectedName" x-text="' • ' + selectedName"></span>: Em estoque</span>
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-[10px] font-black">
+                                        <span x-text="currentStock"></span> pares disponíveis
+                                    </span>
+                                </div>
+                            </template>
+                            <template x-if="isCombinationOutOfStock">
+                                <div class="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 rounded-xl text-xs font-bold text-red-700 dark:text-red-300 flex items-center gap-2 shadow-sm">
+                                    <span class="material-symbols-outlined text-base text-red-500 shrink-0">block</span>
+                                    <span>Tamanho <strong x-text="selectedSize"></strong><span x-show="selectedName" x-text="' na cor ' + selectedName"></span> está <strong>Esgotado</strong> no momento.</span>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
                     {{-- Botão de Compra Direta e Quantidade --}}
                     <form action="{{ route('cart.add', $product) }}" method="POST"
                         @submit="if(!validatePurchase($event)) return false;" class="space-y-4">
@@ -423,6 +528,7 @@
                         <input type="hidden" name="color" :value="selectedColor">
                         <input type="hidden" name="color_name" :value="selectedName">
                         <input type="hidden" name="size" :value="selectedSize">
+                        <input type="hidden" name="product_variant_id" :value="currentVariant ? currentVariant.id : ''">
 
                         {{-- Mensagem de Alerta Visual ao Tentar Comprar Sem Selecionar --}}
                         <div x-show="errorMessage" x-cloak x-transition
@@ -432,10 +538,13 @@
                         </div>
 
                         <button type="submit"
-                            {{ $product->stock <= 0 ? 'disabled' : '' }}
-                            class="w-full {{ $product->stock <= 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-primary hover:opacity-95 shadow-lg shadow-primary/30 active:scale-[0.99]' }} text-white font-black py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-3 text-base uppercase tracking-wider">
-                            <span class="material-symbols-outlined text-2xl">{{ $product->stock <= 0 ? 'block' : 'shopping_bag' }}</span>
-                            {{ $product->stock <= 0 ? 'Tênis Esgotado' : 'Comprar Agora' }}
+                            :disabled="isCombinationOutOfStock || {{ $product->stock <= 0 ? 'true' : 'false' }}"
+                            :class="(isCombinationOutOfStock || {{ $product->stock <= 0 ? 'true' : 'false' }}) 
+                                ? 'bg-slate-300 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed shadow-none' 
+                                : 'bg-primary hover:opacity-95 text-white shadow-lg shadow-primary/30 active:scale-[0.99]'"
+                            class="w-full font-black py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-3 text-base uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-2xl" x-text="(isCombinationOutOfStock || {{ $product->stock <= 0 ? 'true' : 'false' }}) ? 'block' : 'shopping_bag'"></span>
+                            <span x-text="isCombinationOutOfStock ? 'Variação Esgotada' : ({{ $product->stock <= 0 ? 'true' : 'false' }} ? 'Tênis Esgotado' : 'Comprar Agora')"></span>
                         </button>
                     </form>
 

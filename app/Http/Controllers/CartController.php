@@ -15,12 +15,25 @@ class CartController extends Controller
 
         foreach ($cart as $id => &$item) {
             $product = Product::with('colors')->find($item['product_id']);
-            if (!$product || $product->stock <= 0) {
+
+            $variant = null;
+            if (!empty($item['product_variant_id'])) {
+                $variant = \App\Models\ProductVariant::find($item['product_variant_id']);
+            } elseif ($product && !empty($item['size'])) {
+                $variant = $product->findVariant($item['size'], $item['color_name'] ?? null, $item['color'] ?? null);
+            }
+
+            $availableStock = $variant ? (int) $variant->stock : ($product ? (int) $product->stock : 0);
+            $item['available_stock'] = $availableStock;
+            if ($variant) {
+                $item['product_variant_id'] = $variant->id;
+            }
+
+            if (!$product || $availableStock <= 0) {
                 $item['out_of_stock'] = true;
                 $hasStockIssues = true;
-            } elseif ($product->stock < $item['quantity']) {
+            } elseif ($availableStock < $item['quantity']) {
                 $item['insufficient_stock'] = true;
-                $item['available_stock'] = $product->stock;
                 $hasStockIssues = true;
             } else {
                 $item['out_of_stock'] = false;
@@ -58,6 +71,7 @@ class CartController extends Controller
             'color' => 'nullable|string',
             'color_name' => 'nullable|string',
             'size' => 'nullable|string',
+            'product_variant_id' => 'nullable|integer',
         ]);
 
         $availableSizes = $product->availableSizes();
@@ -65,41 +79,53 @@ class CartController extends Controller
             return back()->withErrors(['message' => 'Por favor, selecione um tamanho de tênis antes de comprar.'])->withInput();
         }
 
-        if ($product->colors()->exists() && empty($request->color)) {
+        if ($product->colors()->exists() && empty($request->color) && empty($request->color_name)) {
             return back()->withErrors(['message' => 'Por favor, selecione a cor do tênis antes de comprar.'])->withInput();
         }
 
-        if ($product->stock <= 0) {
-            return back()->withErrors(['message' => 'Desculpe, este produto acabou de esgotar.']);
+        // Find exact variant
+        $variant = null;
+        if ($request->filled('product_variant_id')) {
+            $variant = \App\Models\ProductVariant::where('product_id', $product->id)->find($request->product_variant_id);
+        }
+        if (!$variant && $request->filled('size')) {
+            $variant = $product->findVariant($request->size, $request->color_name, $request->color);
+        }
+
+        $availableStock = $variant ? (int) $variant->stock : (int) $product->stock;
+
+        if ($availableStock <= 0) {
+            $spec = $request->size ? "o tamanho {$request->size}" : 'este produto';
+            if ($request->color_name) $spec .= " na cor {$request->color_name}";
+            return back()->withErrors(['message' => "Desculpe, {$spec} acabou de esgotar."]);
         }
 
         $cart = session()->get('cart', []);
         $id = $product->id 
+            . ($variant ? '_var' . $variant->id : '')
             . ($request->color ? '_' . str_replace('#', '', $request->color) : '')
             . ($request->size ? '_tam' . preg_replace('/[^a-zA-Z0-9]/', '', $request->size) : '');
 
         $currentQty = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
-        $newQty = $currentQty + $request->quantity;
+        $newQty = $currentQty + (int) $request->quantity;
 
-        if ($newQty > $product->stock) {
-            return back()->withErrors(['message' => "Desculpe, só temos {$product->stock} unidades em estoque."]);
+        if ($newQty > $availableStock) {
+            return back()->withErrors(['message' => "Desculpe, só temos {$availableStock} unidades disponíveis desta combinação em estoque."]);
         }
 
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity'] = $newQty;
-        } else {
-            $cart[$id] = [
-                'id' => $id,
-                'product_id' => $product->id,
-                'name' => $product->name,
-                'quantity' => $request->quantity,
-                'price' => $product->price,
-                'color' => $request->color,
-                'color_name' => $request->color_name,
-                'size' => $request->size,
-                'image' => $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? ''),
-            ];
-        }
+        $cart[$id] = [
+            'id' => $id,
+            'product_id' => $product->id,
+            'product_variant_id' => $variant?->id,
+            'name' => $product->name,
+            'quantity' => $newQty,
+            'price' => (float) $product->price,
+            'color' => $request->color,
+            'color_name' => $request->color_name,
+            'size' => $request->size,
+            'available_stock' => $availableStock,
+            'image' => $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? ''),
+        ];
 
         session()->put('cart', $cart);
 
@@ -113,10 +139,19 @@ class CartController extends Controller
         if (isset($cart[$id])) {
             $product = Product::find($cart[$id]['product_id'] ?? null);
 
+            $variant = null;
+            if (!empty($cart[$id]['product_variant_id'])) {
+                $variant = \App\Models\ProductVariant::find($cart[$id]['product_variant_id']);
+            } elseif ($product && !empty($cart[$id]['size'])) {
+                $variant = $product->findVariant($cart[$id]['size'], $cart[$id]['color_name'] ?? null, $cart[$id]['color'] ?? null);
+            }
+
+            $availableStock = $variant ? (int) $variant->stock : ($product ? (int) $product->stock : 0);
+
             if ($request->has('quantity')) {
                 $requestedQty = max(1, (int) $request->quantity);
-                if ($product && $product->stock > 0) {
-                    $requestedQty = min($product->stock, $requestedQty);
+                if ($availableStock > 0) {
+                    $requestedQty = min($availableStock, $requestedQty);
                 }
                 $cart[$id]['quantity'] = $requestedQty;
             }
@@ -126,18 +161,23 @@ class CartController extends Controller
                 $newColor = $request->color;
                 $newColorName = $request->color_name;
 
-                // If color changed, compute new ID preserving size if present
+                $newVariant = $product ? $product->findVariant($item['size'] ?? '', $newColorName, $newColor) : null;
+                $newStock = $newVariant ? (int) $newVariant->stock : ($product ? (int) $product->stock : 0);
+
                 $sizePart = !empty($item['size']) ? '_tam' . preg_replace('/[^a-zA-Z0-9]/', '', $item['size']) : '';
-                $newId = $item['product_id'] . ($newColor ? '_' . str_replace('#', '', $newColor) : '') . $sizePart;
+                $newId = $item['product_id'] . ($newVariant ? '_var' . $newVariant->id : '') . ($newColor ? '_' . str_replace('#', '', $newColor) : '') . $sizePart;
 
                 if ($newId !== $id) {
                     unset($cart[$id]);
                     if (isset($cart[$newId])) {
-                        $cart[$newId]['quantity'] += $item['quantity'];
+                        $cart[$newId]['quantity'] = min($newStock, $cart[$newId]['quantity'] + $item['quantity']);
                     } else {
                         $item['id'] = $newId;
+                        $item['product_variant_id'] = $newVariant?->id;
                         $item['color'] = $newColor;
                         $item['color_name'] = $newColorName;
+                        $item['available_stock'] = $newStock;
+                        $item['quantity'] = min($newStock, $item['quantity']);
                         $cart[$newId] = $item;
                     }
                 } else {
@@ -179,12 +219,25 @@ class CartController extends Controller
 
         foreach ($cart as $id => &$item) {
             $product = Product::with('colors')->find($item['product_id']);
-            if (!$product || $product->stock <= 0) {
+
+            $variant = null;
+            if (!empty($item['product_variant_id'])) {
+                $variant = \App\Models\ProductVariant::find($item['product_variant_id']);
+            } elseif ($product && !empty($item['size'])) {
+                $variant = $product->findVariant($item['size'], $item['color_name'] ?? null, $item['color'] ?? null);
+            }
+
+            $availableStock = $variant ? (int) $variant->stock : ($product ? (int) $product->stock : 0);
+            $item['available_stock'] = $availableStock;
+            if ($variant) {
+                $item['product_variant_id'] = $variant->id;
+            }
+
+            if (!$product || $availableStock <= 0) {
                 $item['out_of_stock'] = true;
                 $hasStockIssues = true;
-            } elseif ($product->stock < $item['quantity']) {
+            } elseif ($availableStock < $item['quantity']) {
                 $item['insufficient_stock'] = true;
-                $item['available_stock'] = $product->stock;
                 $hasStockIssues = true;
             } else {
                 $item['out_of_stock'] = false;

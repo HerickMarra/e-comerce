@@ -137,15 +137,50 @@ class CheckoutController extends Controller
         DB::beginTransaction();
 
         try {
-            // Stock Validation
+            // Stock Validation with Pessimistic Locking to Prevent Race Conditions
+            $orderItemsToCreate = [];
+
             foreach ($cart as $id => $item) {
                 $product = \App\Models\Product::find($item['product_id']);
-                if (!$product || $product->stock < $item['quantity']) {
-                    throw new \Exception("Desculpe, o estoque do produto '{$item['name']}' mudou e não está mais disponível na quantidade desejada.");
+                if (!$product) {
+                    throw new \Exception("Desculpe, o produto '{$item['name']}' não foi encontrado.");
                 }
 
-                // Decrement stock
-                $product->decrement('stock', $item['quantity']);
+                $variant = null;
+                if (!empty($item['product_variant_id'])) {
+                    $variant = \App\Models\ProductVariant::where('id', $item['product_variant_id'])->lockForUpdate()->first();
+                } elseif (!empty($item['size'])) {
+                    $variant = \App\Models\ProductVariant::where('product_id', $product->id)
+                        ->where('size', (string) $item['size'])
+                        ->where(function ($q) use ($item) {
+                            if (!empty($item['color_name'])) {
+                                $q->where('color_name', $item['color_name']);
+                            }
+                            if (!empty($item['color'])) {
+                                $q->orWhere('color_hex', $item['color']);
+                            }
+                        })
+                        ->lockForUpdate()
+                        ->first();
+                }
+
+                if ($variant) {
+                    if ($variant->stock < $item['quantity']) {
+                        $spec = "tamanho {$item['size']}" . (!empty($item['color_name']) ? " na cor {$item['color_name']}" : '');
+                        throw new \Exception("Desculpe, o estoque para o {$spec} de '{$item['name']}' mudou e restam apenas {$variant->stock} unidades disponíveis.");
+                    }
+                } else {
+                    $lockedProduct = \App\Models\Product::where('id', $product->id)->lockForUpdate()->first();
+                    if ($lockedProduct->stock < $item['quantity']) {
+                        throw new \Exception("Desculpe, o estoque do produto '{$item['name']}' mudou e restam apenas {$lockedProduct->stock} unidades disponíveis.");
+                    }
+                }
+
+                $orderItemsToCreate[] = [
+                    'product' => $product,
+                    'variant' => $variant,
+                    'item' => $item,
+                ];
             }
 
             // Automatic Address Saving
@@ -193,13 +228,30 @@ class CheckoutController extends Controller
                 'shipping_descricao_conteudo' => 'Calçados / Tênis', // Sneaker store description
             ]);
 
-            foreach ($cart as $id => $item) {
+            foreach ($orderItemsToCreate as $entry) {
+                $product = $entry['product'];
+                $variant = $entry['variant'];
+                $item = $entry['item'];
+
+                if ($variant) {
+                    $variant->recordMovement(
+                        'sale',
+                        -(int) $item['quantity'],
+                        "Saída por venda no pedido #{$order->order_number}",
+                        $order->id,
+                        Auth::id()
+                    );
+                } else {
+                    $product->decrement('stock', $item['quantity']);
+                }
+
                 $order->items()->create([
                     'product_id' => $item['product_id'],
+                    'product_variant_id' => $variant?->id,
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
-                    'color' => $item['color'],
-                    'color_name' => $item['color_name'],
+                    'color' => $item['color'] ?? null,
+                    'color_name' => $item['color_name'] ?? null,
                     'size' => $item['size'] ?? null,
                 ]);
             }
