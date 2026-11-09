@@ -1,7 +1,7 @@
 <x-admin-layout>
     @section('page_title', 'Editar Tênis: ' . $product->name)
 
-    <div class="max-w-6xl mx-auto space-y-8" x-data="sneakerEditForm()" @submit.prevent="validateAndSubmit()">
+    <div class="max-w-6xl mx-auto space-y-8" x-data="sneakerEditForm()">
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+        <form id="sneakerFormTag" x-ref="sneakerFormRef" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-8" @submit.prevent="validateAndSubmit($event)">
             @csrf
             @method('PUT')
 
@@ -952,8 +952,13 @@
                         this.images.splice(index, 1);
                     },
 
-                    validateAndSubmit() {
-                        const form = this.$el;
+                    validateAndSubmit(event) {
+                        const form = (event && event.target && event.target.tagName === 'FORM')
+                            ? event.target
+                            : (this.$refs.sneakerFormRef || this.$el.querySelector('form') || document.getElementById('sneakerFormTag'));
+
+                        if (!form) return;
+
                         const formData = new FormData(form);
 
                         let errors = [];

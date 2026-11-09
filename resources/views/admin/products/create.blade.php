@@ -1,7 +1,7 @@
 <x-admin-layout>
     @section('page_title', 'Cadastrar Novo Tênis')
 
-    <div class="max-w-6xl mx-auto space-y-8" x-data="sneakerForm()" @submit.prevent="validateAndSubmit()">
+    <div class="max-w-6xl mx-auto space-y-8" x-data="sneakerForm()">
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+        <form id="sneakerFormTag" x-ref="sneakerFormRef" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" @submit.prevent="validateAndSubmit($event)">
             @csrf
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -902,8 +902,13 @@
                         this.images.splice(index, 1);
                     },
 
-                    validateAndSubmit() {
-                        const form = this.$el;
+                    validateAndSubmit(event) {
+                        const form = (event && event.target && event.target.tagName === 'FORM')
+                            ? event.target
+                            : (this.$refs.sneakerFormRef || this.$el.querySelector('form') || document.getElementById('sneakerFormTag'));
+
+                        if (!form) return;
+
                         const formData = new FormData(form);
 
                         let errors = [];

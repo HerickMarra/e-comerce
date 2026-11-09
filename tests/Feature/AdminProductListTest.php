@@ -106,3 +106,4 @@ class AdminProductListTest extends TestCase
         $resIndex->assertSee('Alerta Estoque');
     }
 }
+
