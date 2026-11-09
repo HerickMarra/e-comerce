@@ -44,6 +44,14 @@ class SeoController extends Controller
         $xml .= "    <priority>0.8</priority>\n";
         $xml .= "  </url>\n";
 
+        // 2b. Explore Page (Feed contínuo)
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>" . htmlspecialchars(route('explore')) . "</loc>\n";
+        $xml .= "    <lastmod>{$latestProductDate}</lastmod>\n";
+        $xml .= "    <changefreq>daily</changefreq>\n";
+        $xml .= "    <priority>0.9</priority>\n";
+        $xml .= "  </url>\n";
+
         // 3. Institutional: Nossa História
         $xml .= "  <url>\n";
         $xml .= "    <loc>" . htmlspecialchars(route('home.family')) . "</loc>\n";

@@ -208,6 +208,40 @@ class SeoService
     }
 
     /**
+     * Build SEO metadata for Explore page.
+     */
+    public static function forExplore(): array
+    {
+        $storeName = Setting::get('store_name', config('app.name', 'Denner Tênis'));
+        $title = "Explorar Tênis | Descubra seu Próximo Tênis Favorito | {$storeName}";
+        $description = "Descubra todos os modelos de tênis masculinos e femininos em um feed dinâmico de exploração contínua. Encontre novidades, lançamentos e ofertas exclusivas na {$storeName}.";
+
+        return self::build([
+            'title' => $title,
+            'meta_title' => $title,
+            'description' => $description,
+            'canonical' => route('explore'),
+            'og_title' => $title,
+            'og_description' => $description,
+            'schema' => [
+                self::organizationSchema(),
+                self::websiteSchema(),
+                self::breadcrumbSchema([
+                    ['name' => 'Início', 'url' => url('/')],
+                    ['name' => 'Explorar', 'url' => route('explore')],
+                ]),
+                [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'CollectionPage',
+                    'name' => "Explorar Tênis - {$storeName}",
+                    'description' => $description,
+                    'url' => route('explore'),
+                ],
+            ],
+        ]);
+    }
+
+    /**
      * Build SEO metadata for Institutional pages (e.g. Nossa História).
      */
     public static function forInstitutional(string $pageTitle, string $description, string $url): array

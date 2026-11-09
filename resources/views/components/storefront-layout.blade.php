@@ -123,6 +123,11 @@
 
                 <!-- Navigation -->
                 <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+                    <a class="text-sm font-semibold hover:text-primary transition-colors flex items-center gap-1.5 {{ request()->routeIs('explore') ? 'text-primary font-bold' : '' }}"
+                        href="{{ route('explore') }}">
+                        <span class="material-symbols-outlined text-base">explore</span>
+                        Explorar
+                    </a>
                     @foreach(collect($navCategories ?? [])->take(3) as $navCat)
                         <a class="text-sm font-semibold hover:text-primary transition-colors"
                             href="{{ route('search', ['categories' => [$navCat->id]]) }}">{{ $navCat->name }}</a>
@@ -238,11 +243,18 @@
                     <nav class="space-y-1">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Navegação</p>
                         <a href="/"
-                            class="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all group"
+                            class="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all group {{ request()->is('/') ? 'bg-primary/10 text-primary font-bold' : '' }}"
                             @click="mobileMenuOpen = false">
                             <span
-                                class="material-symbols-outlined text-xl text-slate-400 group-hover:text-primary">home</span>
+                                class="material-symbols-outlined text-xl text-slate-400 group-hover:text-primary {{ request()->is('/') ? 'text-primary' : '' }}">home</span>
                             Início
+                        </a>
+                        <a href="{{ route('explore') }}"
+                            class="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all group {{ request()->routeIs('explore') ? 'bg-primary/10 text-primary font-bold' : '' }}"
+                            @click="mobileMenuOpen = false">
+                            <span
+                                class="material-symbols-outlined text-xl text-slate-400 group-hover:text-primary {{ request()->routeIs('explore') ? 'text-primary' : '' }}">explore</span>
+                            Explorar
                         </a>
                         <a href="{{ route('categories.index') }}"
                             class="flex items-center gap-3 px-4 py-3 text-slate-700 dark:text-slate-200 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-all group"
@@ -434,6 +446,7 @@
                         </h5>
                         <ul class="space-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
                             <li><a class="hover:text-primary transition-colors" href="/">Página Inicial</a></li>
+                            <li><a class="hover:text-primary transition-colors {{ request()->routeIs('explore') ? 'text-primary font-bold' : '' }}" href="{{ route('explore') }}">Explorar</a></li>
                             <li><a class="hover:text-primary transition-colors" href="{{ route('categories.index') }}">Categorias</a></li>
                             <li><a class="hover:text-primary transition-colors" href="{{ route('search') }}">Todos os Tênis</a></li>
                             <li><a class="hover:text-primary transition-colors" href="{{ route('customer.orders') }}">Meus Pedidos</a></li>
