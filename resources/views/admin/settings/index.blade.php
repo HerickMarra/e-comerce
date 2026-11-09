@@ -1,7 +1,7 @@
 <x-admin-layout>
     @section('page_title', 'Configurações do Sistema')
 
-    <div class="max-w-4xl space-y-8" x-data="{
+    <div class="max-w-6xl mx-auto space-y-8" x-data="{
         activeTab: 'site_info',
         primaryColor: '{{ $settings['primary_color'] }}',
         logoPreview: '{{ $settings['store_logo'] ? asset('storage/' . $settings['store_logo']) : '' }}',
@@ -15,6 +15,10 @@
         storeCity: '{{ $settings['store_city'] ?? '' }}',
         storeState: '{{ $settings['store_state'] ?? '' }}',
         loadingCep: false,
+        submitSettingsForm() {
+            const form = document.getElementById('settingsMainForm');
+            if (form) form.submit();
+        },
         searchCep() {
             let zip = (this.storeZip || '').replace(/\D/g, '');
             if (zip.length !== 8) return;
@@ -38,55 +42,107 @@
                 .finally(() => this.loadingCep = false);
         }
     }">
+        {{-- Header Superior Moderno --}}
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center gap-3.5">
+                <div class="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold shadow-sm shadow-primary/10">
+                    <span class="material-symbols-outlined text-2xl">settings</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-black uppercase tracking-wider">
+                            Painel Administrativo
+                        </span>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] font-black uppercase tracking-wider border border-emerald-200/50 dark:border-emerald-800/40">
+                            <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Online
+                        </span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">Configurações do Sistema</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Gerencie canais de atendimento, identidade visual, gateways de pagamento, frete e integrações.</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5 self-start sm:self-auto">
+                <button type="button" @click="submitSettingsForm()"
+                    class="px-5 sm:px-6 py-2.5 sm:py-3 bg-primary hover:bg-primary/95 text-white font-black text-xs sm:text-sm rounded-xl sm:rounded-2xl shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all flex items-center gap-2 cursor-pointer active:scale-95">
+                    <span class="material-symbols-outlined text-base sm:text-lg">save</span>
+                    <span>Salvar Alterações</span>
+                </button>
+            </div>
+        </div>
+
         @if(session('success'))
-            <div class="p-4 bg-primary/10 border border-primary/20 text-primary rounded-xl flex items-center gap-3">
-                <span class="material-symbols-outlined">check_circle</span>
+            <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 shadow-xs">
+                <span class="material-symbols-outlined text-emerald-600">check_circle</span>
                 <span class="text-sm font-bold">{{ session('success') }}</span>
             </div>
         @endif
 
-        {{-- Tab Navigation --}}
-        <div
-            class="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1 md:gap-2">
+        {{-- Barra de Navegação por Abas (Segmented Control Elegante) --}}
+        <div class="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-1.5 sm:p-2 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1.5">
             <button type="button" @click="activeTab = 'site_info'"
-                class="w-full flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
-                :class="activeTab === 'site_info' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'">
-                <span class="material-symbols-outlined text-[1.2rem] md:text-lg">public</span>
-                <span>Informações do Site</span>
+                class="w-full flex flex-col items-center justify-center gap-1 px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-bold transition-all text-center cursor-pointer"
+                :class="activeTab === 'site_info' ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20 dark:bg-primary dark:text-white' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-lg" :class="activeTab === 'site_info' ? 'text-primary dark:text-white' : 'text-slate-400'">public</span>
+                    <span class="text-xs font-bold">Informações</span>
+                </div>
+                <span class="text-[9px] uppercase tracking-wider font-semibold opacity-70">Empresa & Redes</span>
             </button>
+
             <button type="button" @click="activeTab = 'branding'"
-                class="w-full flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
-                :class="activeTab === 'branding' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'">
-                <span class="material-symbols-outlined text-[1.2rem] md:text-lg">palette</span>
-                <span>Identidade Visual</span>
+                class="w-full flex flex-col items-center justify-center gap-1 px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-bold transition-all text-center cursor-pointer"
+                :class="activeTab === 'branding' ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20 dark:bg-primary dark:text-white' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-lg" :class="activeTab === 'branding' ? 'text-purple-400 dark:text-white' : 'text-slate-400'">palette</span>
+                    <span class="text-xs font-bold">Identidade Visual</span>
+                </div>
+                <span class="text-[9px] uppercase tracking-wider font-semibold opacity-70">Logo & Cores</span>
             </button>
+
             <button type="button" @click="activeTab = 'payment'"
-                class="w-full flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
-                :class="activeTab === 'payment' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'">
-                <span class="material-symbols-outlined text-[1.2rem] md:text-lg">payments</span>
-                <span>Gateway de Pagamento</span>
+                class="w-full flex flex-col items-center justify-center gap-1 px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-bold transition-all text-center cursor-pointer"
+                :class="activeTab === 'payment' ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20 dark:bg-primary dark:text-white' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-lg" :class="activeTab === 'payment' ? 'text-emerald-400 dark:text-white' : 'text-slate-400'">payments</span>
+                    <span class="text-xs font-bold">Pagamento</span>
+                </div>
+                <span class="text-[9px] uppercase tracking-wider font-semibold opacity-70">Asaas PIX/Cartão</span>
             </button>
+
             <button type="button" @click="activeTab = 'shipping'"
-                class="w-full flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
-                :class="activeTab === 'shipping' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'">
-                <span class="material-symbols-outlined text-[1.2rem] md:text-lg">local_shipping</span>
-                <span>Frete (Melhor Envio)</span>
+                class="w-full flex flex-col items-center justify-center gap-1 px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-bold transition-all text-center cursor-pointer"
+                :class="activeTab === 'shipping' ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20 dark:bg-primary dark:text-white' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-lg" :class="activeTab === 'shipping' ? 'text-sky-400 dark:text-white' : 'text-slate-400'">local_shipping</span>
+                    <span class="text-xs font-bold">Frete</span>
+                </div>
+                <span class="text-[9px] uppercase tracking-wider font-semibold opacity-70">Melhor Envio</span>
             </button>
+
             <button type="button" @click="activeTab = 'store'"
-                class="w-full flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
-                :class="activeTab === 'store' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'">
-                <span class="material-symbols-outlined text-[1.2rem] md:text-lg">storefront</span>
-                <span>Loja Física</span>
+                class="w-full flex flex-col items-center justify-center gap-1 px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-bold transition-all text-center cursor-pointer"
+                :class="activeTab === 'store' ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20 dark:bg-primary dark:text-white' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-lg" :class="activeTab === 'store' ? 'text-amber-400 dark:text-white' : 'text-slate-400'">storefront</span>
+                    <span class="text-xs font-bold">Loja Física</span>
+                </div>
+                <span class="text-[9px] uppercase tracking-wider font-semibold opacity-70">Retirada em Mãos</span>
             </button>
+
             <button type="button" @click="activeTab = 'email'"
-                class="w-full flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
-                :class="activeTab === 'email' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'">
-                <span class="material-symbols-outlined text-[1.2rem] md:text-lg">mail</span>
-                <span>E-mail (SMTP)</span>
+                class="w-full flex flex-col items-center justify-center gap-1 px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs font-bold transition-all text-center cursor-pointer"
+                :class="activeTab === 'email' ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20 dark:bg-primary dark:text-white' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-lg" :class="activeTab === 'email' ? 'text-indigo-400 dark:text-white' : 'text-slate-400'">mail</span>
+                    <span class="text-xs font-bold">E-mail</span>
+                </div>
+                <span class="text-[9px] uppercase tracking-wider font-semibold opacity-70">Servidor SMTP</span>
             </button>
         </div>
 
-        <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data"
+        <form id="settingsMainForm" action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data"
             class="space-y-8">
             @csrf
             @method('PUT')
@@ -451,7 +507,7 @@
                             <img x-show="logoPreview" :src="logoPreview" class="object-contain p-1"
                                 :style="'height: ' + logoSize + '%'">
                             <span x-show="!logoPreview"
-                                class="material-symbols-outlined text-white text-2xl">chair</span>
+                                class="material-symbols-outlined text-white text-2xl">steps</span>
                         </div>
                         <div>
                             <h3 class="text-2xl font-bold tracking-tight" x-text="previewName || 'Nome da Loja'"></h3>
@@ -574,7 +630,7 @@
                                     </div>
                                     <div class="flex-1">
                                         <div class="grid grid-cols-4 gap-2">
-                                            @foreach(['chair', 'home', 'shopping_bag', 'eco', 'diamond', 'bolt', 'auto_awesome', 'weekend'] as $icon)
+                                            @foreach(['steps', 'shopping_bag', 'bolt', 'sprint', 'sports_score', 'verified', 'local_fire_department', 'diamond'] as $icon)
                                                 <button type="button" @click="storeIcon = '{{ $icon }}'"
                                                     class="size-10 rounded-xl border-2 flex items-center justify-center transition-all"
                                                     :class="storeIcon === '{{ $icon }}' ? 'border-sidebar-dark bg-slate-50 scale-110 shadow-sm' : 'border-slate-100 hover:border-slate-300'">
@@ -1557,7 +1613,7 @@
                                     do Remetente (From Name)</label>
                                 <input type="text" name="mail_from_name" value="{{ $settings['mail_from_name'] ?? '' }}"
                                     class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
-                                    placeholder="Ex: Loja Santo Lar">
+                                    placeholder="Ex: Denner Tênis">
                             </div>
 
                         </div>
@@ -1565,13 +1621,19 @@
                 </div>
             </div>
 
-            {{-- Save Button --}}
-            <div class="flex justify-end">
-                <button type="submit"
-                    class="w-full sm:w-auto justify-center bg-primary text-white px-10 py-4 rounded-2xl font-bold text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-2 group">
-                    <span class="material-symbols-outlined text-lg">save</span>
-                    Salvar Configurações
-                </button>
+            {{-- Floating / Sticky Save Bar --}}
+            <div class="sticky bottom-4 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3 text-slate-500 text-xs">
+                    <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Todas as alterações são salvas e aplicadas em tempo real na loja pública.</span>
+                </div>
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <button type="submit"
+                        class="w-full sm:w-auto justify-center bg-primary hover:bg-primary/95 text-white px-8 py-3.5 rounded-xl sm:rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/25 hover:shadow-primary/40 flex items-center gap-2 cursor-pointer active:scale-98">
+                        <span class="material-symbols-outlined text-lg">save</span>
+                        <span>Salvar Configurações</span>
+                    </button>
+                </div>
             </div>
         </form>
     </div>
