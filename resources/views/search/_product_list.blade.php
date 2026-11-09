@@ -21,7 +21,9 @@
                         $imagePath = $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? '');
                     @endphp
                     <img src="{{ str_starts_with($imagePath, 'http') ? $imagePath : asset('storage/' . $imagePath) }}"
-                        alt="{{ $product->name }}"
+                        alt="Tênis {{ $product->name }}{{ $product->brand ? ' - ' . $product->brand : '' }}"
+                        loading="lazy"
+                        decoding="async"
                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     <button
                         class="absolute top-2 right-2 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">

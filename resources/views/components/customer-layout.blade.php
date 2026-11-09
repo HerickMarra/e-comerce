@@ -1,6 +1,6 @@
 @props(['title', 'active' => 'dashboard'])
 
-<x-storefront-layout>
+<x-storefront-layout :seo="['title' => $title . ' - Minha Conta', 'robots' => 'noindex, nofollow, noarchive']">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
         <nav aria-label="Breadcrumb" class="flex text-sm text-slate-500 mb-6 font-medium">
             <ol class="flex items-center space-x-2">

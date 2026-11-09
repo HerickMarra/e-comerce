@@ -7,6 +7,12 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\SeoController;
+
+// SEO & Merchant Center Feeds
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
+Route::get('/feed/google-shopping.xml', [SeoController::class, 'googleShoppingFeed'])->name('feed.google-shopping');
 
 Route::get('/', [HomeController::class, 'index']);
 Route::get('/nossa-historia', [HomeController::class, 'family'])->name('home.family');

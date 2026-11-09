@@ -1,2 +1,18 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Sensitive and dynamic routes
+Disallow: /admin
+Disallow: /admin/
+Disallow: /checkout
+Disallow: /checkout/
+Disallow: /carrinho
+Disallow: /minha-conta
+Disallow: /minha-conta/
+Disallow: /webhooks
+Disallow: /webhooks/
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /password
+
+Sitemap: /sitemap.xml

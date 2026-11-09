@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductColor;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
@@ -95,6 +96,12 @@ class SearchController extends Controller
             }
         ])->get();
 
+        $matchedCategory = (count($selectedCategories) === 1 && empty($query))
+            ? $categories->firstWhere('id', (int) $selectedCategories[0])
+            : null;
+
+        $seo = SeoService::forSearch($query, $matchedCategory);
+
         return view('search.index', compact(
             'products',
             'categories',
@@ -105,7 +112,8 @@ class SearchController extends Controller
             'maxPrice',
             'selectedColors',
             'inStockOnly',
-            'sort'
+            'sort',
+            'seo'
         ));
     }
 }

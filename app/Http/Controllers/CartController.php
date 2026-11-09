@@ -46,7 +46,9 @@ class CartController extends Controller
                 ?? '';
         }
 
-        return view('cart.index', compact('cart', 'total', 'recommended', 'defaultCep', 'hasStockIssues'));
+        $seo = \App\Services\SeoService::forPrivate('Meu Carrinho');
+
+        return view('cart.index', compact('cart', 'total', 'recommended', 'defaultCep', 'hasStockIssues', 'seo'));
     }
 
     public function add(Request $request, Product $product)

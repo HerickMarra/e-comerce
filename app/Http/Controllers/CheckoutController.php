@@ -36,7 +36,9 @@ class CheckoutController extends Controller
                 ?? '';
         }
 
-        return view('checkout.index', compact('cart', 'subtotal', 'shipping', 'total', 'addresses', 'defaultCep'));
+        $seo = \App\Services\SeoService::forPrivate('Finalizar Compra');
+
+        return view('checkout.index', compact('cart', 'subtotal', 'shipping', 'total', 'addresses', 'defaultCep', 'seo'));
     }
 
     public function process(Request $request, AsaasGateway $gateway)
@@ -276,7 +278,9 @@ class CheckoutController extends Controller
             }
         }
 
-        return view('checkout.success', compact('order', 'paymentData'));
+        $seo = \App\Services\SeoService::forPrivate('Pedido Confirmado #' . $order->order_number);
+
+        return view('checkout.success', compact('order', 'paymentData', 'seo'));
     }
 
     public function checkStatus(Order $order, AsaasGateway $gateway)

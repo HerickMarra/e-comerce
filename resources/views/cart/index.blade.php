@@ -1,4 +1,4 @@
-<x-storefront-layout>
+<x-storefront-layout :seo="$seo">
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" x-data="cartManager">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <div class="lg:col-span-8">

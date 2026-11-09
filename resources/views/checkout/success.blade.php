@@ -1,4 +1,4 @@
-<x-storefront-layout>
+<x-storefront-layout :seo="$seo">
     @php
         $paymentData = $paymentData ?? session('payment_data');
         $isOrderPaid = in_array($order->status, ['paid', 'completed', 'shipped', 'delivered']);

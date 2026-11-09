@@ -1,4 +1,4 @@
-<x-storefront-layout>
+<x-storefront-layout :seo="$seo">
     <main class="max-w-7xl mx-auto px-4 md:px-8 py-6 sm:py-10 pb-32 sm:pb-36 lg:pb-16" x-data="checkoutHandler()">
         <form id="checkoutForm" action="{{ route('checkout.process') }}" method="POST">
             @csrf

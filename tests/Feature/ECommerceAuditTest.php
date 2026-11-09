@@ -117,3 +117,4 @@ class ECommerceAuditTest extends TestCase
         $this->assertEquals(5, $product->fresh()->stock);
     }
 }
+

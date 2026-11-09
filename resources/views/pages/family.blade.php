@@ -1,4 +1,4 @@
-<x-storefront-layout>
+<x-storefront-layout :seo="$seo">
     <div class="bg-white dark:bg-slate-950 min-h-screen">
         <!-- Infinite Carousel Section -->
         <div class="relative w-full overflow-hidden bg-slate-900 py-12 border-b border-white/5">

@@ -1,3 +1,13 @@
+@props([
+    'seo' => [],
+    'title' => null,
+])
+
+@php
+    if ($title && empty($seo['title'])) {
+        $seo['title'] = $title;
+    }
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
 
@@ -6,11 +16,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $appSettings['store_name'] ?? config('app.name', 'VerveHome') }}</title>
+    {{-- SEO & Open Graph Meta Tags --}}
+    <x-seo-meta :seo="$seo" />
 
-    <!-- Fonts -->
+    <!-- Fonts & Resource Hints -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"

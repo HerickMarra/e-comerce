@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Services\SeoService;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -65,12 +66,20 @@ class HomeController extends Controller
             'banner_id' => $randomBanner?->id,
         ];
 
-        return view('welcome', compact('categories', 'luckyProducts', 'randomSections', 'heroSettings'));
+        $seo = SeoService::forHome();
+
+        return view('welcome', compact('categories', 'luckyProducts', 'randomSections', 'heroSettings', 'seo'));
     }
 
     public function family()
     {
-        return view('pages.family');
+        $seo = SeoService::forInstitutional(
+            'Nossa História',
+            'Conheça a história e tradição da Família Studart e da Denner Tênis. Paixão por calçados esportivos, qualidade e compromisso com nossos clientes.',
+            route('home.family')
+        );
+
+        return view('pages.family', compact('seo'));
     }
 
     private function formatYoutubeUrl($url)

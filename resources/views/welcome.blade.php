@@ -1,4 +1,4 @@
-<x-storefront-layout>
+<x-storefront-layout :seo="$seo">
     <style>
         .touch-continuous-wrapper {
             overflow-x: auto;
@@ -53,7 +53,10 @@
             
             <!-- Placeholder / Image Banner: Permanece 100% visível cobrindo o player até o vídeo começar a rodar de verdade -->
             @if(!empty($heroSettings['image_fallback']))
-                <img alt="{{ $appSettings['store_name'] ?? 'Banner' }}"
+                <img alt="{{ $heroSettings['title'] ?? ($appSettings['store_name'] ?? 'Banner Promocional') }}"
+                    fetchpriority="high"
+                    loading="eager"
+                    decoding="async"
                     class="absolute inset-0 w-full h-full object-cover z-[5] transition-opacity duration-700 ease-out"
                     :class="(videoPlaying && '{{ !empty($heroSettings['video_url']) ? '1' : '' }}') ? 'opacity-0 pointer-events-none' : 'opacity-100'"
                     src="{{ $heroSettings['image_fallback'] }}" />
@@ -169,7 +172,9 @@
                         <a href="{{ route('search', ['categories' => [$category->id]]) }}" class="block">
                             <div class="relative aspect-[3/4] rounded-2xl overflow-hidden mb-4 shadow-lg">
                                 @if($category->image_path)
-                                    <img alt="{{ $category->name }}"
+                                    <img alt="Categoria de Tênis {{ $category->name }}"
+                                        loading="lazy"
+                                        decoding="async"
                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                         src="{{ str_starts_with($category->image_path, 'http') ? $category->image_path : asset('storage/' . $category->image_path) }}" />
                                 @else
@@ -217,7 +222,9 @@
                                     $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
                                 @endphp
                                 @if($mainImage)
-                                    <img alt="{{ $product->name }}"
+                                    <img alt="Tênis {{ $product->name }}{{ $product->brand ? ' - ' . $product->brand : '' }}"
+                                        loading="lazy"
+                                        decoding="async"
                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                         src="{{ str_starts_with($mainImage->path, 'http') ? $mainImage->path : asset('storage/' . $mainImage->path) }}" />
                                 @else
@@ -259,7 +266,9 @@
                                         $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
                                     @endphp
                                     @if($mainImage)
-                                        <img alt="{{ $product->name }}"
+                                        <img alt="Tênis {{ $product->name }}{{ $product->brand ? ' - ' . $product->brand : '' }}"
+                                            loading="lazy"
+                                            decoding="async"
                                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                             src="{{ str_starts_with($mainImage->path, 'http') ? $mainImage->path : asset('storage/' . $mainImage->path) }}" />
                                     @else
@@ -318,7 +327,9 @@
                                             $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
                                         @endphp
                                         @if($mainImage)
-                                            <img alt="{{ $product->name }}"
+                                            <img alt="Tênis {{ $product->name }}{{ $product->brand ? ' - ' . $product->brand : '' }}"
+                                                loading="lazy"
+                                                decoding="async"
                                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                 src="{{ str_starts_with($mainImage->path, 'http') ? $mainImage->path : asset('storage/' . $mainImage->path) }}" />
                                         @else
@@ -356,7 +367,9 @@
                                                 $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
                                             @endphp
                                             @if($mainImage)
-                                                <img alt="{{ $product->name }}"
+                                                <img alt="Tênis {{ $product->name }}{{ $product->brand ? ' - ' . $product->brand : '' }}"
+                                                    loading="lazy"
+                                                    decoding="async"
                                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                                     src="{{ str_starts_with($mainImage->path, 'http') ? $mainImage->path : asset('storage/' . $mainImage->path) }}" />
                                             @else

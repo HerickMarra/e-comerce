@@ -1,4 +1,4 @@
-<x-storefront-layout>
+<x-storefront-layout :seo="$seo">
     @php
         $availableSizes = $product->availableSizes();
         $hasSizes = !empty($availableSizes);
@@ -54,22 +54,27 @@
             return this.activeImage.startsWith('http') ? this.activeImage : '{{ asset('storage') }}/' + this.activeImage;
         }
     }">
-        {{-- Breadcrumb simples --}}
+        {{-- Breadcrumb estruturado --}}
         <nav aria-label="Breadcrumb" class="flex mb-6 text-xs font-medium text-slate-400">
-            <ol class="flex items-center space-x-2">
-                <li><a class="hover:text-primary transition-colors" href="/">Home</a></li>
+            <ol class="flex items-center space-x-2" itemscope itemtype="https://schema.org/BreadcrumbList">
+                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a itemprop="item" class="hover:text-primary transition-colors" href="/"><span itemprop="name">Home</span></a>
+                    <meta itemprop="position" content="1" />
+                </li>
                 @if($product->categories->first())
-                    <li class="flex items-center space-x-1.5">
+                    <li class="flex items-center space-x-1.5" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
                         <span class="material-symbols-outlined text-xs">chevron_right</span>
-                        <a class="hover:text-primary transition-colors"
+                        <a itemprop="item" class="hover:text-primary transition-colors"
                             href="{{ route('search', ['categories' => [$product->categories->first()->id]]) }}">
-                            {{ $product->categories->first()->name }}
+                            <span itemprop="name">{{ $product->categories->first()->name }}</span>
                         </a>
+                        <meta itemprop="position" content="2" />
                     </li>
                 @endif
-                <li class="flex items-center space-x-1.5 text-slate-800 dark:text-white font-bold">
+                <li class="flex items-center space-x-1.5 text-slate-800 dark:text-white font-bold" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
                     <span class="material-symbols-outlined text-xs">chevron_right</span>
-                    <span class="truncate max-w-[220px] sm:max-w-md">{{ $product->name }}</span>
+                    <span itemprop="name" class="truncate max-w-[220px] sm:max-w-md">{{ $product->name }}</span>
+                    <meta itemprop="position" content="{{ $product->categories->first() ? '3' : '2' }}" />
                 </li>
             </ol>
         </nav>
@@ -88,9 +93,11 @@
                     @endif
 
                     <template x-if="activeImage">
-                        <img :alt="'{{ $product->name }}'"
+                        <img :alt="'{{ $product->name }} {{ $product->brand ? '- ' . $product->brand : '' }} - Foto Principal'"
                             class="w-full h-full object-cover transition-opacity duration-300"
-                            :src="mainImageUrl()" />
+                            :src="mainImageUrl()"
+                            fetchpriority="high"
+                            decoding="async" />
                     </template>
                     <template x-if="!activeImage">
                         <div class="flex flex-col items-center justify-center text-slate-300 dark:text-slate-600">
@@ -107,7 +114,10 @@
                             <button type="button" @click="activeImage = '{{ $image->path }}'"
                                 :class="activeImage === '{{ $image->path }}' ? 'border-primary ring-2 ring-primary/30 scale-105' : 'border-slate-200 dark:border-slate-800 opacity-60 hover:opacity-100'"
                                 class="w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all p-0 flex-shrink-0 bg-slate-50 dark:bg-slate-800">
-                                <img alt="Miniatura" class="w-full h-full object-cover"
+                                <img alt="{{ $product->name }} - Foto {{ $loop->iteration }}" 
+                                    class="w-full h-full object-cover"
+                                    loading="lazy"
+                                    decoding="async"
                                     src="{{ str_starts_with($image->path, 'http') ? $image->path : asset('storage/' . $image->path) }}" />
                             </button>
                         @endforeach
