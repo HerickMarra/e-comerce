@@ -13,10 +13,85 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['categories', 'images', 'colors'])->latest()->paginate(12);
-        return view('admin.products.index', compact('products'));
+        $query = Product::with(['categories', 'images', 'colors', 'variants']);
+
+        // Search by name, brand, model_line, sku
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('brand', 'like', "%{$search}%")
+                  ->orWhere('model_line', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by Category
+        if ($request->filled('category')) {
+            $query->whereHas('categories', function ($q) use ($request) {
+                $q->where('categories.id', $request->category);
+            });
+        }
+
+        // Filter by Status (active / inactive)
+        if ($request->filled('status')) {
+            if ($request->status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($request->status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
+        // Filter by Stock status
+        if ($request->filled('stock_status')) {
+            if ($request->stock_status === 'in_stock') {
+                $query->where('stock', '>', 3);
+            } elseif ($request->stock_status === 'low_stock') {
+                $query->whereBetween('stock', [1, 3]);
+            } elseif ($request->stock_status === 'out_of_stock') {
+                $query->where('stock', '<=', 0);
+            }
+        }
+
+        // Sorting
+        $sort = $request->get('sort', 'latest');
+        switch ($sort) {
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'stock_asc':
+                $query->orderBy('stock', 'asc');
+                break;
+            case 'stock_desc':
+                $query->orderBy('stock', 'desc');
+                break;
+            case 'name_asc':
+                $query->orderBy('name', 'asc');
+                break;
+            default:
+                $query->latest('id');
+                break;
+        }
+
+        $products = $query->paginate(15)->withQueryString();
+
+        // Metrics for summary KPI cards
+        $metrics = [
+            'total' => Product::count(),
+            'active' => Product::where('is_active', true)->count(),
+            'total_stock' => (int) Product::sum('stock'),
+            'low_stock' => Product::whereBetween('stock', [1, 3])->count(),
+            'out_of_stock' => Product::where('stock', '<=', 0)->count(),
+        ];
+
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.products.index', compact('products', 'categories', 'metrics'));
     }
 
     /**
