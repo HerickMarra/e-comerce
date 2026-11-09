@@ -15,7 +15,7 @@ class AppearanceController extends Controller
             'home_hero_title' => Setting::get('home_hero_title', 'Redefina a Elegância do seu Lar'),
             'home_hero_subtitle' => Setting::get('home_hero_subtitle', 'Descubra o luxo do design minimalista e a maestria artesanal. Peças exclusivas concebidas para o viver contemporâneo.'),
             'home_hero_btn_text' => Setting::get('home_hero_btn_text', 'Ver Catálogo'),
-            'home_hero_btn_link' => Setting::get('home_hero_btn_link', '/categorias'),
+            'home_hero_btn_link' => Setting::get('home_hero_btn_link', '/explorar'),
             'home_hero_video_url' => Setting::get('home_hero_video_url', 'https://www.youtube.com/embed/uFZRqTRk8-o?autoplay=1&mute=1&controls=0&loop=1&playlist=uFZRqTRk8-o&showinfo=0&rel=0&disablekb=1&iv_load_policy=3&modestbranding=1&fs=0&playsinline=1'),
             'home_hero_image_fallback' => Setting::get('home_hero_image_fallback', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=2070'),
         ];

@@ -47,13 +47,18 @@ class HomeController extends Controller
 
         $youtubeId = \App\Models\Banner::extractYoutubeId($rawVideoUrl);
 
+        $rawBtnLink = $randomBanner?->btn_link ?: \App\Models\Setting::get('home_hero_btn_link');
+        $btnLink = (empty($rawBtnLink) || $rawBtnLink === '/categorias' || $rawBtnLink === route('categories.index'))
+            ? route('explore')
+            : $rawBtnLink;
+
         // Configurações da Hero Section
         $heroSettings = [
             'tag' => \App\Models\Setting::get('home_hero_tag', 'Coleção'),
             'title' => $randomBanner?->title ?: \App\Models\Setting::get('home_hero_title', 'Redefina a Elegância do seu Lar'),
             'subtitle' => \App\Models\Setting::get('home_hero_subtitle', ''),
             'btn_text' => $randomBanner?->btn_text ?: \App\Models\Setting::get('home_hero_btn_text', 'Ver Catálogo'),
-            'btn_link' => $randomBanner?->btn_link ?: \App\Models\Setting::get('home_hero_btn_link', route('categories.index')),
+            'btn_link' => $btnLink,
             'media_type' => $randomBanner ? $randomBanner->media_type : 'video',
             'is_direct_video' => $randomBanner ? $randomBanner->isDirectVideo() : false,
             'video_url' => $randomBanner && $randomBanner->isVideo() 

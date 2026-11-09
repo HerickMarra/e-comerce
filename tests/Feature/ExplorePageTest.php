@@ -71,6 +71,8 @@ class ExplorePageTest extends TestCase
         $response->assertSee('Explorar');
         $response->assertSee('Feed Infinito de Descoberta');
         $response->assertSee('Explorar Todos os Tênis');
+        // Check banner button links to explore
+        $this->assertStringContainsString(route('explore'), $response->getContent());
     }
 
     public function test_explore_ajax_request_returns_valid_json_with_html_cards(): void
