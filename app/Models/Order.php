@@ -38,6 +38,38 @@ class Order extends Model
         'stock_restored' => 'boolean',
     ];
 
+    protected $appends = [
+        'public_shipping_label_url',
+    ];
+
+    /**
+     * Mutator to guarantee shipping_label_url always carries ?public=true parameter.
+     */
+    public function setShippingLabelUrlAttribute($value): void
+    {
+        if ($value && !str_contains($value, 'public=')) {
+            $value = trim($value) . (str_contains($value, '?') ? '&' : '?') . 'public=true';
+        }
+        $this->attributes['shipping_label_url'] = $value;
+    }
+
+    /**
+     * Accessor to guarantee direct download link for Melhor Envio label without login gate.
+     */
+    public function getPublicShippingLabelUrlAttribute(): ?string
+    {
+        if (empty($this->shipping_label_url)) {
+            return null;
+        }
+
+        $url = trim($this->shipping_label_url);
+        if (!str_contains($url, 'public=')) {
+            $url .= (str_contains($url, '?') ? '&' : '?') . 'public=true';
+        }
+
+        return $url;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

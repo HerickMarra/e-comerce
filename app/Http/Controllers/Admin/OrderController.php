@@ -48,7 +48,7 @@ class OrderController extends Controller
         $previousStatus = $order->status;
         $newStatus = $request->status;
 
-        if ($newStatus === 'paid' && $previousStatus !== 'paid') {
+        if ($newStatus === 'paid') {
             OrderPaymentService::finalize($order);
         } else {
             // Restore inventory when cancelling order
@@ -77,20 +77,26 @@ class OrderController extends Controller
         if ($provider === 'melhorenvio' || $hasMelhorEnvioToken) {
             $melhorEnvio = new MelhorEnvioService();
 
-            // If order already has a shipping_id but lacks label URL, try generating/fetching label directly
-            if (!empty($order->shipping_id) && empty($order->shipping_label_url)) {
+            // If order already has a shipping_id, attempt checkout, generate, and fetch label
+            if (!empty($order->shipping_id)) {
+                $melhorEnvio->checkout([$order->shipping_id]);
                 $melhorEnvio->generate([$order->shipping_id]);
+                usleep(1500000);
                 $labelUrl = $melhorEnvio->printLabel([$order->shipping_id]);
+                if (!$labelUrl) {
+                    usleep(2000000);
+                    $labelUrl = $melhorEnvio->printLabel([$order->shipping_id]);
+                }
                 $trackingData = $melhorEnvio->tracking([$order->shipping_id]);
                 $trackingCode = $trackingData[$order->shipping_id]['tracking'] ?? null;
 
-                if ($labelUrl) {
+                if ($labelUrl || $trackingCode) {
                     $order->update([
-                        'shipping_label_url' => $labelUrl,
+                        'shipping_label_url' => $labelUrl ?: $order->shipping_label_url,
                         'shipping_tracking_code' => $trackingCode ?: $order->shipping_tracking_code,
                         'shipping_tracking_url' => $trackingCode ? 'https://melhorenvio.com.br/rastreio/' . $trackingCode : $order->shipping_tracking_url,
                     ]);
-                    return back()->with('success', 'Etiqueta do Melhor Envio sincronizada e disponível com sucesso!');
+                    return back()->with('success', 'Etiqueta do Melhor Envio sincronizada e disponível para impressão!');
                 }
             }
 
@@ -107,7 +113,12 @@ class OrderController extends Controller
 
                 if ($checkoutResult) {
                     $melhorEnvio->generate([$cartId]);
+                    usleep(1500000);
                     $labelUrl = $melhorEnvio->printLabel([$cartId]);
+                    if (!$labelUrl) {
+                        usleep(2000000);
+                        $labelUrl = $melhorEnvio->printLabel([$cartId]);
+                    }
                     $trackingData = $melhorEnvio->tracking([$cartId]);
                     $trackingCode = $trackingData[$cartId]['tracking'] ?? null;
                 }

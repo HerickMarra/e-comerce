@@ -322,27 +322,40 @@
                                 @endif
                             </div>
 
-                            <div class="flex flex-wrap items-center gap-2">
-                                <button type="button" @click="generateLabel()"
-                                    class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-600 text-white rounded-2xl text-sm font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 active:scale-95 cursor-pointer">
-                                    <span class="material-symbols-outlined text-xl">download</span>
-                                    <span>Baixar PDF da Etiqueta</span>
-                                </button>
-
+                            <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2">
                                 @if($order->shipping_label_url)
-                                    <a href="{{ $order->shipping_label_url }}" target="_blank"
-                                        title="Abrir no Painel do Melhor Envio"
+                                    <a href="{{ $order->public_shipping_label_url }}" target="_blank"
+                                        class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 text-white rounded-2xl text-sm font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 active:scale-95 cursor-pointer">
+                                        <span class="material-symbols-outlined text-xl">download</span>
+                                        <span>Baixar Etiqueta Oficial (PDF)</span>
+                                    </a>
+
+                                    <a href="{{ $order->public_shipping_label_url }}" target="_blank"
+                                        title="Abrir no Painel do Melhor Envio sem login"
                                         class="inline-flex items-center justify-center gap-1.5 px-4 py-3.5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-2xl hover:border-emerald-500 hover:text-emerald-600 transition-all text-xs">
                                         <span class="material-symbols-outlined text-base text-emerald-600">open_in_new</span>
-                                        <span>Painel Web</span>
+                                        <span>Abrir no Navegador</span>
                                     </a>
+
+                                    <button type="button" @click="generateLabel()"
+                                        title="Gerar via PDF local da loja"
+                                        class="inline-flex items-center justify-center gap-1.5 px-3 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium rounded-2xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all text-xs cursor-pointer">
+                                        <span class="material-symbols-outlined text-base">print</span>
+                                        <span>PDF Alternativo</span>
+                                    </button>
                                 @else
+                                    <button type="button" @click="generateLabel()"
+                                        class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-600 text-white rounded-2xl text-sm font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 active:scale-95 cursor-pointer">
+                                        <span class="material-symbols-outlined text-xl">download</span>
+                                        <span>Baixar PDF da Etiqueta</span>
+                                    </button>
+
                                     <form action="{{ route('admin.orders.recruit-shipping', $order) }}" method="POST" class="inline">
                                         @csrf
                                         <button type="submit"
-                                            class="inline-flex items-center justify-center gap-1.5 px-4 py-3.5 bg-white dark:bg-slate-800 border-2 border-primary/30 text-primary font-bold rounded-2xl hover:bg-primary/5 transition-all text-xs">
+                                            class="inline-flex items-center justify-center gap-1.5 px-4 py-3.5 bg-white dark:bg-slate-800 border-2 border-primary/30 text-primary font-bold rounded-2xl hover:bg-primary/5 transition-all text-xs cursor-pointer">
                                             <span class="material-symbols-outlined text-base">sync</span>
-                                            <span>Sincronizar</span>
+                                            <span>Sincronizar Etiqueta</span>
                                         </button>
                                     </form>
                                 @endif

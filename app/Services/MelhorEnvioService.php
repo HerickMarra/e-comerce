@@ -366,6 +366,23 @@ class MelhorEnvioService
     }
 
     /**
+     * Format label URL with public=true parameter to allow direct download without login.
+     */
+    public static function formatPublicLabelUrl(?string $url): ?string
+    {
+        if (empty($url)) {
+            return null;
+        }
+
+        $url = trim($url);
+        if (!str_contains($url, 'public=')) {
+            $url .= (str_contains($url, '?') ? '&' : '?') . 'public=true';
+        }
+
+        return $url;
+    }
+
+    /**
      * Print shipment labels (returns public download URL).
      */
     public function printLabel(array $orderIds): ?string
@@ -378,7 +395,8 @@ class MelhorEnvioService
 
             if ($response->successful()) {
                 $data = $response->json();
-                return $data['url'] ?? null;
+                $url = $data['url'] ?? null;
+                return self::formatPublicLabelUrl($url);
             }
 
             Log::warning('Melhor Envio printLabel response: ' . $response->body());

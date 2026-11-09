@@ -61,11 +61,6 @@ class OrderPaymentService
      */
     public static function autoRecruitShipping(Order $order): void
     {
-        // Check if already recruited
-        if ($order->shipping_id) {
-            return;
-        }
-
         // Check if pickup at store
         $isPickup = str_contains(strtolower($order->shipping_modalidade ?? ''), 'retirad') || 
                     str_contains(strtolower($order->notes ?? ''), 'retirad') ||
@@ -84,53 +79,99 @@ class OrderPaymentService
         $provider = Setting::get('shipping_provider', 'melhorenvio');
         $hasMelhorEnvioToken = !empty(Setting::get('melhorenvio_token'));
 
-        if ($provider === 'melhorenvio' || $hasMelhorEnvioToken) {
-            try {
-                $melhorEnvio = new MelhorEnvioService();
-                $cartResult = $melhorEnvio->createCartOrder($order);
+        if (!$hasMelhorEnvioToken && $provider !== 'melhorenvio') {
+            return;
+        }
 
-                if ($cartResult && isset($cartResult['id'])) {
-                    $cartId = $cartResult['id'];
-                    Log::info("OrderPaymentService: Melhor Envio cart order created #{$cartId} for order #{$order->order_number}");
+        try {
+            $melhorEnvio = new MelhorEnvioService();
 
-                    // Automatic checkout (debits balance from Melhor Envio wallet)
-                    $checkoutResult = $melhorEnvio->checkout([$cartId]);
-                    $labelUrl = null;
-                    $trackingCode = null;
-
-                    if ($checkoutResult) {
-                        $melhorEnvio->generate([$cartId]);
-                        $labelUrl = $melhorEnvio->printLabel([$cartId]);
-                        $trackingData = $melhorEnvio->tracking([$cartId]);
-                        $trackingCode = $trackingData[$cartId]['tracking'] ?? null;
+            // If order already has shipping_id
+            if (!empty($order->shipping_id)) {
+                // If it already has label, ensure URL has ?public=true
+                if (!empty($order->shipping_label_url)) {
+                    if (!str_contains($order->shipping_label_url, 'public=')) {
+                        $order->update([
+                            'shipping_label_url' => MelhorEnvioService::formatPublicLabelUrl($order->shipping_label_url),
+                        ]);
                     }
-
-                    $serviceName = $order->shipping_modalidade ?: ($cartResult['service']['name'] ?? 'Melhor Envio');
-
-                    $order->update([
-                        'shipping_id' => $cartId,
-                        'shipping_service_name' => $serviceName,
-                        'shipping_tracking_url' => $trackingCode ? 'https://melhorenvio.com.br/rastreio/' . $trackingCode : null,
-                        'shipping_label_url' => $labelUrl,
-                        'shipping_tracking_code' => $trackingCode,
-                        'shipping_api_response' => [
-                            'provider' => 'melhorenvio',
-                            'cart' => $cartResult,
-                            'checkout' => $checkoutResult,
-                        ],
-                    ]);
-
-                    Log::info("OrderPaymentService: Melhor Envio shipping recruited successfully for order #{$order->order_number}", [
-                        'shipping_id' => $cartId,
-                        'tracking' => $trackingCode,
-                        'label_url' => $labelUrl,
-                    ]);
-                } else {
-                    Log::warning("OrderPaymentService: Failed to create Melhor Envio cart order for order #{$order->order_number}");
+                    return;
                 }
-            } catch (\Throwable $e) {
-                Log::error("OrderPaymentService: Exception while auto-recruiting Melhor Envio shipping: " . $e->getMessage());
+
+                // If no label yet, attempt checkout, generate, and fetch print URL
+                $melhorEnvio->checkout([$order->shipping_id]);
+                $melhorEnvio->generate([$order->shipping_id]);
+                usleep(1500000); // 1.5s pause for async generation
+
+                $labelUrl = $melhorEnvio->printLabel([$order->shipping_id]);
+                if (!$labelUrl) {
+                    usleep(2000000);
+                    $labelUrl = $melhorEnvio->printLabel([$order->shipping_id]);
+                }
+
+                $trackingData = $melhorEnvio->tracking([$order->shipping_id]);
+                $trackingCode = $trackingData[$order->shipping_id]['tracking'] ?? null;
+
+                if ($labelUrl || $trackingCode) {
+                    $order->update([
+                        'shipping_label_url' => $labelUrl ?: $order->shipping_label_url,
+                        'shipping_tracking_code' => $trackingCode ?: $order->shipping_tracking_code,
+                        'shipping_tracking_url' => $trackingCode ? 'https://melhorenvio.com.br/rastreio/' . $trackingCode : $order->shipping_tracking_url,
+                    ]);
+                    Log::info("OrderPaymentService: Label successfully fetched for existing shipping_id #{$order->shipping_id}");
+                }
+                return;
             }
+
+            // Create new cart order on Melhor Envio
+            $cartResult = $melhorEnvio->createCartOrder($order);
+
+            if ($cartResult && isset($cartResult['id'])) {
+                $cartId = $cartResult['id'];
+                Log::info("OrderPaymentService: Melhor Envio cart order created #{$cartId} for order #{$order->order_number}");
+
+                // Automatic checkout (debits balance from Melhor Envio wallet)
+                $checkoutResult = $melhorEnvio->checkout([$cartId]);
+                $labelUrl = null;
+                $trackingCode = null;
+
+                if ($checkoutResult) {
+                    $melhorEnvio->generate([$cartId]);
+                    usleep(1500000); // 1.5s wait for asynchronous generation
+                    $labelUrl = $melhorEnvio->printLabel([$cartId]);
+                    if (!$labelUrl) {
+                        usleep(2000000); // 2s retry
+                        $labelUrl = $melhorEnvio->printLabel([$cartId]);
+                    }
+                    $trackingData = $melhorEnvio->tracking([$cartId]);
+                    $trackingCode = $trackingData[$cartId]['tracking'] ?? null;
+                }
+
+                $serviceName = $order->shipping_modalidade ?: ($cartResult['service']['name'] ?? 'Melhor Envio');
+
+                $order->update([
+                    'shipping_id' => $cartId,
+                    'shipping_service_name' => $serviceName,
+                    'shipping_tracking_url' => $trackingCode ? 'https://melhorenvio.com.br/rastreio/' . $trackingCode : null,
+                    'shipping_label_url' => $labelUrl,
+                    'shipping_tracking_code' => $trackingCode,
+                    'shipping_api_response' => [
+                        'provider' => 'melhorenvio',
+                        'cart' => $cartResult,
+                        'checkout' => $checkoutResult,
+                    ],
+                ]);
+
+                Log::info("OrderPaymentService: Melhor Envio shipping recruited successfully for order #{$order->order_number}", [
+                    'shipping_id' => $cartId,
+                    'tracking' => $trackingCode,
+                    'label_url' => $labelUrl,
+                ]);
+            } else {
+                Log::warning("OrderPaymentService: Failed to create Melhor Envio cart order for order #{$order->order_number}");
+            }
+        } catch (\Throwable $e) {
+            Log::error("OrderPaymentService: Exception while auto-recruiting Melhor Envio shipping: " . $e->getMessage());
         }
     }
 }
