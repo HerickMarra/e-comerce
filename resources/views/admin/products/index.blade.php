@@ -3,17 +3,17 @@
 
     <div class="space-y-8">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider mb-1">
                     <span class="material-symbols-outlined text-xs">steps</span>
                     Catálogo de Calçados
                 </div>
-                <h1 class="text-3xl font-black text-slate-900 dark:text-white">Tênis & Sneakers</h1>
-                <p class="text-slate-500 text-sm mt-0.5">Gerencie os modelos, numerações ativas, marcas e estoque por par.</p>
+                <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Tênis & Sneakers</h1>
+                <p class="text-slate-500 text-xs sm:text-sm mt-0.5">Gerencie os modelos, numerações ativas, marcas e estoque por par.</p>
             </div>
             <a href="{{ route('admin.products.create') }}"
-                class="inline-flex items-center justify-center px-6 py-3.5 bg-primary hover:opacity-95 text-white font-bold rounded-2xl transition-all shadow-lg shadow-primary/25 gap-2 text-sm">
+                class="inline-flex items-center justify-center px-5 sm:px-6 py-3 sm:py-3.5 bg-primary hover:opacity-95 text-white font-bold rounded-2xl transition-all shadow-lg shadow-primary/25 gap-2 text-xs sm:text-sm w-full sm:w-auto shrink-0">
                 <span class="material-symbols-outlined text-xl">add</span>
                 Cadastrar Novo Tênis
             </a>
@@ -30,8 +30,8 @@
 
         <!-- Products Table -->
         <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse min-w-[760px]">
                     <thead>
                         <tr class="bg-slate-50/75 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 uppercase text-[10px] font-black text-slate-400 tracking-wider">
                             <th class="px-6 py-4">Tênis / Modelo</th>

@@ -64,7 +64,7 @@
 
                 {{-- Live Preview --}}
                 <div
-                    class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 text-white overflow-hidden relative">
+                    class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-5 sm:p-8 text-white overflow-hidden relative">
                     <div class="absolute top-0 right-0 size-64 rounded-full opacity-5"
                         :style="'background: ' + primaryColor" style="transform: translate(30%, -30%)"></div>
                     <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-6">Pré-visualização</p>
@@ -99,7 +99,7 @@
                             <p class="text-xs text-slate-500">Nome, slogan e descrição exibidos publicamente.</p>
                         </div>
                     </div>
-                    <div class="p-8 space-y-6">
+                    <div class="p-5 sm:p-8 space-y-6">
                         <div>
                             <label
                                 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">Nome
@@ -131,7 +131,7 @@
                             <p class="text-xs text-slate-500">Formatos: PNG, JPG, SVG. Recomendado: 256x256px.</p>
                         </div>
                     </div>
-                    <div class="p-8">
+                    <div class="p-5 sm:p-8">
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                             {{-- Logo Upload --}}
                             <div class="space-y-4">
@@ -228,7 +228,7 @@
                             <p class="text-xs text-slate-500">Cor principal usada em botões, links e destaques.</p>
                         </div>
                     </div>
-                    <div class="p-8">
+                    <div class="p-5 sm:p-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
                                 <label
@@ -291,7 +291,7 @@
                         </div>
                     </div>
 
-                    <div class="p-8 space-y-8">
+                    <div class="p-5 sm:p-8 space-y-8">
                         <div>
                             <label
                                 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 block">Ambiente
@@ -550,7 +550,7 @@
                         </button>
                     </div>
 
-                    <div class="p-8 space-y-8">
+                    <div class="p-5 sm:p-8 space-y-8">
                         {{-- Environment --}}
                         <div>
                             <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-4 block italic">
@@ -679,7 +679,7 @@
                         </div>
                     </div>
 
-                    <div class="p-8 space-y-6">
+                    <div class="p-5 sm:p-8 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {{-- CEP de Origem --}}
                             <div>
@@ -778,7 +778,7 @@
                         </div>
                     </div>
 
-                    <div class="p-8 space-y-6">
+                    <div class="p-5 sm:p-8 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
                                 <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
@@ -828,7 +828,7 @@
                         </div>
                     </div>
 
-                    <div class="p-8 space-y-6">
+                    <div class="p-5 sm:p-8 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
                                 <div>
@@ -885,7 +885,7 @@
                         </button>
                     </div>
 
-                    <div class="p-8 space-y-8">
+                    <div class="p-5 sm:p-8 space-y-8">
                         <div>
                             <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-4 block italic">Ambiente de Conexão</label>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -963,7 +963,7 @@
                         </div>
                     </div>
 
-                    <div class="p-8 space-y-8">
+                    <div class="p-5 sm:p-8 space-y-8">
                         {{-- Pickup Toggle --}}
                         <div
                             class="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-100">
@@ -1076,7 +1076,7 @@
                         </div>
                     </div>
 
-                    <div class="p-8 space-y-8">
+                    <div class="p-5 sm:p-8 space-y-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label
@@ -1181,7 +1181,7 @@
             {{-- Save Button --}}
             <div class="flex justify-end">
                 <button type="submit"
-                    class="bg-primary text-white px-10 py-4 rounded-2xl font-bold text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-2 group">
+                    class="w-full sm:w-auto justify-center bg-primary text-white px-10 py-4 rounded-2xl font-bold text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-2 group">
                     <span class="material-symbols-outlined text-lg">save</span>
                     Salvar Configurações
                 </button>

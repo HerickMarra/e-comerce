@@ -146,13 +146,13 @@
                         </div>
 
                         {{-- Grade de Numerações Interativa --}}
-                        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2.5">
+                        <div class="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-2">
                             <template x-for="size in allSizes" :key="size">
                                 <button type="button" @click="toggleSize(size)"
                                     :class="selectedSizes.includes(size) 
                                         ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-md ring-2 ring-primary/40' 
                                         : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400'"
-                                    class="py-3 px-2 rounded-xl text-center font-black text-sm border-2 transition-all hover:scale-105 active:scale-95 flex flex-col items-center justify-center">
+                                    class="py-2.5 sm:py-3 px-1.5 sm:px-2 rounded-xl text-center font-black text-xs sm:text-sm border-2 transition-all hover:scale-105 active:scale-95 flex flex-col items-center justify-center">
                                     <span x-text="size"></span>
                                     <span class="text-[9px] uppercase font-bold tracking-tight opacity-60">BR</span>
                                 </button>
@@ -160,12 +160,12 @@
                         </div>
 
                         {{-- Adicionar Numeração Customizada --}}
-                        <div class="flex items-center gap-3 pt-2">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2">
                             <input type="text" x-model="customSizeInput" @keydown.enter.prevent="addCustomSize()"
                                 placeholder="Outro tamanho (ex: 33, 47, 39.5)"
-                                class="w-64 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-xs font-bold focus:ring-primary focus:border-primary border">
+                                class="w-full sm:w-64 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-xs font-bold focus:ring-primary focus:border-primary border">
                             <button type="button" @click="addCustomSize()"
-                                class="px-4 py-2 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
+                                class="w-full sm:w-auto px-4 py-2 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
                                 + Adicionar Tamanho
                             </button>
                         </div>
@@ -416,11 +416,11 @@
                         </div>
 
                         {{-- Ou adicionar URL externa --}}
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             <input type="url" x-model="externalUrl" placeholder="Ou cole a URL de uma imagem da internet (https://...)"
-                                class="flex-1 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono focus:ring-primary focus:border-primary border">
+                                class="w-full sm:flex-1 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono focus:ring-primary focus:border-primary border">
                             <button type="button" @click="addExternalImage()"
-                                class="px-4 py-2.5 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
+                                class="w-full sm:w-auto px-4 py-2.5 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
                                 Adicionar
                             </button>
                         </div>

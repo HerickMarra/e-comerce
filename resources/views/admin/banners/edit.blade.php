@@ -3,24 +3,24 @@
 
     <div class="max-w-4xl mx-auto">
         {{-- Header --}}
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
             <div class="flex items-center gap-4">
                 <a href="{{ route('admin.banners.index') }}"
-                    class="p-2 text-slate-400 hover:text-slate-700 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors">
+                    class="p-2 text-slate-400 hover:text-slate-700 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors shrink-0">
                     <span class="material-symbols-outlined text-lg">arrow_back</span>
                 </a>
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Editar Banner #{{ $banner->id }}</h1>
-                    <p class="text-sm text-slate-500 mt-1">Atualize as informações do vídeo ou imagem do banner</p>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Editar Banner #{{ $banner->id }}</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Atualize as informações do vídeo ou imagem do banner</p>
                 </div>
             </div>
 
             <form action="{{ route('admin.banners.destroy', $banner) }}" method="POST"
-                onsubmit="return confirm('Tem certeza que deseja excluir este banner?');">
+                onsubmit="return confirm('Tem certeza que deseja excluir este banner?');" class="w-full sm:w-auto">
                 @csrf
                 @method('DELETE')
                 <button type="submit"
-                    class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors flex items-center gap-1.5">
+                    class="w-full sm:w-auto justify-center px-4 py-2.5 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-base">delete</span>
                     Excluir Banner
                 </button>
@@ -42,7 +42,7 @@
             @csrf
             @method('PUT')
 
-            <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-8 space-y-8">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-8 space-y-8">
                 {{-- Preview Atual --}}
                 @if($banner->effective_image_url || $banner->effective_video_url)
                     <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center gap-4">
@@ -206,13 +206,13 @@
             </div>
 
             {{-- Submit --}}
-            <div class="flex items-center justify-end gap-4">
+            <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4">
                 <a href="{{ route('admin.banners.index') }}"
-                    class="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-sm hover:bg-slate-50 transition-all">
+                    class="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-sm hover:bg-slate-50 transition-all text-center w-full sm:w-auto">
                     Cancelar
                 </a>
                 <button type="submit"
-                    class="px-8 py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
+                    class="px-8 py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all text-center w-full sm:w-auto">
                     Salvar Alterações
                 </button>
             </div>

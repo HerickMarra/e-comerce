@@ -1,13 +1,13 @@
 <x-admin-layout>
     <div class="space-y-8">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Modelos de E-mail</h1>
-                <p class="text-slate-500 mt-1">Gerencie os modelos de e-mail do sistema e marketing.</p>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Modelos de E-mail</h1>
+                <p class="text-slate-500 mt-1 text-xs sm:text-sm">Gerencie os modelos de e-mail do sistema e marketing.</p>
             </div>
             <a href="{{ route('admin.emails.create') }}"
-                class="inline-flex items-center justify-center px-5 py-3 bg-primary text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary/20 gap-2">
+                class="inline-flex items-center justify-center px-5 py-3 bg-primary text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary/20 gap-2 w-full sm:w-auto text-sm">
                 <span class="material-symbols-outlined text-xl">add_circle</span>
                 Novo Modelo
             </a>
@@ -33,8 +33,8 @@
 
         <!-- Templates Table -->
         <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse min-w-[600px]">
                     <thead>
                         <tr
                             class="bg-slate-50/50 border-b border-slate-100 uppercase text-[11px] font-bold text-slate-500 tracking-wider">

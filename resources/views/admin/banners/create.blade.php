@@ -30,7 +30,7 @@
             x-data="{ mediaType: 'video' }">
             @csrf
 
-            <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-8 space-y-8">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-5 sm:p-8 space-y-8">
                 {{-- Tipo de Mídia --}}
                 <div>
                     <label class="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-3 block italic">
@@ -163,13 +163,13 @@
             </div>
 
             {{-- Submit --}}
-            <div class="flex items-center justify-end gap-4">
+            <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4">
                 <a href="{{ route('admin.banners.index') }}"
-                    class="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-sm hover:bg-slate-50 transition-all">
+                    class="px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 font-bold text-sm hover:bg-slate-50 transition-all text-center w-full sm:w-auto">
                     Cancelar
                 </a>
                 <button type="submit"
-                    class="px-8 py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
+                    class="px-8 py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all text-center w-full sm:w-auto">
                     Salvar Banner
                 </button>
             </div>

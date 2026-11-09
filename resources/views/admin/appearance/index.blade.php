@@ -24,7 +24,7 @@
         @method('PUT')
 
         {{-- Seção Hero --}}
-        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-5 sm:p-8">
             <div class="flex items-center gap-4 mb-8">
                 <div
                     class="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
@@ -104,9 +104,9 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-end gap-4">
+        <div class="flex items-center justify-end">
             <button type="submit"
-                class="bg-primary text-white font-bold px-8 py-3.5 rounded-xl hover:scale-105 transition-all shadow-lg hover:shadow-primary/30 flex items-center gap-2">
+                class="w-full sm:w-auto justify-center bg-primary text-white font-bold px-8 py-3.5 rounded-xl hover:scale-105 transition-all shadow-lg hover:shadow-primary/30 flex items-center gap-2">
                 <span class="material-symbols-outlined">save</span>
                 Salvar Configurações
             </button>

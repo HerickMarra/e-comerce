@@ -149,7 +149,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="h-[300px] w-full">
+                    <div class="h-[250px] sm:h-[300px] w-full">
                         <canvas id="ordersChart"></canvas>
                     </div>
                 </div>
@@ -157,13 +157,13 @@
                 <!-- Recent Transactions -->
                 <div
                     class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                    <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <h3 class="font-bold text-lg">Pedidos Recentes</h3>
+                    <div class="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <h3 class="font-bold text-base sm:text-lg">Pedidos Recentes</h3>
                         <a href="{{ route('admin.orders.index') }}"
-                            class="text-sm font-bold text-primary hover:underline">Ver todos</a>
+                            class="text-xs sm:text-sm font-bold text-primary hover:underline">Ver todos</a>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left min-w-[500px]">
                             <thead>
                                 <tr
                                     class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-xs uppercase tracking-wider">

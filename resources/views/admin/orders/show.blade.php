@@ -25,11 +25,11 @@
                         </div>
 
                         <form action="{{ route('admin.orders.update', $order) }}" method="POST"
-                            class="flex items-center gap-3">
+                            class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
                             @csrf
                             @method('PUT')
                             <select name="status"
-                                class="px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-bold">
+                                class="w-full sm:w-auto px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-bold">
                                 <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pendente
                                 </option>
                                 <option value="paid" {{ $order->status == 'paid' ? 'selected' : '' }}>Pago</option>
@@ -43,7 +43,7 @@
                                 </option>
                             </select>
                             <button type="submit"
-                                class="bg-primary text-white font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+                                class="w-full sm:w-auto justify-center bg-primary text-white font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-sm">save</span>
                                 Atualizar
                             </button>
@@ -57,8 +57,8 @@
                     <div class="p-6 border-b border-slate-100 dark:border-slate-800">
                         <h3 class="font-bold text-lg">Produtos do Pedido</h3>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left min-w-[500px]">
                             <thead>
                                 <tr
                                     class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-xs uppercase tracking-wider">

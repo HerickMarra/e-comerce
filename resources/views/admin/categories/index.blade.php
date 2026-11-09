@@ -2,13 +2,13 @@
     @section('page_title', 'Categorias')
 
     {{-- Header --}}
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
             <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Categorias</h1>
             <p class="text-sm text-slate-500 mt-1">Organize seus produtos por categorias</p>
         </div>
         <a href="{{ route('admin.categories.create') }}"
-            class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-105">
+            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-105 w-full sm:w-auto">
             <span class="material-symbols-outlined text-lg">add</span>
             Nova Categoria
         </a>
@@ -32,7 +32,8 @@
     {{-- Table --}}
     <div
         class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-sm min-w-[640px]">
             <thead>
                 <tr class="border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
                     <th class="text-left px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">#
@@ -119,6 +120,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
 
         @if($categories->hasPages())
             <div class="px-6 py-4 border-t border-slate-100 dark:border-slate-800">

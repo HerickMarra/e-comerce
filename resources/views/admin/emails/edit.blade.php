@@ -63,7 +63,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Main Info -->
                 <div class="md:col-span-2 space-y-6">
-                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-8">
+                    <div class="bg-white rounded-3xl p-5 sm:p-8 shadow-sm border border-slate-100 space-y-8">
                         <h2 class="text-xl font-bold text-slate-900 flex items-center gap-3">
                             <div
                                 class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -108,7 +108,7 @@
 
                 <!-- Sidebar Info -->
                 <div class="space-y-6">
-                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-6">
+                    <div class="bg-white rounded-3xl p-5 sm:p-8 shadow-sm border border-slate-100 space-y-6">
                         <h2 class="text-xl font-bold text-slate-900 flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                                 <span class="material-symbols-outlined">category</span>

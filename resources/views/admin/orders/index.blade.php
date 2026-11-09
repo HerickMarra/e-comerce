@@ -33,8 +33,8 @@
         <!-- Orders Table -->
         <div
             class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left min-w-[720px]">
                     <thead>
                         <tr class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-xs uppercase tracking-wider">
                             <th class="px-6 py-4 font-bold">Número</th>

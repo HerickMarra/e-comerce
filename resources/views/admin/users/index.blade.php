@@ -401,21 +401,21 @@
                 @click.away="showSummaryModal = false">
 
                 {{-- Header Moderno do Modal --}}
-                <div class="p-6 sm:p-8 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
+                <div class="p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
                     <div class="absolute -right-16 -bottom-16 size-64 rounded-full bg-primary/10 blur-2xl pointer-events-none"></div>
                     <div class="absolute -left-12 -top-12 size-48 rounded-full bg-emerald-500/10 blur-xl pointer-events-none"></div>
 
-                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6 relative z-10">
                         {{-- Perfil do Usuário --}}
-                        <div class="flex items-center gap-4 sm:gap-5">
-                            <div class="size-16 sm:size-20 rounded-2xl bg-gradient-to-tr from-primary to-blue-500 p-0.5 shadow-xl shadow-primary/20 shrink-0">
-                                <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-2xl sm:text-3xl text-white">
+                        <div class="flex items-center gap-3.5 sm:gap-5 min-w-0">
+                            <div class="size-12 xs:size-16 sm:size-20 rounded-2xl bg-gradient-to-tr from-primary to-blue-500 p-0.5 shadow-xl shadow-primary/20 shrink-0">
+                                <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center font-black text-xl xs:text-2xl sm:text-3xl text-white">
                                     <span x-text="summaryData?.user?.name ? summaryData.user.name.charAt(0).toUpperCase() : 'U'"></span>
                                 </div>
                             </div>
                             <div class="space-y-1.5 min-w-0">
-                                <div class="flex items-center gap-2.5 flex-wrap">
-                                    <h3 class="text-xl sm:text-2xl font-black text-white truncate max-w-sm sm:max-w-md"
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h3 class="text-lg sm:text-2xl font-black text-white truncate max-w-[200px] xs:max-w-sm sm:max-w-md"
                                         x-text="summaryData?.user?.name || 'Carregando...'"></h3>
                                     
                                     {{-- Segmento do Cliente --}}
@@ -434,10 +434,10 @@
                                 </div>
 
                                 {{-- Pílulas de Contato Rápido --}}
-                                <div class="flex items-center gap-3 flex-wrap text-xs text-slate-300">
-                                    <div class="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
+                                <div class="flex items-center gap-2 sm:gap-3 flex-wrap text-xs text-slate-300">
+                                    <div class="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10 max-w-full">
                                         <span class="material-symbols-outlined text-sm text-slate-400">mail</span>
-                                        <span class="font-medium truncate max-w-[200px]" x-text="summaryData?.user?.email || ''"></span>
+                                        <span class="font-medium truncate max-w-[140px] xs:max-w-[180px] sm:max-w-[220px]" x-text="summaryData?.user?.email || ''"></span>
                                         <button type="button" @click="copyText(summaryData?.user?.email, 'email')"
                                             class="text-slate-400 hover:text-white transition-colors ml-1"
                                             :title="copiedField === 'email' ? 'Copiado!' : 'Copiar E-mail'">
@@ -448,7 +448,7 @@
                                     <template x-if="summaryData?.user?.cpf && summaryData?.user?.cpf !== 'Não informado'">
                                         <div class="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10">
                                             <span class="material-symbols-outlined text-sm text-slate-400">badge</span>
-                                            <span class="font-mono font-medium" x-text="summaryData.user.cpf"></span>
+                                            <span class="font-mono font-medium text-xs" x-text="summaryData.user.cpf"></span>
                                             <button type="button" @click="copyText(summaryData?.user?.raw_cpf, 'cpf')"
                                                 class="text-slate-400 hover:text-white transition-colors ml-1"
                                                 :title="copiedField === 'cpf' ? 'Copiado!' : 'Copiar CPF'">
@@ -465,7 +465,7 @@
                         </div>
 
                         {{-- Ações no Topo do Modal --}}
-                        <div class="flex items-center gap-2 self-end lg:self-center">
+                        <div class="flex items-center gap-2 flex-wrap self-end lg:self-center">
                             <template x-if="summaryData?.user?.clean_phone">
                                 <button type="button" @click="openWhatsApp()"
                                     class="px-3.5 py-2 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 active:scale-95">
@@ -501,7 +501,7 @@
                 </div>
 
                 {{-- Conteúdo do Modal --}}
-                <div x-show="!summaryLoading && summaryData" class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
+                <div x-show="!summaryLoading && summaryData" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 custom-scrollbar">
                     
                     {{-- 4 Cards de Métricas Principais --}}
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">

@@ -56,8 +56,8 @@
                 {{-- Imagem --}}
                 <div class="space-y-4" x-data="{ preview: '{{ $category->image_path ? asset('storage/' . $category->image_path) : '' }}' }">
                     <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block">Imagem da Categoria</label>
-                    <div class="flex items-start gap-6">
-                        <div class="size-32 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden relative group">
+                    <div class="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+                        <div class="size-28 sm:size-32 rounded-2xl bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden relative group shrink-0">
                             <template x-if="preview">
                                 <img :src="preview" class="w-full h-full object-cover">
                             </template>

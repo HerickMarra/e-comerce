@@ -2,27 +2,27 @@
     <div class="max-w-6xl mx-auto space-y-8">
         <!-- Header -->
         <div
-            class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] shadow-sm border border-slate-100">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900 flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-                        <span class="material-symbols-outlined text-3xl">mail</span>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 flex items-center gap-3">
+                    <div class="size-10 sm:size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-2xl sm:text-3xl">mail</span>
                     </div>
                     Inscrições Newsletter
                 </h1>
-                <p class="text-slate-500 mt-2 font-medium">Gerencie os e-mails capturados através do rodapé do site.</p>
+                <p class="text-slate-500 mt-2 font-medium text-xs sm:text-sm">Gerencie os e-mails capturados através do rodapé do site.</p>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="px-6 py-3 bg-slate-50 rounded-2xl border border-slate-100 text-sm font-bold text-slate-600">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="w-full sm:w-auto text-center px-5 py-2.5 sm:px-6 sm:py-3 bg-slate-50 rounded-2xl border border-slate-100 text-xs sm:text-sm font-bold text-slate-600">
                     Total: {{ $subscriptions->total() }} e-mails
                 </div>
             </div>
         </div>
 
         <!-- Tabela -->
-        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
+        <div class="bg-white rounded-3xl sm:rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left min-w-[500px]">
                     <thead>
                         <tr class="border-b border-slate-50">
                             <th class="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
