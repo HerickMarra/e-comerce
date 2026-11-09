@@ -43,11 +43,18 @@
                                         <div>
                                             <h3 class="text-lg font-medium text-slate-900 dark:text-white"
                                                 x-text="item.name"></h3>
-                                            <template x-if="item.color_name && !item.available_colors?.length">
-                                                <p
-                                                    class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-bold">
-                                                    Cor: <span x-text="item.color_name"></span></p>
-                                            </template>
+                                            <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                                                <template x-if="item.size">
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-black border border-slate-200 dark:border-slate-700">
+                                                        Tam: <span class="ml-1" x-text="item.size"></span>
+                                                    </span>
+                                                </template>
+                                                <template x-if="item.color_name && !item.available_colors?.length">
+                                                    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">
+                                                        Cor: <span x-text="item.color_name"></span>
+                                                    </span>
+                                                </template>
+                                            </div>
 
                                             <template x-if="item.available_colors && item.available_colors.length > 0">
                                                 <div class="mt-3">
@@ -133,20 +140,20 @@
 
                             {{-- Always-visible: Store Pickup --}}
                             @if(App\Models\Setting::get('enable_store_pickup', '1') === '1')
-                                <label class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all"
-                                    :class="selectedShipping?._type === 'pickup' ? 'border-primary bg-primary/5' : 'border-slate-100 hover:border-slate-300'">
-                                    <input type="radio" class="accent-primary"
+                                <label class="flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all"
+                                    :class="selectedShipping?._type === 'pickup' ? 'border-emerald-500 bg-emerald-50/20' : 'border-slate-100 dark:border-slate-800 hover:border-slate-300'">
+                                    <input type="radio" class="accent-emerald-600"
                                         :checked="selectedShipping?._type === 'pickup'"
-                                        @change="selectShipping({ _type: 'pickup', modalidade: 'Retirar na Loja', prazo: 0, valor: 0, simulacao_id: null })">
+                                        @change="selectShipping({ _type: 'pickup', servico: 'Retirada na Loja Física', modalidade: 'Retirar na Loja', prazo: 0, valor: 0, simulacao_id: null })">
                                     <div class="flex-1">
                                         <p
                                             class="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                                            <span class="material-symbols-outlined text-sm text-primary">store</span>
-                                            Retirar na Loja
+                                            <span class="material-symbols-outlined text-base text-emerald-600">storefront</span>
+                                            Retirar na Loja Física
                                         </p>
-                                        <p class="text-[10px] text-slate-500">Combine o horário após o pedido</p>
+                                        <p class="text-[10px] text-slate-500">Pronto em até 2 horas úteis</p>
                                     </div>
-                                    <p class="text-sm font-bold text-emerald-500">Grátis</p>
+                                    <span class="text-xs font-black text-emerald-600 bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full uppercase">Grátis</span>
                                 </label>
                             @endif
 

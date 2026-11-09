@@ -52,14 +52,26 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
             'color' => 'nullable|string',
             'color_name' => 'nullable|string',
+            'size' => 'nullable|string',
         ]);
+
+        $availableSizes = $product->availableSizes();
+        if (!empty($availableSizes) && empty($request->size)) {
+            return back()->withErrors(['message' => 'Por favor, selecione um tamanho de tênis antes de comprar.'])->withInput();
+        }
+
+        if ($product->colors()->exists() && empty($request->color)) {
+            return back()->withErrors(['message' => 'Por favor, selecione a cor do tênis antes de comprar.'])->withInput();
+        }
 
         if ($product->stock <= 0) {
             return back()->withErrors(['message' => 'Desculpe, este produto acabou de esgotar.']);
         }
 
         $cart = session()->get('cart', []);
-        $id = $product->id . ($request->color ? '_' . str_replace('#', '', $request->color) : '');
+        $id = $product->id 
+            . ($request->color ? '_' . str_replace('#', '', $request->color) : '')
+            . ($request->size ? '_tam' . preg_replace('/[^a-zA-Z0-9]/', '', $request->size) : '');
 
         $currentQty = isset($cart[$id]) ? $cart[$id]['quantity'] : 0;
         $newQty = $currentQty + $request->quantity;
@@ -79,6 +91,7 @@ class CartController extends Controller
                 'price' => $product->price,
                 'color' => $request->color,
                 'color_name' => $request->color_name,
+                'size' => $request->size,
                 'image' => $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? ''),
             ];
         }

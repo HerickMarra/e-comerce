@@ -1,181 +1,332 @@
 <x-admin-layout>
-    <div class="max-w-5xl mx-auto space-y-8">
+    @section('page_title', 'Editar Tênis: ' . $product->name)
+
+    <div class="max-w-6xl mx-auto space-y-8" x-data="sneakerEditForm()" @submit.prevent="validateAndSubmit()">
         <!-- Header -->
-        <div class="flex items-center gap-4">
-            <a href="{{ route('admin.products.index') }}"
-                class="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all">
-                <span class="material-symbols-outlined">arrow_back</span>
-            </a>
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900">Editar Produto</h1>
-                <p class="text-slate-500 mt-1">Atualize as informações e organize a galeria de fotos.</p>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="{{ route('admin.products.index') }}"
+                    class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white transition-all">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider mb-1">
+                        <span class="material-symbols-outlined text-xs">steps</span>
+                        Gerenciar Tênis #{{ $product->id }}
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Editar Tênis</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Atualize a numeração, cores, fotos e especificações do modelo.</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <a href="{{ route('product.show', $product->slug) }}" target="_blank"
+                    class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">visibility</span>
+                    Ver na Loja
+                </a>
             </div>
         </div>
 
-        <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data"
-            class="space-y-6" x-data="productForm()" @submit.prevent="validateAndSubmit()">
+        <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
             @csrf
             @method('PUT')
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Coluna Principal -->
-                <div class="lg:col-span-2 space-y-6">
-                    <!-- Informações Básicas -->
-                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-8">
-                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                                <span class="material-symbols-outlined">info</span>
+                <!-- Coluna Principal (2/3) -->
+                <div class="lg:col-span-2 space-y-8">
+
+                    <!-- CARD 1: Dados Principais do Tênis -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                <span class="material-symbols-outlined">steps</span>
                             </div>
-                            Informações Básicas
+                            Informações do Tênis
                         </h2>
 
-                        <div class="space-y-6">
+                        <div class="space-y-5">
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Nome do Produto</label>
-                                <input type="text" name="name" value="{{ old('name', $product->name) }}"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium py-4 px-6 border-2"
-                                    placeholder="Ex: Sofá Chesterfield Couro">
-                                @error('name') <p class="mt-2 text-sm text-red-500 font-medium">{{ $message }}</p>
-                                @enderror
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                                    Nome do Modelo <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="name" value="{{ old('name', $product->name) }}" required
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-bold py-3.5 px-5 border-2 text-base text-slate-900 dark:text-white"
+                                    placeholder="Ex: Tênis Nike Air Force 1 '07 LV8">
+                                @error('name') <p class="mt-1.5 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                                        Marca / Fabricante
+                                    </label>
+                                    <div class="relative">
+                                        <input type="text" name="brand" x-model="brand" list="brands-list"
+                                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-semibold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white"
+                                            placeholder="Ex: Nike, Adidas, Olympikus...">
+                                        <datalist id="brands-list">
+                                            <option value="Nike">
+                                            <option value="Adidas">
+                                            <option value="Olympikus">
+                                            <option value="Puma">
+                                            <option value="Asics">
+                                            <option value="Mizuno">
+                                            <option value="New Balance">
+                                            <option value="Vans">
+                                            <option value="Converse">
+                                            <option value="Fila">
+                                        </datalist>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                                        Linha / Coleção
+                                    </label>
+                                    <input type="text" name="model_line" value="{{ old('model_line', $product->model_line) }}"
+                                        class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-semibold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white"
+                                        placeholder="Ex: Running / Casual / Streetwear">
+                                </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Descrição Detalhada</label>
-                                <textarea name="description" rows="6"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium py-4 px-6 border-2"
-                                    placeholder="Descreva os materiais, dimensões e diferenciais...">{{ old('description', $product->description) }}</textarea>
-                                @error('description') <p class="mt-2 text-sm text-red-500 font-medium">{{ $message }}
-                                </p> @enderror
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                                    Gênero do Calçado
+                                </label>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    @foreach(['Masculino', 'Feminino', 'Unissex', 'Infantil'] as $genderOption)
+                                        <label class="flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all text-xs font-bold"
+                                            :class="gender === '{{ $genderOption }}' ? 'border-primary bg-primary/10 text-primary' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300'">
+                                            <input type="radio" name="gender" value="{{ $genderOption }}" class="hidden" x-model="gender">
+                                            <span>{{ $genderOption }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Especificações
-                                    Técnicas</label>
-                                <textarea name="technical_specifications" rows="6"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium py-4 px-6 border-2"
-                                    placeholder="Poderá colocar especificações técnicas aqui...">{{ old('technical_specifications', $product->technical_specifications) }}</textarea>
-                                @error('technical_specifications') <p class="mt-2 text-sm text-red-500 font-medium">
-                                    {{ $message }}
-                                </p> @enderror
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                                    Descrição e Detalhes do Calçado
+                                </label>
+                                <textarea name="description" rows="5"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-medium p-4 border-2 text-sm text-slate-900 dark:text-white"
+                                    placeholder="Descreva o conforto, tipo de pisada, tecnologias de amortecimento e estilo do tênis...">{{ old('description', $product->description) }}</textarea>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Cores (Move to left) -->
-                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-8">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-3">
-                                <div
-                                    class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                                    <span class="material-symbols-outlined">palette</span>
-                                </div>
-                                Opções de Cores
-                            </h2>
-                            <button type="button" @click="addColor()"
-                                class="text-sm font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1 transition-colors">
-                                <span class="material-symbols-outlined text-base">add_circle</span>
-                                Adicionar Cor
+                    <!-- CARD 2: Tamanhos Disponíveis (BR) -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center">
+                                        <span class="material-symbols-outlined">straighten</span>
+                                    </div>
+                                    Tamanhos Disponíveis (Padrão BR)
+                                </h2>
+                                <p class="text-xs text-slate-400 mt-1">Selecione as numerações que você tem em estoque para este tênis.</p>
+                            </div>
+                            <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-xs font-black text-slate-700 dark:text-slate-300 w-fit">
+                                <span x-text="selectedSizes.length"></span> tamanhos ativos
+                            </span>
+                        </div>
+
+                        {{-- Botões de Seleção Rápida --}}
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mr-1">Predefinições:</span>
+                            <button type="button" @click="setSizes(['38','39','40','41','42','43'])"
+                                class="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold transition-colors">
+                                🔥 Mais Vendidos (38 ao 43)
+                            </button>
+                            <button type="button" @click="setSizes(['36','37','38','39','40','41','42','43','44'])"
+                                class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors">
+                                👟 Adulto Padrão (36 ao 44)
+                            </button>
+                            <button type="button" @click="selectAllSizes()"
+                                class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors">
+                                Todos
+                            </button>
+                            <button type="button" @click="selectedSizes = []"
+                                class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition-colors">
+                                Limpar
                             </button>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-show="colors.length > 0">
+                        {{-- Grade de Numerações Interativa --}}
+                        <div class="grid grid-cols-4 sm:grid-cols-7 gap-2.5">
+                            <template x-for="size in allSizes" :key="size">
+                                <button type="button" @click="toggleSize(size)"
+                                    :class="selectedSizes.includes(size) 
+                                        ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-md ring-2 ring-primary/40' 
+                                        : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400'"
+                                    class="py-3 px-2 rounded-xl text-center font-black text-sm border-2 transition-all hover:scale-105 active:scale-95 flex flex-col items-center justify-center">
+                                    <span x-text="size"></span>
+                                    <span class="text-[9px] uppercase font-bold tracking-tight opacity-60">BR</span>
+                                </button>
+                            </template>
+                        </div>
+
+                        {{-- Adicionar Numeração Customizada --}}
+                        <div class="flex items-center gap-3 pt-2">
+                            <input type="text" x-model="customSizeInput" @keydown.enter.prevent="addCustomSize()"
+                                placeholder="Outro tamanho (ex: 33, 47, 39.5)"
+                                class="w-64 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-xs font-bold focus:ring-primary focus:border-primary border text-slate-900 dark:text-white">
+                            <button type="button" @click="addCustomSize()"
+                                class="px-4 py-2 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
+                                + Adicionar Tamanho
+                            </button>
+                        </div>
+
+                        {{-- Hidden inputs for form submit --}}
+                        <template x-for="size in selectedSizes" :key="'hidden_' + size">
+                            <input type="hidden" name="sizes[]" :value="size">
+                        </template>
+                    </div>
+
+                    <!-- CARD 3: Cores & Colorways do Tênis -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center">
+                                        <span class="material-symbols-outlined">palette</span>
+                                    </div>
+                                    Cores & Colorways
+                                </h2>
+                                <p class="text-xs text-slate-400 mt-1">Cadastre as cores disponíveis deste calçado.</p>
+                            </div>
+                            <button type="button" @click="addColor()"
+                                class="text-xs font-bold text-purple-600 hover:text-purple-700 bg-purple-50 dark:bg-purple-900/30 px-3 py-2 rounded-xl flex items-center gap-1 transition-colors">
+                                <span class="material-symbols-outlined text-base">add</span>
+                                Nova Cor
+                            </button>
+                        </div>
+
+                        {{-- Presets de cores populares para tênis --}}
+                        <div>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Cores Populares de Tênis:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <button type="button" @click="addPresetColor('#000000', 'All Black (Preto)')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-black text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> All Black
+                                </button>
+                                <button type="button" @click="addPresetColor('#FFFFFF', 'Triple White (Branco)')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white text-slate-900 text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-slate-300"></span> Triple White
+                                </button>
+                                <button type="button" @click="addPresetColor('#1a1a1a', 'Panda (Preto e Branco)')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-900 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> Panda (P&B)
+                                </button>
+                                <button type="button" @click="addPresetColor('#808080', 'Cinza / Prata')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-500 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> Cinza
+                                </button>
+                                <button type="button" @click="addPresetColor('#1E40AF', 'Azul Royal')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-blue-700 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> Azul Royal
+                                </button>
+                                <button type="button" @click="addPresetColor('#DC2626', 'Vermelho')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-red-600 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> Vermelho
+                                </button>
+                                <button type="button" @click="addPresetColor('#F5F5DC', 'Off-White / Gelo')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-amber-50 text-amber-900 text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-amber-200"></span> Off-White
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Lista de Cores Configuradas --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <template x-for="(colorObj, index) in colors" :key="index">
-                                <div
-                                    class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 group transition-all hover:bg-white hover:shadow-lg hover:shadow-slate-200/50">
-                                    <!-- Color Picker Preview -->
-                                    <div
-                                        class="relative w-12 h-12 rounded-xl overflow-hidden shadow-inner border-2 border-white ring-1 ring-slate-200 shrink-0">
+                                <div class="flex items-center gap-3 p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 transition-all">
+                                    <div class="relative w-10 h-10 rounded-xl overflow-hidden shadow-inner border border-slate-300 dark:border-slate-600 shrink-0">
                                         <input type="color" x-model="colors[index].hex"
                                             class="absolute inset-[-50%] w-[200%] h-[200%] cursor-pointer">
                                     </div>
-
-                                    <div class="flex-1 space-y-1">
+                                    <div class="flex-1 space-y-0.5">
                                         <input type="text" x-model="colors[index].name" :name="`colors[${index}][name]`"
-                                            class="w-full bg-transparent border-none p-0 focus:ring-0 font-bold text-sm text-slate-700 placeholder:text-slate-400"
-                                            placeholder="Nome da Cor">
+                                            class="w-full bg-transparent border-none p-0 focus:ring-0 font-bold text-xs text-slate-800 dark:text-slate-200 placeholder:text-slate-400"
+                                            placeholder="Nome da cor (ex: Triple Black)">
                                         <input type="text" x-model="colors[index].hex" :name="`colors[${index}][hex]`"
-                                            class="w-full bg-transparent border-none p-0 focus:ring-0 font-mono text-[10px] uppercase text-slate-400"
-                                            placeholder="#FFFFFF">
+                                            class="w-full bg-transparent border-none p-0 focus:ring-0 font-mono text-[10px] uppercase text-slate-400">
                                     </div>
-
                                     <button type="button" @click="removeColor(index)"
-                                        class="w-8 h-8 rounded-lg bg-white text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                        class="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                        <span class="material-symbols-outlined text-base">close</span>
                                     </button>
                                 </div>
                             </template>
                         </div>
-
-                        <div x-show="colors.length === 0"
-                            class="py-10 text-center border-2 border-dashed border-slate-100 rounded-3xl">
-                            <span class="material-symbols-outlined text-slate-200 text-5xl mb-2">palette</span>
-                            <p class="text-sm text-slate-400 font-medium">Defina as opções de cores para este produto.
-                            </p>
-                        </div>
                     </div>
 
-                    <!-- Galeria de Imagens -->
-                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-8">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-3">
-                                <div
-                                    class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                                    <span class="material-symbols-outlined">imagesmode</span>
-                                </div>
-                                Galeria de Imagens
-                            </h2>
-                            <span
-                                class="text-xs font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-full uppercase tracking-wider"
-                                x-text="`${images.length} fotos` text-sm"></span>
-                        </div>
-
-                        <!-- Upload Area -->
-                        <div class="relative">
-                            <input type="file" multiple accept="image/*"
-                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
-                                @change="handleFileUpload($event)">
-                            <div
-                                class="w-full py-12 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center hover:border-emerald-500 transition-all bg-slate-50/50 group">
-                                <div
-                                    class="w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                    <span
-                                        class="material-symbols-outlined text-emerald-500 text-3xl">add_photo_alternate</span>
-                                </div>
-                                <p class="text-base font-bold text-slate-700">Clique ou arraste novas imagens aqui</p>
-                                <p class="text-sm text-slate-400 mt-1">A primeira imagem será a principal</p>
+                    <!-- CARD 4: Galeria de Fotos do Tênis -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center">
+                                        <span class="material-symbols-outlined">photo_library</span>
+                                    </div>
+                                    Fotos do Tênis
+                                </h2>
+                                <p class="text-xs text-slate-400 mt-1">A primeira foto é a capa principal do anúncio. Arraste para reordenar.</p>
                             </div>
+                            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full">
+                                <span x-text="images.length"></span> fotos
+                            </span>
                         </div>
 
-                        <!-- Sortable Gallery -->
-                        <div x-ref="sortableContainer"
-                            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 min-h-[140px]">
+                        {{-- Dica para lojas de calçados --}}
+                        <div class="p-3.5 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800/40 text-xs text-blue-800 dark:text-blue-300 flex items-start gap-2.5">
+                            <span class="material-symbols-outlined text-base shrink-0 mt-0.5 text-blue-600">lightbulb</span>
+                            <p><strong>Dica de fotografia para tênis:</strong> Posições ideais: 1ª Lateral Externa (Capa), 2ª Lateral Interna, 3ª Vista Superior (Bico), 4ª Traseira e 5ª Solado.</p>
+                        </div>
+
+                        {{-- Upload Box --}}
+                        <div class="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-primary rounded-2xl p-6 text-center cursor-pointer transition-colors relative"
+                            @dragover.prevent="$el.classList.add('border-primary', 'bg-primary/5')"
+                            @dragleave.prevent="$el.classList.remove('border-primary', 'bg-primary/5')"
+                            @drop.prevent="$el.classList.remove('border-primary', 'bg-primary/5'); handleFileUpload($event)">
+                            <input type="file" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                @change="handleFileUpload($event)">
+                            <span class="material-symbols-outlined text-4xl text-slate-400 mb-2 block">add_photo_alternate</span>
+                            <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Clique ou arraste novas fotos do tênis aqui</p>
+                            <p class="text-xs text-slate-400 mt-1">Suporta JPG, PNG, WEBP de alta qualidade</p>
+                        </div>
+
+                        {{-- Ou adicionar URL externa --}}
+                        <div class="flex items-center gap-2">
+                            <input type="url" x-model="externalUrl" placeholder="Ou cole a URL de uma imagem da internet (https://...)"
+                                class="flex-1 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono focus:ring-primary focus:border-primary border text-slate-900 dark:text-white">
+                            <button type="button" @click="addExternalImage()"
+                                class="px-4 py-2.5 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
+                                Adicionar
+                            </button>
+                        </div>
+
+                        {{-- Preview Grid Reordenável --}}
+                        <div x-ref="sortableContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-4" x-show="images.length > 0">
                             <template x-for="(img, index) in images" :key="img.id">
-                                <div :data-id="img.id"
-                                    class="relative aspect-[3/4] rounded-2xl border-2 border-slate-100 overflow-hidden bg-slate-50 cursor-move group hover:border-emerald-500 transition-all shadow-sm">
+                                <div class="relative aspect-square rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group cursor-move shadow-sm bg-slate-100 dark:bg-slate-800">
                                     <img :src="img.preview" class="w-full h-full object-cover">
-
-                                    <!-- Badges -->
-                                    <div class="absolute top-2 left-2 flex flex-col gap-1">
-                                        <template x-if="index === 0">
-                                            <span
-                                                class="px-2 py-0.5 bg-emerald-600 text-[9px] font-black text-white uppercase rounded-lg shadow-lg">Principal</span>
-                                        </template>
-                                        <span
-                                            class="w-6 h-6 flex items-center justify-center bg-slate-900/60 backdrop-blur-md text-white rounded-lg text-[10px] font-black"
-                                            x-text="index + 1"></span>
+                                    
+                                    {{-- Badge Capa --}}
+                                    <div x-show="index === 0" class="absolute top-2 left-2 px-2 py-0.5 bg-primary text-white text-[9px] font-black uppercase rounded-md shadow-md">
+                                        Foto Capa
+                                    </div>
+                                    <div x-show="index > 0" class="absolute top-2 left-2 px-1.5 py-0.5 bg-black/60 text-white text-[9px] font-bold rounded">
+                                        #<span x-text="index + 1"></span>
                                     </div>
 
-                                    <!-- Actions -->
-                                    <div
-                                        class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                        <button type="button" @click="removeImage(index)"
-                                            class="w-10 h-10 bg-white text-red-500 rounded-xl hover:bg-red-50 transition-colors shadow-xl">
-                                            <span class="material-symbols-outlined text-xl">delete</span>
-                                        </button>
-                                    </div>
+                                    <button type="button" @click="removeImage(index)"
+                                        class="absolute top-2 right-2 size-7 bg-red-500 text-white rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
 
-                                    <!-- Hidden Inputs -->
                                     <input type="hidden" :name="`image_order[${img.id}]`" :value="index">
                                     <template x-if="img.type === 'url'">
                                         <input type="hidden" name="image_urls[]" :value="img.preview">
@@ -184,138 +335,186 @@
                             </template>
                         </div>
 
-                        <!-- Real file inputs container (hidden) -->
-                        <div class="hidden" x-ref="fileInputs"></div>
+                        {{-- Hidden file inputs container --}}
+                        <div x-ref="fileInputs" class="hidden"></div>
+                    </div>
 
-                        <!-- External URL Option -->
-                        <div class="pt-6 border-t border-slate-100">
-                            <label class="block text-sm font-bold text-slate-500 mb-3 flex items-center gap-2">
-                                <span class="material-symbols-outlined text-base">link</span>
-                                Adicionar por URL externa
-                            </label>
-                            <div class="flex gap-2">
-                                <input type="url" x-model="externalUrl"
-                                    class="flex-1 bg-slate-50 border-slate-200 rounded-xl focus:ring-emerald-500 transition-all font-medium py-3 px-4"
-                                    placeholder="https://images.unsplash.com/...">
-                                <button type="button" @click="addExternalImage()"
-                                    class="px-6 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all">Adicionar</button>
+                    <!-- CARD 5: Ficha Técnica do Tênis -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
+                                <span class="material-symbols-outlined">tune</span>
                             </div>
+                            Ficha Técnica do Calçado
+                        </h2>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                                    Material do Cabedal
+                                </label>
+                                <input type="text" name="material" value="{{ old('material', $product->material) }}"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-semibold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white"
+                                    placeholder="Ex: Mesh respirável / Couro Sintético">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                                    Solado & Amortecimento
+                                </label>
+                                <input type="text" name="sole_material" value="{{ old('sole_material', $product->sole_material) }}"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-semibold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white"
+                                    placeholder="Ex: Borracha antiderrapante com EVA">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
+                                Outras Especificações (Pisada, Drop, Origem)
+                            </label>
+                            <textarea name="technical_specifications" rows="3"
+                                class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-medium p-4 border-2 text-sm text-slate-900 dark:text-white"
+                                placeholder="Indicação: Corrida e Treino&#10;Tipo de Pisada: Neutra&#10;Garantia do Fabricante: Contra defeito de fabricação">{{ old('technical_specifications', $product->technical_specifications) }}</textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- Coluna Lateral -->
-                <div class="space-y-6">
-                    <!-- Preço e Estoque -->
-                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-8">
-                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                                <span class="material-symbols-outlined">payments</span>
-                            </div>
-                            Valores
+                <!-- Coluna Lateral (1/3) -->
+                <div class="space-y-8">
+
+                    <!-- CARD Valores & Promoção -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <span class="material-symbols-outlined text-emerald-600">payments</span>
+                            Preço & Estoque
                         </h2>
 
-                        <div class="space-y-6">
+                        <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Preço de Venda (R$)</label>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                                    Preço de Venda (R$) <span class="text-red-500">*</span>
+                                </label>
                                 <div class="relative">
-                                    <span
-                                        class="absolute left-6 top-1/2 -translate-y-1/2 font-bold text-slate-400">R$</span>
-                                    <input type="number" step="0.01" name="price"
-                                        value="{{ old('price', $product->price) }}"
-                                        class="w-full bg-slate-50 border-slate-200 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-black py-4 pl-14 pr-6 border-2 text-xl"
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400">R$</span>
+                                    <input type="number" step="0.01" name="price" x-model.number="price" required
+                                        class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-black py-3.5 pl-12 pr-4 border-2 text-lg text-slate-900 dark:text-white"
                                         placeholder="0,00">
                                 </div>
-                                @error('price') <p class="mt-2 text-sm text-red-500 font-medium">{{ $message }}</p>
-                                @enderror
+                                @error('price') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
                             </div>
 
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">Estoque Inicial</label>
-                                <input type="number" name="stock" value="{{ old('stock', $product->stock) }}"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-black py-4 px-6 border-2"
-                                    placeholder="0">
-                                @error('stock') <p class="mt-2 text-sm text-red-500 font-medium">{{ $message }}</p>
-                                @enderror
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                                    Preço "De" Riscado (Opcional)
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400">R$</span>
+                                    <input type="number" step="0.01" name="compare_price" x-model.number="comparePrice"
+                                        class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-bold py-3 pl-12 pr-4 border-2 text-sm text-slate-900 dark:text-white"
+                                        placeholder="Ex: 599,90">
+                                </div>
+                                <template x-if="comparePrice > price && price > 0">
+                                    <p class="mt-1.5 text-xs text-emerald-600 font-bold flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">local_offer</span>
+                                        Desconto de <span x-text="Math.round(((comparePrice - price) / comparePrice) * 100)"></span>% OFF
+                                    </p>
+                                </template>
                             </div>
 
-                            {{-- Dimensões para cálculo de frete --}}
-                            <div class="pt-2 border-t border-slate-100">
-                                <p class="text-sm font-bold text-slate-700 mb-1">Dimensões para Frete</p>
-                                <p class="text-[11px] text-slate-400 mb-4">Obrigatório para cálculo automático via
-                                    EnviaMais.</p>
-                                <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5">
+                                    Estoque Total (Pares) <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" name="stock" value="{{ old('stock', $product->stock) }}" required min="0"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-bold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white">
+                                @error('stock') <p class="mt-1 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                                <label class="flex items-center gap-3 cursor-pointer">
+                                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }}
+                                        class="rounded border-slate-300 text-primary focus:ring-primary size-5">
                                     <div>
-                                        <label class="block text-xs font-bold text-slate-500 mb-1.5">Peso (kg)</label>
-                                        <input type="number" step="0.001" name="weight"
-                                            value="{{ old('weight', $product->weight) }}"
-                                            class="w-full bg-slate-50 border-slate-200 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 transition-all py-3 px-4 border-2 text-sm"
-                                            placeholder="0.000">
+                                        <span class="text-xs font-bold text-slate-900 dark:text-white block">Tênis Ativo na Loja</span>
+                                        <span class="text-[10px] text-slate-400">Visível no catálogo e buscas</span>
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-500 mb-1.5">Altura (cm)</label>
-                                        <input type="number" step="0.01" name="height"
-                                            value="{{ old('height', $product->height) }}"
-                                            class="w-full bg-slate-50 border-slate-200 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 transition-all py-3 px-4 border-2 text-sm"
-                                            placeholder="0.00">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-500 mb-1.5">Largura
-                                            (cm)</label>
-                                        <input type="number" step="0.01" name="width"
-                                            value="{{ old('width', $product->width) }}"
-                                            class="w-full bg-slate-50 border-slate-200 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 transition-all py-3 px-4 border-2 text-sm"
-                                            placeholder="0.00">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-500 mb-1.5">Comprimento
-                                            (cm)</label>
-                                        <input type="number" step="0.01" name="length"
-                                            value="{{ old('length', $product->length) }}"
-                                            class="w-full bg-slate-50 border-slate-200 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 transition-all py-3 px-4 border-2 text-sm"
-                                            placeholder="0.00">
-                                    </div>
-                                </div>
+                                </label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Categorias -->
-                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-8">
-                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                                <span class="material-symbols-outlined">sell</span>
-                            </div>
-                            Categorias
+                    <!-- CARD Categorias / Marcas -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
+                        <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <span class="material-symbols-outlined text-blue-600">category</span>
+                            Categorias / Marcas <span class="text-red-500">*</span>
                         </h2>
 
-                        <div>
-                            <select name="categories[]" multiple
-                                class="w-full bg-slate-50 border-slate-200 rounded-2xl focus:ring-emerald-500 focus:border-emerald-500 transition-all font-medium py-4 px-6 border-2 h-48 custom-scrollbar">
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ in_array($category->id, old('categories', $product->categories->pluck('id')->toArray())) ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <p class="mt-3 text-[11px] text-slate-400 font-bold uppercase tracking-tight">Segure Ctrl
-                                para selecionar mais de uma</p>
-                            @error('categories') <p class="mt-2 text-sm text-red-500 font-medium">{{ $message }}</p>
-                            @enderror
+                        <div class="space-y-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
+                            @php 
+                                $selectedCategoryIds = old('categories', $product->categories->pluck('id')->toArray()); 
+                            @endphp
+                            @foreach($categories as $category)
+                                <label class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+                                    <input type="checkbox" name="categories[]" value="{{ $category->id }}"
+                                        {{ in_array($category->id, $selectedCategoryIds) ? 'checked' : '' }}
+                                        class="rounded border-slate-300 text-primary focus:ring-primary size-4">
+                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-200">{{ $category->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        @error('categories') <p class="text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
+                    </div>
+
+                    <!-- CARD Caixa de Envio / Frete (Melhor Envio) -->
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                            <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <span class="material-symbols-outlined text-amber-600">local_shipping</span>
+                                Dimensões da Caixa
+                            </h2>
+                            <button type="button" @click="resetShoeBoxDimensions()"
+                                class="text-[10px] font-bold text-amber-700 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-md"
+                                title="Redefinir para medidas padrão de caixa de tênis">
+                                Padrão
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Medidas para cálculo no Melhor Envio / Correios:</p>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">Peso (kg)</label>
+                                <input type="number" step="0.001" name="weight" x-model="boxWeight"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-bold border text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">Altura (cm)</label>
+                                <input type="number" step="0.1" name="height" x-model="boxHeight"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-bold border text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">Largura (cm)</label>
+                                <input type="number" step="0.1" name="width" x-model="boxWidth"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-bold border text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1">Comprimento (cm)</label>
+                                <input type="number" step="0.1" name="length" x-model="boxLength"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-bold border text-slate-900 dark:text-white">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Botões de Ação -->
-                    <div class="pt-4 flex flex-col gap-3">
+                    <!-- Botões de Envio -->
+                    <div class="pt-2 flex flex-col gap-3">
                         <button type="submit"
-                            class="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-lg rounded-3xl transition-all shadow-2xl shadow-emerald-200 flex items-center justify-center gap-3">
+                            class="w-full py-4 bg-primary hover:opacity-95 text-white font-black text-base rounded-2xl transition-all shadow-xl shadow-primary/25 flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined">save</span>
-                            Atualizar Produto
+                            Atualizar Tênis
                         </button>
                         <a href="{{ route('admin.products.index') }}"
-                            class="w-full py-5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-3xl transition-all text-center">
-                            Descartar Alterações
+                            class="w-full py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all text-center text-xs">
+                            Voltar para a Lista
                         </a>
                     </div>
                 </div>
@@ -326,49 +525,134 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
         <script>
-            function productForm() {
+            function sneakerEditForm() {
                 return {
-                    images: [
-                        @foreach($product->images as $image)
-                                                                                                        {
-                                id: '{{ $image->id }}',
-                                preview: '{{ str_starts_with($image->path, "http") ? $image->path : asset("storage/" . $image->path) }}',
-                                type: '{{ str_starts_with($image->path, "http") ? "url" : "existing" }}'
-                            },
-                        @endforeach
-                                                            ],
-                    colors: [
-                        @foreach($product->colors as $color)
-                            { hex: '{{ $color->hex_code }}', name: '{{ $color->color_name }}' },
-                        @endforeach
-                                                            ],
+                    brand: '{{ old('brand', $product->brand) }}',
+                    gender: '{{ old('gender', $product->gender ?? 'Unissex') }}',
+                    price: {{ old('price', $product->price) }},
+                    comparePrice: {{ old('compare_price', $product->compare_price ?? 0) }},
+                    
+                    // Shoe sizes (BR standard)
+                    allSizes: ['34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'],
+                    selectedSizes: {!! json_encode(old('sizes', $product->sizes ?? ['38', '39', '40', '41', '42', '43'])) !!},
+                    customSizeInput: '',
+
+                    // Box dimensions (standard sneaker box)
+                    boxWeight: {{ old('weight', $product->weight ?: 0.8) }},
+                    boxHeight: {{ old('height', $product->height ?: 12) }},
+                    boxWidth: {{ old('width', $product->width ?: 22) }},
+                    boxLength: {{ old('length', $product->length ?: 34) }},
+
+                    // Colors
+                    colors: {!! json_encode(
+                        old('colors', 
+                            $product->colors->count() > 0 
+                                ? $product->colors->map(fn($c) => ['hex' => $c->hex_code, 'name' => $c->color_name])->values()
+                                : [['hex' => '#000000', 'name' => 'All Black']]
+                        )
+                    ) !!},
+
+                    // Images
+                    images: {!! json_encode(
+                        $product->images->sortBy('position')->values()->map(function($img) {
+                            return [
+                                'id' => (string) $img->id,
+                                'preview' => str_starts_with($img->path, 'http') ? $img->path : asset('storage/' . $img->path),
+                                'type' => 'existing'
+                            ];
+                        })
+                    ) !!},
+                    externalUrl: '',
+                    fileCount: 0,
+
+                    toggleSize(size) {
+                        const index = this.selectedSizes.indexOf(size);
+                        if (index > -1) {
+                            this.selectedSizes.splice(index, 1);
+                        } else {
+                            this.selectedSizes.push(size);
+                            this.sortSizes();
+                        }
+                    },
+
+                    setSizes(sizesArray) {
+                        this.selectedSizes = [...sizesArray];
+                    },
+
+                    selectAllSizes() {
+                        this.selectedSizes = [...this.allSizes];
+                    },
+
+                    sortSizes() {
+                        this.selectedSizes.sort((a, b) => {
+                            const numA = parseFloat(a);
+                            const numB = parseFloat(b);
+                            if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+                            return a.localeCompare(b);
+                        });
+                    },
+
+                    addCustomSize() {
+                        const val = this.customSizeInput.trim();
+                        if (val && !this.selectedSizes.includes(val)) {
+                            this.selectedSizes.push(val);
+                            if (!this.allSizes.includes(val)) {
+                                this.allSizes.push(val);
+                                this.allSizes.sort((a, b) => parseFloat(a) - parseFloat(b));
+                            }
+                            this.sortSizes();
+                            this.customSizeInput = '';
+                        }
+                    },
+
+                    resetShoeBoxDimensions() {
+                        this.boxWeight = 0.8;
+                        this.boxHeight = 12;
+                        this.boxWidth = 22;
+                        this.boxLength = 34;
+                    },
 
                     addColor() {
-                        this.colors.push({ hex: '#10B981', name: '' });
+                        this.colors.push({ hex: '#FFFFFF', name: '' });
+                    },
+
+                    addPresetColor(hex, name) {
+                        this.colors.push({ hex: hex, name: name });
                     },
 
                     removeColor(index) {
                         this.colors.splice(index, 1);
                     },
-                    externalUrl: '',
-                    fileCount: 0,
-                    nextId: 1,
 
                     init() {
+                        // Ensure all existing sizes are in allSizes list
+                        this.selectedSizes.forEach(s => {
+                            if (!this.allSizes.includes(s)) {
+                                this.allSizes.push(s);
+                            }
+                        });
+                        this.allSizes.sort((a, b) => {
+                            const numA = parseFloat(a);
+                            const numB = parseFloat(b);
+                            if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+                            return a.localeCompare(b);
+                        });
+
                         this.$nextTick(() => {
-                            new Sortable(this.$refs.sortableContainer, {
-                                animation: 150,
-                                handle: '.group',
-                                onEnd: (evt) => {
-                                    const movedItem = this.images.splice(evt.oldIndex, 1)[0];
-                                    this.images.splice(evt.newIndex, 0, movedItem);
-                                }
-                            });
+                            if (this.$refs.sortableContainer) {
+                                new Sortable(this.$refs.sortableContainer, {
+                                    animation: 150,
+                                    onEnd: (evt) => {
+                                        const movedItem = this.images.splice(evt.oldIndex, 1)[0];
+                                        this.images.splice(evt.newIndex, 0, movedItem);
+                                    }
+                                });
+                            }
                         });
                     },
 
                     handleFileUpload(event) {
-                        const files = Array.from(event.target.files);
+                        const files = Array.from(event.target.files || (event.dataTransfer && event.dataTransfer.files) || []);
                         files.forEach(file => {
                             const reader = new FileReader();
                             const id = 'file_' + (++this.fileCount);
@@ -376,7 +660,6 @@
                             reader.onload = (e) => {
                                 this.images.push({
                                     id: id,
-                                    file: file,
                                     preview: e.target.result,
                                     type: 'file'
                                 });
@@ -384,7 +667,7 @@
                             };
                             reader.readAsDataURL(file);
                         });
-                        event.target.value = ''; // Reset input
+                        if (event.target) event.target.value = '';
                     },
 
                     addFileInput(id, file) {
@@ -403,7 +686,7 @@
                     addExternalImage() {
                         if (this.externalUrl) {
                             this.images.push({
-                                id: 'ext_' + (this.nextId++),
+                                id: 'ext_' + Date.now(),
                                 preview: this.externalUrl,
                                 type: 'url'
                             });
@@ -426,11 +709,11 @@
 
                         let errors = [];
 
-                        if (!formData.get('name')) errors.push("O nome do produto é obrigatório.");
-                        if (!formData.get('price')) errors.push("O preço é obrigatório.");
-                        if (!formData.get('stock')) errors.push("O estoque é obrigatório.");
-                        if (formData.getAll('categories[]').length === 0) errors.push("Selecione pelo menos uma categoria.");
-                        if (this.images.length === 0) errors.push("Adicione pelo menos uma imagem.");
+                        if (!formData.get('name')) errors.push("O nome do tênis é obrigatório.");
+                        if (!formData.get('price')) errors.push("O preço de venda é obrigatório.");
+                        if (formData.getAll('categories[]').length === 0) errors.push("Selecione pelo menos uma categoria ou marca.");
+                        if (this.selectedSizes.length === 0) errors.push("Selecione pelo menos uma numeração/tamanho para o tênis.");
+                        if (this.images.length === 0) errors.push("O tênis precisa ter pelo menos uma imagem.");
 
                         if (errors.length > 0) {
                             alert("Por favor, preencha os campos obrigatórios:\n\n- " + errors.join("\n- "));
@@ -439,26 +722,8 @@
 
                         form.submit();
                     }
-                }
+                };
             }
         </script>
-        <style>
-            .custom-scrollbar::-webkit-scrollbar {
-                width: 6px;
-            }
-
-            .custom-scrollbar::-webkit-scrollbar-track {
-                background: transparent;
-            }
-
-            .custom-scrollbar::-webkit-scrollbar-thumb {
-                background: #e2e8f0;
-                border-radius: 10px;
-            }
-
-            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                background: #cbd5e1;
-            }
-        </style>
     @endpush
 </x-admin-layout>

@@ -14,8 +14,11 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(\Illuminate\Http\Request $request): View
     {
+        if ($request->filled('redirect')) {
+            session(['url.intended' => $request->redirect]);
+        }
         return view('auth.login');
     }
 
@@ -29,6 +32,11 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
+        $user->update([
+            'last_login_at' => now(),
+            'last_login_ip' => $request->ip(),
+        ]);
+
         if ($user->hasRole('Super Admin') || $user->hasRole('Admin') || $user->hasRole('Manager')) {
             return redirect()->intended(route('admin.dashboard', absolute: false));
         }

@@ -15,7 +15,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('categories')->latest()->paginate(10);
+        $products = Product::with(['categories', 'images', 'colors'])->latest()->paginate(12);
         return view('admin.products.index', compact('products'));
     }
 
@@ -35,9 +35,16 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'brand' => 'nullable|string|max:100',
+            'model_line' => 'nullable|string|max:100',
+            'gender' => 'nullable|string|in:Masculino,Feminino,Unissex,Infantil',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'compare_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'sizes' => 'nullable|array',
+            'material' => 'nullable|string|max:255',
+            'sole_material' => 'nullable|string|max:255',
             'weight' => 'nullable|numeric|min:0',
             'height' => 'nullable|numeric|min:0',
             'width' => 'nullable|numeric|min:0',
@@ -46,27 +53,48 @@ class ProductController extends Controller
             'categories.*' => 'exists:categories,id',
             'technical_specifications' => 'nullable|string',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp,avif|max:10240',
             'image_urls' => 'nullable|array',
             'image_urls.*' => 'url',
-            'image_order' => 'required|array',
+            'image_order' => 'nullable|array',
             'colors' => 'nullable|array',
             'colors.*.hex' => 'required|string|max:7',
             'colors.*.name' => 'nullable|string|max:255',
+            'is_active' => 'nullable|boolean',
         ]);
+
+        // Default sneaker box dimensions if not provided (0.8kg, 34cm x 22cm x 12cm)
+        $weight = !empty($validated['weight']) ? (float) $validated['weight'] : 0.8;
+        $height = !empty($validated['height']) ? (float) $validated['height'] : 12.0;
+        $width = !empty($validated['width']) ? (float) $validated['width'] : 22.0;
+        $length = !empty($validated['length']) ? (float) $validated['length'] : 34.0;
+
+        // Process sizes array
+        $sizes = $request->input('sizes', []);
+        if (is_array($sizes)) {
+            // Sort sizes numerically if possible
+            usort($sizes, fn($a, $b) => is_numeric($a) && is_numeric($b) ? ($a <=> $b) : strcmp($a, $b));
+        }
 
         $product = Product::create([
             'name' => $validated['name'],
             'slug' => Str::slug($validated['name']) . '-' . rand(1000, 9999),
-            'description' => $validated['description'],
+            'brand' => $validated['brand'] ?? null,
+            'model_line' => $validated['model_line'] ?? null,
+            'gender' => $validated['gender'] ?? 'Unissex',
+            'description' => $validated['description'] ?? null,
             'price' => $validated['price'],
+            'compare_price' => $validated['compare_price'] ?? null,
             'stock' => $validated['stock'],
-            'weight' => $validated['weight'] ?? null,
-            'height' => $validated['height'] ?? null,
-            'width' => $validated['width'] ?? null,
-            'length' => $validated['length'] ?? null,
+            'sizes' => $sizes,
+            'material' => $validated['material'] ?? null,
+            'sole_material' => $validated['sole_material'] ?? null,
+            'weight' => $weight,
+            'height' => $height,
+            'width' => $width,
+            'length' => $length,
             'technical_specifications' => $validated['technical_specifications'] ?? null,
-            'is_active' => true,
+            'is_active' => $request->boolean('is_active', true),
         ]);
 
         $product->categories()->attach($request->categories);
@@ -106,7 +134,7 @@ class ProductController extends Controller
         // Save colors
         if ($request->has('colors')) {
             foreach ($request->colors as $colorData) {
-                if (isset($colorData['hex'])) {
+                if (!empty($colorData['hex'])) {
                     $product->colors()->create([
                         'hex_code' => $colorData['hex'],
                         'color_name' => $colorData['name'] ?? null,
@@ -115,15 +143,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('admin.products.index')->with('success', 'Produto criado com sucesso com sua galeria organizada!');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        return redirect()->route('admin.products.index')->with('success', 'Tênis cadastrado com sucesso!');
     }
 
     /**
@@ -131,7 +151,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load(['categories', 'images']);
+        $product->load(['categories', 'images', 'colors']);
         $categories = Category::all();
         return view('admin.products.edit', compact('product', 'categories'));
     }
@@ -143,9 +163,16 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'brand' => 'nullable|string|max:100',
+            'model_line' => 'nullable|string|max:100',
+            'gender' => 'nullable|string|in:Masculino,Feminino,Unissex,Infantil',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'compare_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'sizes' => 'nullable|array',
+            'material' => 'nullable|string|max:255',
+            'sole_material' => 'nullable|string|max:255',
             'weight' => 'nullable|numeric|min:0',
             'height' => 'nullable|numeric|min:0',
             'width' => 'nullable|numeric|min:0',
@@ -154,25 +181,44 @@ class ProductController extends Controller
             'categories.*' => 'exists:categories,id',
             'technical_specifications' => 'nullable|string',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp,avif|max:10240',
             'image_urls' => 'nullable|array',
             'image_urls.*' => 'url',
-            'image_order' => 'required|array',
+            'image_order' => 'nullable|array',
             'colors' => 'nullable|array',
             'colors.*.hex' => 'required|string|max:7',
             'colors.*.name' => 'nullable|string|max:255',
+            'is_active' => 'nullable|boolean',
         ]);
+
+        $weight = !empty($validated['weight']) ? (float) $validated['weight'] : ($product->weight ?: 0.8);
+        $height = !empty($validated['height']) ? (float) $validated['height'] : ($product->height ?: 12.0);
+        $width = !empty($validated['width']) ? (float) $validated['width'] : ($product->width ?: 22.0);
+        $length = !empty($validated['length']) ? (float) $validated['length'] : ($product->length ?: 34.0);
+
+        $sizes = $request->input('sizes', []);
+        if (is_array($sizes)) {
+            usort($sizes, fn($a, $b) => is_numeric($a) && is_numeric($b) ? ($a <=> $b) : strcmp($a, $b));
+        }
 
         $product->update([
             'name' => $validated['name'],
-            'description' => $validated['description'],
+            'brand' => $validated['brand'] ?? null,
+            'model_line' => $validated['model_line'] ?? null,
+            'gender' => $validated['gender'] ?? 'Unissex',
+            'description' => $validated['description'] ?? null,
             'price' => $validated['price'],
+            'compare_price' => $validated['compare_price'] ?? null,
             'stock' => $validated['stock'],
-            'weight' => $validated['weight'] ?? null,
-            'height' => $validated['height'] ?? null,
-            'width' => $validated['width'] ?? null,
-            'length' => $validated['length'] ?? null,
+            'sizes' => $sizes,
+            'material' => $validated['material'] ?? null,
+            'sole_material' => $validated['sole_material'] ?? null,
+            'weight' => $weight,
+            'height' => $height,
+            'width' => $width,
+            'length' => $length,
             'technical_specifications' => $validated['technical_specifications'] ?? null,
+            'is_active' => $request->boolean('is_active', true),
         ]);
 
         $product->categories()->sync($request->categories);
@@ -182,14 +228,11 @@ class ProductController extends Controller
         $files = $request->file('images', []);
         $urls = $request->input('image_urls', []);
 
-        // Get current image IDs to see what was removed
         $currentImages = $product->images;
         $orderIds = array_keys($imageOrder);
 
-        // Remove images not in the new order
         foreach ($currentImages as $existingImage) {
             if (!in_array((string) $existingImage->id, $orderIds)) {
-                // If it's a local file, we could delete it from storage here
                 $existingImage->delete();
             }
         }
@@ -218,7 +261,6 @@ class ProductController extends Controller
                     $urlCounter++;
                 }
             } else {
-                // Existing image, just update position and is_main
                 $img = $product->images()->find($id);
                 if ($img) {
                     $img->update([
@@ -233,7 +275,7 @@ class ProductController extends Controller
         $product->colors()->delete();
         if ($request->has('colors')) {
             foreach ($request->colors as $colorData) {
-                if (isset($colorData['hex'])) {
+                if (!empty($colorData['hex'])) {
                     $product->colors()->create([
                         'hex_code' => $colorData['hex'],
                         'color_name' => $colorData['name'] ?? null,
@@ -242,7 +284,7 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('admin.products.index')->with('success', 'Produto atualizado com sucesso!');
+        return redirect()->route('admin.products.index')->with('success', 'Tênis atualizado com sucesso!');
     }
 
     /**
@@ -250,9 +292,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Performance a soft delete (only hides the product)
         $product->delete();
-
-        return redirect()->route('admin.products.index')->with('success', 'Produto removido com sucesso!');
+        return redirect()->route('admin.products.index')->with('success', 'Tênis removido com sucesso!');
     }
 }

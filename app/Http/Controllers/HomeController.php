@@ -38,15 +38,32 @@ class HomeController extends Controller
                 return $category;
             });
 
+        // Obter banner aleatório do módulo de Banners
+        $randomBanner = \App\Models\Banner::where('is_active', true)->inRandomOrder()->first();
+
+        $rawVideoUrl = $randomBanner && $randomBanner->isVideo() 
+            ? ($randomBanner->video_url ?: '') 
+            : \App\Models\Setting::get('home_hero_video_url', 'https://www.youtube.com/watch?v=HKiTf7EjKtg');
+
+        $youtubeId = \App\Models\Banner::extractYoutubeId($rawVideoUrl);
+
         // Configurações da Hero Section
         $heroSettings = [
-            'tag' => \App\Models\Setting::get('home_hero_tag', 'Coleção 2024'),
-            'title' => \App\Models\Setting::get('home_hero_title', 'Redefina a Elegância do seu Lar'),
-            'subtitle' => \App\Models\Setting::get('home_hero_subtitle', 'Descubra o luxo do design minimalista e a maestria artesanal. Peças exclusivas concebidas para o viver contemporâneo.'),
-            'btn_text' => \App\Models\Setting::get('home_hero_btn_text', 'Ver Catálogo'),
-            'btn_link' => \App\Models\Setting::get('home_hero_btn_link', route('categories.index')),
-            'video_url' => $this->formatYoutubeUrl(\App\Models\Setting::get('home_hero_video_url', 'https://www.youtube.com/watch?v=uFZRqTRk8-o')),
-            'image_fallback' => \App\Models\Setting::get('home_hero_image_fallback', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=2070'),
+            'tag' => \App\Models\Setting::get('home_hero_tag', 'Coleção'),
+            'title' => $randomBanner?->title ?: \App\Models\Setting::get('home_hero_title', 'Redefina a Elegância do seu Lar'),
+            'subtitle' => \App\Models\Setting::get('home_hero_subtitle', ''),
+            'btn_text' => $randomBanner?->btn_text ?: \App\Models\Setting::get('home_hero_btn_text', 'Ver Catálogo'),
+            'btn_link' => $randomBanner?->btn_link ?: \App\Models\Setting::get('home_hero_btn_link', route('categories.index')),
+            'media_type' => $randomBanner ? $randomBanner->media_type : 'video',
+            'is_direct_video' => $randomBanner ? $randomBanner->isDirectVideo() : false,
+            'video_url' => $randomBanner && $randomBanner->isVideo() 
+                ? $randomBanner->effective_video_url 
+                : (!$randomBanner ? \App\Models\Banner::formatYoutubeUrl(\App\Models\Setting::get('home_hero_video_url', 'https://www.youtube.com/watch?v=HKiTf7EjKtg')) : ''),
+            'youtube_id' => $youtubeId,
+            'image_fallback' => $randomBanner && $randomBanner->effective_image_url 
+                ? $randomBanner->effective_image_url 
+                : \App\Models\Setting::get('home_hero_image_fallback', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=2070'),
+            'banner_id' => $randomBanner?->id,
         ];
 
         return view('welcome', compact('categories', 'luckyProducts', 'randomSections', 'heroSettings'));
@@ -59,30 +76,6 @@ class HomeController extends Controller
 
     private function formatYoutubeUrl($url)
     {
-        if (empty($url))
-            return '';
-
-        // If it's already an embed URL, just ensure parameters are right if possible, or return as is
-        if (str_contains($url, '/embed/')) {
-            // Ensure it has background parameters if not present
-            if (!str_contains($url, 'autoplay=')) {
-                $separator = str_contains($url, '?') ? '&' : '?';
-                $url .= $separator . 'autoplay=1&mute=1&controls=0&loop=1&showinfo=0&rel=0&disablekb=1&iv_load_policy=3&modestbranding=1&fs=0&playsinline=1';
-            }
-            return $url;
-        }
-
-        $videoId = null;
-
-        // Handle youtube.com/watch?v=ID or youtu.be/ID
-        if (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^& \? \n]+)/', $url, $matches)) {
-            $videoId = $matches[1];
-        }
-
-        if ($videoId) {
-            return "https://www.youtube.com/embed/{$videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist={$videoId}&showinfo=0&rel=0&disablekb=1&iv_load_policy=3&modestbranding=1&fs=0&playsinline=1";
-        }
-
-        return $url;
+        return \App\Models\Banner::formatYoutubeUrl($url);
     }
 }

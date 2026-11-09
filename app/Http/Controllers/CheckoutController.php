@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\DynamicEmail;
 use App\Models\EmailTemplate;
 
+use App\Services\OrderPaymentService;
+
 class CheckoutController extends Controller
 {
     public function index()
@@ -51,7 +53,7 @@ class CheckoutController extends Controller
         $shippingLabel = $request->input('shipping_label', 'Retirada na Loja');
         $total = $subtotal + $shippingAmount;
 
-        // Validate and save user info if missing
+        // Validate and save user info (Logged in or Guest)
         if (Auth::check()) {
             $user = Auth::user();
             $rules = [];
@@ -61,13 +63,56 @@ class CheckoutController extends Controller
                 $rules['user_phone'] = 'required|string';
 
             if (!empty($rules)) {
-                $request->validate($rules);
+                $request->validate($rules, [
+                    'user_cpf.required' => 'Informe seu CPF para emissão da nota fiscal.',
+                    'user_cpf.min' => 'Informe um CPF válido.',
+                    'user_phone.required' => 'Informe seu WhatsApp / telefone para envio.',
+                ]);
 
                 $user->update([
                     'cpf' => $user->cpf ?: $request->user_cpf,
                     'phone' => $user->phone ?: $request->user_phone,
                 ]);
             }
+        } else {
+            // Guest Checkout: validação dos dados básicos do cliente
+            $request->validate([
+                'customer_name' => 'required|string|max:255',
+                'customer_email' => 'required|email|max:255',
+                'customer_cpf' => 'required|string|min:11',
+                'customer_phone' => 'required|string|min:10',
+            ], [
+                'customer_name.required' => 'Informe seu nome completo.',
+                'customer_email.required' => 'Informe seu e-mail para receber a confirmação do pedido.',
+                'customer_email.email' => 'Informe um e-mail válido.',
+                'customer_cpf.required' => 'O CPF é obrigatório para emissão da nota e processamento do pagamento.',
+                'customer_cpf.min' => 'Informe um CPF válido.',
+                'customer_phone.required' => 'Informe seu WhatsApp / telefone para contato.',
+            ]);
+
+            $cleanEmail = strtolower(trim($request->customer_email));
+            $user = \App\Models\User::where('email', $cleanEmail)->first();
+
+            if (!$user) {
+                $user = \App\Models\User::create([
+                    'name' => trim($request->customer_name),
+                    'email' => $cleanEmail,
+                    'cpf' => $request->customer_cpf,
+                    'phone' => $request->customer_phone,
+                    'password' => bcrypt(\Illuminate\Support\Str::random(16)),
+                ]);
+                if (method_exists($user, 'assignRole')) {
+                    try { $user->assignRole('Customer'); } catch (\Exception $e) {}
+                }
+            } else {
+                $updates = [];
+                if (!$user->cpf && $request->customer_cpf) $updates['cpf'] = $request->customer_cpf;
+                if (!$user->phone && $request->customer_phone) $updates['phone'] = $request->customer_phone;
+                if (!empty($updates)) $user->update($updates);
+            }
+
+            // Autentica o cliente automaticamente para acompanhar o pedido
+            Auth::login($user);
         }
 
         // Start Transaction
@@ -127,7 +172,7 @@ class CheckoutController extends Controller
                 'notes' => trim(($request->notes ?? '') . ' | Frete: ' . $shippingLabel),
                 'shipping_simulacao_id' => $request->shipping_simulacao_id,
                 'shipping_modalidade' => $shippingLabel,
-                'shipping_descricao_conteudo' => 'Artigos de Decoração', // Default description
+                'shipping_descricao_conteudo' => 'Calçados / Tênis', // Sneaker store description
             ]);
 
             foreach ($cart as $id => $item) {
@@ -137,6 +182,7 @@ class CheckoutController extends Controller
                     'price' => $item['price'],
                     'color' => $item['color'],
                     'color_name' => $item['color_name'],
+                    'size' => $item['size'] ?? null,
                 ]);
             }
 
@@ -164,6 +210,12 @@ class CheckoutController extends Controller
                     'payment_id' => $paymentResult['payment_id'],
                 ]);
 
+                // Check if payment was approved immediately (e.g. Credit Card)
+                $asaasStatus = $paymentResult['status'] ?? '';
+                if (in_array($asaasStatus, ['CONFIRMED', 'RECEIVED'])) {
+                    OrderPaymentService::finalize($order);
+                }
+
                 // Clear Cart
                 session()->forget('cart');
 
@@ -181,13 +233,39 @@ class CheckoutController extends Controller
         }
     }
 
-    public function success(Order $order)
+    public function success(Order $order, \App\Services\AsaasService $asaasService)
     {
-        return view('checkout.success', compact('order'));
+        $paymentData = session('payment_data');
+
+        if (!$paymentData && $order->payment_method === 'pix' && $order->payment_id) {
+            try {
+                $pixData = $asaasService->getPixQrCode($order->payment_id);
+                if ($pixData) {
+                    $paymentData = [
+                        'pix_qr_code' => $pixData['encodedImage'] ?? null,
+                        'pix_copy_paste' => $pixData['payload'] ?? null,
+                    ];
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Could not recover PIX data for order ' . $order->id . ': ' . $e->getMessage());
+            }
+        }
+
+        return view('checkout.success', compact('order', 'paymentData'));
     }
 
     public function checkStatus(Order $order, AsaasGateway $gateway)
     {
+        // If already finalized in database, return immediately
+        if (in_array($order->status, ['paid', 'completed', 'delivered', 'shipped'])) {
+            return response()->json([
+                'paid' => true,
+                'status' => $order->status,
+                'tracking_code' => $order->shipping_tracking_code,
+                'label_url' => $order->shipping_label_url,
+            ]);
+        }
+
         if (!$order->payment_id) {
             return response()->json(['paid' => false]);
         }
@@ -195,28 +273,18 @@ class CheckoutController extends Controller
         $payment = $gateway->getPayment($order->payment_id);
 
         if ($payment && in_array($payment['status'], ['RECEIVED', 'CONFIRMED'])) {
-            if ($order->status !== 'paid' && $order->status !== 'completed') {
-                $order->update(['status' => 'paid']);
+            OrderPaymentService::finalize($order);
 
-                // Send Payment Confirmed Email
-                try {
-                    $template = EmailTemplate::where('slug', 'payment-confirmed')->first();
-                    if ($template && $order->user) {
-                        $user = $order->user;
-                        $content = str_replace(
-                            ['{name}', '{order_number}', '{status}'],
-                            [$user->name, $order->order_number, $order->status],
-                            $template->content
-                        );
-                        Mail::to($user->email)->send(new DynamicEmail($template->subject, $content));
-                    }
-                } catch (\Exception $e) {
-                    \Log::error('Error sending payment confirmed email: ' . $e->getMessage());
-                }
-            }
-            return response()->json(['paid' => true]);
+            $order->refresh();
+
+            return response()->json([
+                'paid' => true,
+                'status' => 'paid',
+                'tracking_code' => $order->shipping_tracking_code,
+                'label_url' => $order->shipping_label_url,
+            ]);
         }
 
-        return response()->json(['paid' => false]);
+        return response()->json(['paid' => false, 'status' => $order->status]);
     }
 }

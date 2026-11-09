@@ -140,32 +140,61 @@
                 </div>
             </section>
 
-            {{-- Shipping Address --}}
+            {{-- Shipping Address / Pickup Location --}}
+            @php
+                $isPickup = str_contains(strtolower($order->shipping_modalidade ?? ''), 'retirad') || 
+                            str_contains(strtolower($order->notes ?? ''), 'retirad') ||
+                            str_contains(strtolower($order->shipping_service_name ?? ''), 'retirad');
+            @endphp
             <section class="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm">
-                <div class="flex items-center gap-2 mb-6 text-primary">
-                    <span class="material-symbols-outlined">location_on</span>
-                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Informações de Entrega</h2>
+                <div class="flex items-center gap-2 mb-6 {{ $isPickup ? 'text-emerald-600' : 'text-primary' }}">
+                    <span class="material-symbols-outlined">{{ $isPickup ? 'storefront' : 'location_on' }}</span>
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ $isPickup ? 'Ponto de Retirada Presencial' : 'Informações de Entrega' }}</h2>
                 </div>
-                <div class="text-slate-600 dark:text-slate-400 space-y-2">
-                    <p class="font-bold text-slate-900 dark:text-white text-lg">{{ $order->user->name }}</p>
-                    @php $addr = $order->address_info; @endphp
-                    @if(isset($addr['street']))
-                        <p class="text-sm">{{ $addr['street'] }}, {{ $addr['number'] ?? '' }}</p>
-                        @if($addr['complement'] ?? null) <p class="text-sm">{{ $addr['complement'] }}</p> @endif
-                        <p class="text-sm">{{ $addr['neighborhood'] ?? '' }}</p>
-                        <p class="text-sm">{{ $addr['city'] ?? '' }} - {{ $addr['state'] ?? '' }}</p>
-                        <p class="text-sm font-mono mt-1">CEP: {{ $addr['zip_code'] ?? $addr['zip'] ?? '' }}</p>
-                    @else
-                        <p class="text-sm italic text-slate-400">Informações de endereço não registradas no pedido.</p>
-                    @endif
-                    
-                    @if($order->user->phone)
-                        <p class="pt-4 flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest text-[10px]">
-                            <span class="material-symbols-outlined text-base">call</span>
-                            {{ $order->user->phone }}
+                @if($isPickup)
+                    <div class="p-6 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-800/30 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                                {{ App\Models\Setting::get('store_pickup_name', 'DENNER Tênis - Loja Física') }}
+                            </span>
+                            <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300">
+                                Frete Grátis
+                            </span>
+                        </div>
+                        <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                            {{ App\Models\Setting::get('store_street') }}, {{ App\Models\Setting::get('store_number') }} - {{ App\Models\Setting::get('store_neighborhood') }}<br>
+                            {{ App\Models\Setting::get('store_city') }} - {{ App\Models\Setting::get('store_state') }} • CEP: {{ App\Models\Setting::get('store_zip') }}
                         </p>
-                    @endif
-                </div>
+                        <p class="text-xs text-slate-500">
+                            <strong>Horário de Funcionamento:</strong> {{ App\Models\Setting::get('store_pickup_hours', 'Segunda a Sexta: 09h às 18h | Sábado: 09h às 13h') }}
+                        </p>
+                        <div class="pt-2 text-xs text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1.5 border-t border-emerald-100 dark:border-emerald-800/30">
+                            <span class="material-symbols-outlined text-sm">info</span>
+                            <span>{{ App\Models\Setting::get('store_pickup_instructions', 'Apresente documento oficial com foto e o número do pedido no balcão.') }}</span>
+                        </div>
+                    </div>
+                @else
+                    <div class="text-slate-600 dark:text-slate-400 space-y-2">
+                        <p class="font-bold text-slate-900 dark:text-white text-lg">{{ $order->user->name }}</p>
+                        @php $addr = $order->address_info; @endphp
+                        @if(isset($addr['street']))
+                            <p class="text-sm">{{ $addr['street'] }}, {{ $addr['number'] ?? '' }}</p>
+                            @if($addr['complement'] ?? null) <p class="text-sm">{{ $addr['complement'] }}</p> @endif
+                            <p class="text-sm">{{ $addr['neighborhood'] ?? '' }}</p>
+                            <p class="text-sm">{{ $addr['city'] ?? '' }} - {{ $addr['state'] ?? '' }}</p>
+                            <p class="text-sm font-mono mt-1">CEP: {{ $addr['zip_code'] ?? $addr['zip'] ?? '' }}</p>
+                        @else
+                            <p class="text-sm italic text-slate-400">Informações de endereço não registradas no pedido.</p>
+                        @endif
+                        
+                        @if($order->user->phone)
+                            <p class="pt-4 flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white uppercase tracking-widest text-[10px]">
+                                <span class="material-symbols-outlined text-base">call</span>
+                                {{ $order->user->phone }}
+                            </p>
+                        @endif
+                    </div>
+                @endif
             </section>
         </div>
 

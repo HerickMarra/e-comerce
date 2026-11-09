@@ -1,0 +1,137 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Order;
+use App\Models\Setting;
+use App\Models\EmailTemplate;
+use App\Mail\DynamicEmail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
+class OrderPaymentService
+{
+    /**
+     * Finalize order payment: update status, send confirmation email, and auto-recruit shipping.
+     *
+     * @param Order $order
+     * @return bool
+     */
+    public static function finalize(Order $order): bool
+    {
+        // If already completed or paid, skip duplicate notification
+        $wasAlreadyPaid = in_array($order->status, ['paid', 'completed', 'delivered', 'shipped']);
+
+        if (!$wasAlreadyPaid) {
+            $order->update([
+                'status' => 'paid',
+            ]);
+
+            Log::info("OrderPaymentService: Order #{$order->order_number} marked as PAID.");
+
+            // Send Payment Confirmed Email
+            try {
+                $template = EmailTemplate::where('slug', 'payment-confirmed')->first();
+                if ($template && $order->user) {
+                    $user = $order->user;
+                    $content = str_replace(
+                        ['{name}', '{order_number}', '{status}'],
+                        [$user->name, $order->order_number, 'paid'],
+                        $template->content
+                    );
+                    Mail::to($user->email)->send(new DynamicEmail($template->subject, $content));
+                    Log::info("OrderPaymentService: Payment confirmation email sent to {$user->email}.");
+                }
+            } catch (\Throwable $e) {
+                Log::error("OrderPaymentService: Error sending payment confirmation email: " . $e->getMessage());
+            }
+        }
+
+        // Automatically Recruit Shipping (Melhor Envio) if not pickup and not already recruited
+        self::autoRecruitShipping($order);
+
+        return true;
+    }
+
+    /**
+     * Automatically recruit shipping on Melhor Envio when order is paid.
+     *
+     * @param Order $order
+     * @return void
+     */
+    public static function autoRecruitShipping(Order $order): void
+    {
+        // Check if already recruited
+        if ($order->shipping_id) {
+            return;
+        }
+
+        // Check if pickup at store
+        $isPickup = str_contains(strtolower($order->shipping_modalidade ?? ''), 'retirad') || 
+                    str_contains(strtolower($order->notes ?? ''), 'retirad') ||
+                    ($order->shipping_amount == 0 && empty($order->shipping_simulacao_id));
+
+        if ($isPickup) {
+            Log::info("OrderPaymentService: Order #{$order->order_number} is store pickup. Skipping carrier label generation.");
+            return;
+        }
+
+        if (empty($order->address_info)) {
+            Log::warning("OrderPaymentService: Order #{$order->order_number} has no address_info. Cannot recruit shipping.");
+            return;
+        }
+
+        $provider = Setting::get('shipping_provider', 'melhorenvio');
+        $hasMelhorEnvioToken = !empty(Setting::get('melhorenvio_token'));
+
+        if ($provider === 'melhorenvio' || $hasMelhorEnvioToken) {
+            try {
+                $melhorEnvio = new MelhorEnvioService();
+                $cartResult = $melhorEnvio->createCartOrder($order);
+
+                if ($cartResult && isset($cartResult['id'])) {
+                    $cartId = $cartResult['id'];
+                    Log::info("OrderPaymentService: Melhor Envio cart order created #{$cartId} for order #{$order->order_number}");
+
+                    // Automatic checkout (debits balance from Melhor Envio wallet)
+                    $checkoutResult = $melhorEnvio->checkout([$cartId]);
+                    $labelUrl = null;
+                    $trackingCode = null;
+
+                    if ($checkoutResult) {
+                        $melhorEnvio->generate([$cartId]);
+                        $labelUrl = $melhorEnvio->printLabel([$cartId]);
+                        $trackingData = $melhorEnvio->tracking([$cartId]);
+                        $trackingCode = $trackingData[$cartId]['tracking'] ?? null;
+                    }
+
+                    $serviceName = $order->shipping_modalidade ?: ($cartResult['service']['name'] ?? 'Melhor Envio');
+
+                    $order->update([
+                        'shipping_id' => $cartId,
+                        'shipping_service_name' => $serviceName,
+                        'shipping_tracking_url' => $trackingCode ? 'https://melhorenvio.com.br/rastreio/' . $trackingCode : null,
+                        'shipping_label_url' => $labelUrl,
+                        'shipping_tracking_code' => $trackingCode,
+                        'shipping_api_response' => [
+                            'provider' => 'melhorenvio',
+                            'cart' => $cartResult,
+                            'checkout' => $checkoutResult,
+                        ],
+                    ]);
+
+                    Log::info("OrderPaymentService: Melhor Envio shipping recruited successfully for order #{$order->order_number}", [
+                        'shipping_id' => $cartId,
+                        'tracking' => $trackingCode,
+                        'label_url' => $labelUrl,
+                    ]);
+                } else {
+                    Log::warning("OrderPaymentService: Failed to create Melhor Envio cart order for order #{$order->order_number}");
+                }
+            } catch (\Throwable $e) {
+                Log::error("OrderPaymentService: Exception while auto-recruiting Melhor Envio shipping: " . $e->getMessage());
+            }
+        }
+    }
+}
+

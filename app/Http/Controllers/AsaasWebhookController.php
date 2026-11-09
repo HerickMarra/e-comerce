@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\DynamicEmail;
 use App\Models\EmailTemplate;
+use App\Services\OrderPaymentService;
 
 class AsaasWebhookController extends Controller
 {
@@ -91,27 +92,16 @@ class AsaasWebhookController extends Controller
 
         $previousStatus = $order->status;
 
-        $order->update([
-            'status' => $newStatus,
-            'payment_id' => $paymentId ?? $order->payment_id,
-        ]);
-
-        // Send Payment Confirmed Email if status changed to paid
-        if ($newStatus === 'paid' && $previousStatus !== 'paid' && $previousStatus !== 'completed') {
-            try {
-                $template = EmailTemplate::where('slug', 'payment-confirmed')->first();
-                if ($template && $order->user) {
-                    $user = $order->user;
-                    $content = str_replace(
-                        ['{name}', '{order_number}', '{status}'],
-                        [$user->name, $order->order_number, $newStatus],
-                        $template->content
-                    );
-                    Mail::to($user->email)->send(new DynamicEmail($template->subject, $content));
-                }
-            } catch (\Exception $e) {
-                \Log::error('Error sending payment confirmed email via Webhook: ' . $e->getMessage());
-            }
+        if ($newStatus === 'paid') {
+            $order->update([
+                'payment_id' => $paymentId ?? $order->payment_id,
+            ]);
+            OrderPaymentService::finalize($order);
+        } else {
+            $order->update([
+                'status' => $newStatus,
+                'payment_id' => $paymentId ?? $order->payment_id,
+            ]);
         }
 
         Log::info('Asaas Webhook: order updated', [

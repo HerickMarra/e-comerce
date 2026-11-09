@@ -1,16 +1,20 @@
 <x-guest-layout>
     <div class="flex min-h-screen">
         {{-- Side Image --}}
-        <div class="hidden lg:block lg:w-1/2 relative">
-            <img alt="Design de Interior Moderno" class="absolute inset-0 w-full h-full object-cover"
-                src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=2000">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+        <div class="hidden lg:block lg:w-1/2 relative bg-slate-950">
+            <img alt="Tênis de Corrida e Maratona" class="absolute inset-0 w-full h-full object-cover"
+                src="https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=crop&q=80&w=2000">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20"></div>
             <div class="absolute bottom-16 left-16 right-16 text-white z-20">
-                <blockquote class="text-4xl font-light leading-tight italic drop-shadow-md">
-                    "A beleza da sua casa começa com a atenção aos detalhes."
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[11px] font-black uppercase tracking-widest mb-4">
+                    <span class="material-symbols-outlined text-sm text-primary">directions_run</span>
+                    Comunidade de Corredores
+                </div>
+                <blockquote class="text-3xl lg:text-4xl font-black leading-tight drop-shadow-md">
+                    "Acesso antecipado aos melhores tênis de corrida, maratona e treino diário."
                 </blockquote>
-                <p class="mt-6 font-semibold uppercase tracking-[0.2em] text-sm opacity-90">—
-                    {{ $appSettings['store_name'] ?? 'VerveHome' }} Registry
+                <p class="mt-4 font-bold uppercase tracking-[0.2em] text-xs opacity-80">
+                    — {{ $appSettings['store_name'] ?? 'DENNER Tênis' }} Running Club
                 </p>
             </div>
         </div>

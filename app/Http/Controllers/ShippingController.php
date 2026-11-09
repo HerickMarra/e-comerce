@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Setting;
 use App\Services\EnviaMaisService;
+use App\Services\MelhorEnvioService;
 use Illuminate\Http\Request;
 
 class ShippingController extends Controller
@@ -16,7 +18,7 @@ class ShippingController extends Controller
 
         $cep = preg_replace('/\D/', '', $request->cep);
 
-        // Build volumes from the cart session or single product
+        $productsList = [];
         $volumes = [];
         $totalValue = 0;
 
@@ -26,21 +28,31 @@ class ShippingController extends Controller
                 return response()->json(['error' => 'Produto não encontrado.'], 404);
             }
 
-            $quantity = (int) $request->get('quantity', 1);
-            $totalValue = $product->price * $quantity;
+            $quantity = max(1, (int) $request->get('quantity', 1));
+            $price = (float) $product->price;
+            $totalValue = $price * $quantity;
 
-            if (!$product->weight || !$product->height || !$product->width || !$product->length) {
-                return response()->json([
-                    'error' => 'Este produto não possui dimensões cadastradas para o cálculo de frete.',
-                ], 422);
-            }
+            $weight = (float) ($product->weight ?: 0.3);
+            $height = (float) ($product->height ?: 4);
+            $width = (float) ($product->width ?: 11);
+            $length = (float) ($product->length ?: 16);
+
+            $productsList[] = [
+                'id' => $product->id,
+                'weight' => $weight,
+                'height' => $height,
+                'width' => $width,
+                'length' => $length,
+                'price' => $price,
+                'quantity' => $quantity,
+            ];
 
             for ($i = 0; $i < $quantity; $i++) {
                 $volumes[] = [
-                    'peso_carga' => (float) $product->weight,
-                    'altura_carga' => (float) $product->height,
-                    'largura_carga' => (float) $product->width,
-                    'comprimento_carga' => (float) $product->length,
+                    'peso_carga' => $weight,
+                    'altura_carga' => $height,
+                    'largura_carga' => $width,
+                    'comprimento_carga' => $length,
                 ];
             }
         } else {
@@ -53,104 +65,100 @@ class ShippingController extends Controller
             foreach ($cart as $item) {
                 $product = Product::find($item['product_id'] ?? $item['id'] ?? null);
 
-                if (!$product)
-                    continue;
-
-                $totalValue += $product->price * ($item['quantity'] ?? 1);
-
-                // Skip if product has no dimensions
-                if (!$product->weight || !$product->height || !$product->width || !$product->length) {
+                if (!$product) {
                     continue;
                 }
 
-                // One volume entry per quantity
-                for ($i = 0; $i < ($item['quantity'] ?? 1); $i++) {
+                $qty = max(1, (int) ($item['quantity'] ?? 1));
+                $price = (float) ($item['price'] ?? $product->price);
+                $totalValue += $price * $qty;
+
+                $weight = (float) ($product->weight ?: 0.3);
+                $height = (float) ($product->height ?: 4);
+                $width = (float) ($product->width ?: 11);
+                $length = (float) ($product->length ?: 16);
+
+                $productsList[] = [
+                    'id' => $product->id,
+                    'weight' => $weight,
+                    'height' => $height,
+                    'width' => $width,
+                    'length' => $length,
+                    'price' => $price,
+                    'quantity' => $qty,
+                ];
+
+                for ($i = 0; $i < $qty; $i++) {
                     $volumes[] = [
-                        'peso_carga' => (int) $product->weight,
-                        'altura_carga' => (int) $product->height,
-                        'largura_carga' => (int) $product->width,
-                        'comprimento_carga' => (int) $product->length,
+                        'peso_carga' => (int) ceil($weight),
+                        'altura_carga' => (int) ceil($height),
+                        'largura_carga' => (int) ceil($width),
+                        'comprimento_carga' => (int) ceil($length),
                     ];
                 }
             }
         }
 
-        if (empty($volumes)) {
+        if (empty($productsList)) {
             return response()->json([
-                'error' => 'Não foi possível identificar volumes para cálculo. Verifique as dimensões dos produtos.',
+                'error' => 'Nenhum produto válido encontrado para o cálculo de frete.',
             ], 422);
         }
 
-        $service = new EnviaMaisService();
-        $cotacoes = $service->getShipping($cep, $totalValue, $volumes);
+        $provider = Setting::get('shipping_provider', 'melhorenvio');
+        $hasMelhorEnvioToken = !empty(Setting::get('melhorenvio_token'));
+        $cotacoes = [];
+
+        // Primary: Melhor Envio
+        if ($provider === 'melhorenvio' || $hasMelhorEnvioToken) {
+            $melhorEnvio = new MelhorEnvioService();
+            $cotacoes = $melhorEnvio->calculate($cep, $productsList, $totalValue);
+        }
+
+        // Secondary / Fallback: EnviaMais
+        if (empty($cotacoes) && !empty(Setting::get('enviamais_api_key'))) {
+            $enviaMais = new EnviaMaisService();
+            $rawCotacoes = $enviaMais->getShipping($cep, $totalValue, $volumes);
+
+            $modalidadeMap = [
+                4 => 'PAC (Econômico)',
+                12 => 'SEDEX (Expresso)',
+                1 => 'Normal',
+                2 => 'SEDEX 10',
+                3 => 'SEDEX 12',
+                5 => 'PAC Mini',
+                6 => 'Impresso Normal',
+                7 => 'Impresso Urgente',
+                8 => 'Carta Simples',
+                9 => 'Carta Registrada',
+                10 => 'SEDEX Hoje',
+                11 => 'SEDEX (Contrato)',
+                13 => 'PAC (Contrato)',
+                201 => 'Jadlog Package',
+                202 => 'Jadlog .Com',
+                301 => 'Azul Cargo Amanhã',
+                302 => 'Azul Cargo E-commerce',
+            ];
+
+            foreach ($rawCotacoes as $c) {
+                $cotacoes[] = [
+                    'modalidade' => (string) ($c['modalidade'] ?? ''),
+                    'servico' => $modalidadeMap[$c['modalidade']] ?? ($c['servico'] ?? ('Opção #' . ($c['modalidade'] ?? ''))),
+                    'prazo' => (int) ($c['prazo'] ?? 5),
+                    'valor' => (float) ($c['valor'] ?? 0),
+                    'simulacao_id' => $c['simulacao_id'] ?? null,
+                ];
+            }
+        }
 
         if (empty($cotacoes)) {
             return response()->json([
-                'error' => 'Não foi possível calcular o frete para este CEP. Tente novamente ou entre em contato.',
+                'error' => 'Não foi possível calcular o frete para este CEP. Verifique se o CEP está correto ou entre em contato.',
             ], 422);
         }
 
-        // Map modalidade IDs to names (EnviaMais common values)
-        $modalidadeMap = [
-            4 => 'PAC (Econômico)',
-            12 => 'SEDEX (Expresso)',
-            1 => 'Normal',
-            2 => 'SEDEX 10',
-            3 => 'SEDEX 12',
-            5 => 'PAC Mini',
-            6 => 'Impresso Normal',
-            7 => 'Impresso Urgente',
-            8 => 'Carta Simples',
-            9 => 'Carta Registrada',
-            10 => 'SEDEX Hoje',
-            11 => 'SEDEX (Contrato)',
-            13 => 'PAC (Contrato)',
-            201 => 'Jadlog Package',
-            202 => 'Jadlog .Com',
-            301 => 'Azul Cargo Amanhã',
-            302 => 'Azul Cargo E-commerce',
-        ];
-
-        if (count($cotacoes) > 0) {
-            // Sort by price to find "Melhor Preço"
-            usort($cotacoes, fn($a, $b) => ($a['valor'] ?? 9999) <=> ($b['valor'] ?? 9999));
-            $cheapestIndex = 0;
-
-            // Sort by time to find "Melhor Prazo"
-            // We create a temporary copy to find the fastest without losing price sort order yet
-            $tempFastest = $cotacoes;
-            usort($tempFastest, fn($a, $b) => ($a['prazo'] ?? 999) <=> ($b['prazo'] ?? 999));
-            $fastestModalidade = $tempFastest[0]['modalidade'] ?? null;
-
-            foreach ($cotacoes as $i => &$c) {
-                if ($i === $cheapestIndex) {
-                    $c['servico'] = 'Melhor Preço';
-                } elseif ($c['modalidade'] === $fastestModalidade) {
-                    $c['servico'] = 'Melhor Prazo';
-                } else {
-                    $c['servico'] = $modalidadeMap[$c['modalidade']] ?? "Entrega #" . $c['modalidade'];
-                }
-            }
-
-            // Final Sort: Mejor Precio (index 0) stays first, Mejor Prazo stays last if there's more than one
-            if (count($cotacoes) > 1) {
-                // To guarantee "Melhor Prazo" is last if it's different from "Melhor Preço"
-                usort($cotacoes, function ($a, $b) {
-                    if (($a['servico'] ?? '') === 'Melhor Preço')
-                        return -1;
-                    if (($b['servico'] ?? '') === 'Melhor Preço')
-                        return 1;
-                    if (($a['servico'] ?? '') === 'Melhor Prazo')
-                        return 1;
-                    if (($b['servico'] ?? '') === 'Melhor Prazo')
-                        return -1;
-                    return 0;
-                });
-            }
-        } else {
-            // Safety for empty results
-            $cotacoes = [];
-        }
+        // Sort by price
+        usort($cotacoes, fn($a, $b) => ($a['valor'] ?? 0) <=> ($b['valor'] ?? 0));
 
         return response()->json(['cotacoes' => $cotacoes]);
     }

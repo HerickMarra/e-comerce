@@ -12,10 +12,8 @@ Route::get('/', [HomeController::class, 'index']);
 Route::get('/nossa-historia', [HomeController::class, 'family'])->name('home.family');
 Route::get('/produto/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/categorias', [\App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
-Route::middleware('auth')->group(function () {
-    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
-    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
-});
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 Route::get('/checkout/sucesso/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/checkout/status/{order}', [CheckoutController::class, 'checkStatus'])->name('checkout.status');
 
@@ -47,12 +45,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('products', App\Http\Controllers\Admin\ProductController::class);
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
+    Route::get('users/{user}/summary', [App\Http\Controllers\Admin\UserController::class, 'summary'])->name('users.summary');
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     Route::resource('emails', App\Http\Controllers\Admin\EmailTemplateController::class);
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update']);
     Route::post('orders/{order}/recruit-shipping', [App\Http\Controllers\Admin\OrderController::class, 'recruitShipping'])->name('orders.recruit-shipping');
+    Route::resource('banners', App\Http\Controllers\Admin\BannerController::class);
+    Route::post('banners/{banner}/toggle-status', [App\Http\Controllers\Admin\BannerController::class, 'toggleStatus'])->name('banners.toggle-status');
     Route::get('/configuracoes', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
     Route::put('/configuracoes', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/configuracoes/test-melhorenvio', [\App\Http\Controllers\Admin\SettingsController::class, 'testMelhorEnvio'])->name('settings.test-melhorenvio');
     Route::post('/configuracoes/test-enviamais', [\App\Http\Controllers\Admin\SettingsController::class, 'testEnviaMais'])->name('settings.test-enviamais');
 
     Route::get('/aparencia', [\App\Http\Controllers\Admin\AppearanceController::class, 'index'])->name('appearance.index');

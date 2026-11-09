@@ -19,6 +19,7 @@
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script defer src="https://unpkg.com/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -45,7 +46,15 @@
             },
         }
     </script>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
     <style type="text/tailwindcss">
+        [x-cloak] {
+            display: none !important;
+        }
         @layer base {
             body { font-family: 'Inter', sans-serif; }
         }
@@ -100,8 +109,8 @@
                 </div>
 
                 <!-- Navigation -->
-                <nav class="hidden md:flex items-center gap-10">
-                    @foreach($navCategories ?? [] as $navCat)
+                <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+                    @foreach(collect($navCategories ?? [])->take(3) as $navCat)
                         <a class="text-sm font-semibold hover:text-primary transition-colors"
                             href="{{ route('search', ['categories' => [$navCat->id]]) }}">{{ $navCat->name }}</a>
                     @endforeach
@@ -111,8 +120,8 @@
                         href="{{ route('customer.orders') }}">Meus Pedidos</a>
                 </nav>
 
-                <!-- Search -->
-                <div class="flex-1 max-w-sm hidden lg:block">
+                <!-- Search (oculto na Home para evitar busca duplicada com a barra do banner) -->
+                <div class="flex-1 max-w-sm {{ request()->is('/') ? 'hidden' : 'hidden lg:block' }}">
                     <form action="{{ route('search') }}" method="GET" class="relative">
                         <span
                             class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
@@ -292,91 +301,96 @@
         {{ $slot }}
     </main>
 
-    <footer class="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 pt-20 pb-10">
+    <footer class="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 pt-10 sm:pt-16 pb-8 sm:pb-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-16">
-                <div class="lg:col-span-4">
-                    <div class="flex items-center gap-2 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 sm:mb-12">
+                {{-- Coluna 1: Marca & Dados da Loja --}}
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="flex items-center gap-2">
                         @if($appSettings['store_logo'])
-                            <img src="{{ asset('storage/' . $appSettings['store_logo']) }}" class="w-auto object-contain"
-                                style="height: {{ ($appSettings['store_logo_size'] ?? 100) * 0.35 }}px; max-height: 112px;"
+                            <img src="{{ str_starts_with($appSettings['store_logo'], 'http') ? $appSettings['store_logo'] : asset('storage/' . $appSettings['store_logo']) }}"
+                                class="w-auto object-contain"
+                                style="height: {{ min(48, ($appSettings['store_logo_size'] ?? 100) * 0.35) }}px; max-height: 52px;"
                                 alt="{{ $appSettings['store_name'] }}">
                         @else
-                            <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center text-white">
-                                <span
-                                    class="material-symbols-outlined text-xl">{{ $appSettings['store_icon'] ?? 'chair' }}</span>
+                            <div class="size-9 bg-primary rounded-xl flex items-center justify-center text-white">
+                                <span class="material-symbols-outlined text-lg">{{ $appSettings['store_icon'] ?? 'steps' }}</span>
                             </div>
-                            <span class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white uppercase">
+                            <span class="text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
                                 {{ $appSettings['store_name'] ?? config('app.name') }}
                             </span>
                         @endif
                     </div>
-                    <div class="text-slate-500 dark:text-slate-400 leading-relaxed mb-8 max-w-sm text-sm">
-                        <p class="font-bold text-slate-900 dark:text-white mb-1">Casa Studart Cachaçaria Ltda</p>
-                        <p>CNPJ 50.320.830.0001-74</p>
-                        <p>Rua Nossa Senhora do Rosário, 07 (Porão)</p>
-                        <p>Centro Histórico - Pirenópolis - Goiás - GO</p>
-                        <p>Cep 72.980-000 • Contato +55 61 98522.0100</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
+                        Sua loja especializada em tênis de corrida, treino e performance das melhores marcas mundiais, com envio rápido e garantia de originalidade.
+                    </p>
+                    <div class="text-[11px] text-slate-400 space-y-0.5">
+                        @if(\App\Models\Setting::get('store_document'))
+                            <p>CNPJ/CPF: {{ \App\Models\Setting::get('store_document') }}</p>
+                        @endif
+                        @if(\App\Models\Setting::get('store_city'))
+                            <p>{{ \App\Models\Setting::get('store_street') ? \App\Models\Setting::get('store_street') . ', ' . \App\Models\Setting::get('store_number') . ' • ' : '' }}{{ \App\Models\Setting::get('store_city') }}/{{ \App\Models\Setting::get('store_state') }}</p>
+                        @endif
+                        @if(\App\Models\Setting::get('store_phone'))
+                            <p>Atendimento: {{ \App\Models\Setting::get('store_phone') }}</p>
+                        @endif
                     </div>
-                    <div class="flex gap-4">
-                        <a class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
-                            href="https://wa.me/+556185220100?text=linklist" target="_blank" title="WhatsApp">
-                            <svg class="w-5 h-5 fill-current" role="img" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <title>WhatsApp</title>
-                                <path
-                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72 1.144 3.763 1.748 5.8 1.748h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                    {{-- Redes Sociais --}}
+                    <div class="flex items-center gap-2.5 pt-1">
+                        @php
+                            $whatsFooter = 'https://wa.me/' . (preg_replace('/\D/', '', \App\Models\Setting::get('store_phone', '5561985220100')) ?: '5561985220100');
+                        @endphp
+                        <a class="size-8 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
+                            href="{{ $whatsFooter }}" target="_blank" title="WhatsApp">
+                            <svg class="size-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72 1.144 3.763 1.748 5.8 1.748h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                             </svg>
                         </a>
-                        <a class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-[#E4405F] hover:text-white transition-all shadow-sm"
-                            href="https://www.instagram.com/casastudart/" target="_blank" title="Instagram">
-                            <svg class="w-5 h-5 fill-current" role="img" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <title>Instagram</title>
-                                <path
-                                    d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z" />
-                            </svg>
-                        </a>
-                        <a class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-[#1877F2] hover:text-white transition-all shadow-sm"
-                            href="https://www.facebook.com/StudartHugo/" target="_blank" title="Facebook">
-                            <svg class="w-5 h-5 fill-current" role="img" viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <title>Facebook</title>
-                                <path
-                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        <a class="size-8 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-[#E4405F] hover:text-white transition-all shadow-sm"
+                            href="https://instagram.com" target="_blank" title="Instagram">
+                            <svg class="size-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                             </svg>
                         </a>
                     </div>
                 </div>
-                <div class="lg:col-span-2">
-                    <h5 class="font-bold text-slate-900 dark:text-white mb-8 uppercase text-xs tracking-widest">
-                        Institucional
+
+                {{-- Coluna 2 e 3: Links Institucionais e Atendimento (No mobile: grid lado a lado!) --}}
+                <div class="lg:col-span-4 grid grid-cols-2 gap-6">
+                    <div>
+                        <h5 class="font-bold text-slate-900 dark:text-white mb-3 text-xs uppercase tracking-wider">
+                            Institucional
+                        </h5>
+                        <ul class="space-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                            <li><a class="hover:text-primary transition-colors" href="/">Página Inicial</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="{{ route('categories.index') }}">Categorias</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="{{ route('search') }}">Todos os Tênis</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="{{ route('customer.orders') }}">Meus Pedidos</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h5 class="font-bold text-slate-900 dark:text-white mb-3 text-xs uppercase tracking-wider">
+                            Atendimento
+                        </h5>
+                        <ul class="space-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                            <li><a class="hover:text-primary transition-colors" href="{{ $whatsFooter }}" target="_blank">Fale no WhatsApp</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="#">Prazos & Frete</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="#">Trocas e Devoluções</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="#">Retirada na Loja</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                {{-- Coluna 4: Newsletter Compacta --}}
+                <div class="lg:col-span-4 space-y-3">
+                    <h5 class="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
+                        Novidades & Ofertas
                     </h5>
-                    <ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
-                        <li><a class="hover:text-primary transition-colors" href="{{ route('home.family') }}">Nossa
-                                História</a></li>
-                        <li><a class="hover:text-primary transition-colors" href="#">Nossa Marca</a></li>
-                        <li><a class="hover:text-primary transition-colors" href="#">Sustentabilidade</a></li>
-                        <li><a class="hover:text-primary transition-colors" href="#">Showrooms</a></li>
-                        <li><a class="hover:text-primary transition-colors" href="#">Artesanato Curado</a></li>
-                    </ul>
-                </div>
-                <div class="lg:col-span-2">
-                    <h5 class="font-bold text-slate-900 dark:text-white mb-8 uppercase text-xs tracking-widest">
-                        Atendimento</h5>
-                    <ul class="space-y-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
-                        <li><a class="hover:text-primary transition-colors" href="#">Envio e Entrega</a></li>
-                        <li><a class="hover:text-primary transition-colors" href="#">Trocas e Devoluções</a></li>
-                        <li><a class="hover:text-primary transition-colors" href="#">Garantia de Qualidade</a></li>
-                        <li><a class="hover:text-primary transition-colors" href="#">Fale Conosco</a></li>
-                    </ul>
-                </div>
-                <div class="lg:col-span-4">
-                    <h5 class="font-bold text-slate-900 dark:text-white mb-8 uppercase text-xs tracking-widest">
-                        Inspire-se</h5>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Participe da nossa lista exclusiva para
-                        dicas de design e novos lançamentos.</p>
-                    <form class="flex flex-col gap-3" x-data="{ 
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                        Receba cupons exclusivos e lançamentos de tênis direto no seu e-mail.
+                    </p>
+                    <form class="space-y-2" x-data="{ 
                         email: '', 
                         loading: false, 
                         message: '', 
@@ -401,47 +415,72 @@
                                 this.success = data.success;
                                 if (data.success) this.email = '';
                             })
-                            .catch(error => {
+                            .catch(() => {
                                 this.loading = false;
-                                this.message = 'Ocorreu um erro ao processar sua inscrição. Tente novamente.';
+                                this.message = 'Erro ao processar inscrição.';
                                 this.success = false;
                             });
                         }
                     }" @submit.prevent="subscribe()">
-                        <div class="relative">
+                        <div class="flex items-center gap-1.5">
                             <input
-                                class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                placeholder="seu@email.com" type="email" x-model="email" required />
+                                class="flex-1 min-w-0 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-medium"
+                                placeholder="Seu melhor e-mail..." type="email" x-model="email" required />
+                            <button type="submit" :disabled="loading"
+                                class="bg-primary text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-md shadow-primary/20 disabled:opacity-50 shrink-0 flex items-center justify-center">
+                                <template x-if="!loading"><span>Cadastrar</span></template>
+                                <template x-if="loading"><span class="material-symbols-outlined animate-spin text-sm">sync</span></template>
+                            </button>
                         </div>
-                        <button type="submit" :disabled="loading"
-                            class="bg-primary text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 disabled:opacity-50 flex items-center justify-center gap-2">
-                            <template x-if="!loading"><span>Inscrever-se</span></template>
-                            <template x-if="loading"><span
-                                    class="material-symbols-outlined animate-spin text-sm">sync</span></template>
-                        </button>
                         <p x-show="message" x-cloak :class="success ? 'text-emerald-500' : 'text-red-500'"
-                            class="text-xs font-bold mt-2 antialiased" x-text="message"></p>
+                            class="text-[11px] font-bold" x-text="message"></p>
                     </form>
                 </div>
             </div>
-            <div
-                class="pt-10 border-t border-slate-100 dark:border-slate-900 flex flex-col md:flex-row justify-between items-center gap-8">
-                <div class="flex flex-col md:flex-row items-center gap-4 text-xs font-medium text-slate-400">
-                    <p>© {{ date('Y') }} {{ $appSettings['store_name'] ?? config('app.name') }}</p>
-                    <div class="hidden md:block w-1 h-1 bg-slate-300 rounded-full"></div>
-                    <a class="hover:text-primary" href="#">Política de Privacidade</a>
-                    <div class="hidden md:block w-1 h-1 bg-slate-300 rounded-full"></div>
-                    <a class="hover:text-primary" href="#">Termos de Serviço</a>
+
+            {{-- Barra Inferior: Pagamentos & Copyright --}}
+            <div class="pt-6 border-t border-slate-100 dark:border-slate-900 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+                <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[11px] text-slate-400 font-medium">
+                    <p>© {{ date('Y') }} {{ $appSettings['store_name'] ?? 'Denner Tênis' }}. Todos os direitos reservados.</p>
                 </div>
-                <div class="flex items-center gap-5 opacity-60 grayscale hover:grayscale-0 transition-all duration-300">
-                    <!-- Placeholder payment icons -->
-                    <div class="h-4 w-8 bg-slate-200 rounded"></div>
-                    <div class="h-4 w-8 bg-slate-200 rounded"></div>
-                    <div class="h-4 w-8 bg-slate-200 rounded"></div>
+
+                {{-- Formas de Pagamento --}}
+                <div class="flex items-center gap-2 flex-wrap justify-center text-[10px] font-black text-slate-500">
+                    <span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-emerald-600 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">qr_code_2</span> PIX
+                    </span>
+                    <span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">credit_card</span> Cartão até 10x
+                    </span>
+                    <span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">lock</span> 100% Seguro
+                    </span>
                 </div>
             </div>
         </div>
     </footer>
+
+    {{-- Botão Flutuante do WhatsApp --}}
+    @php
+        $rawPhone = \App\Models\Setting::get('store_phone', '5561985220100');
+        $cleanPhone = preg_replace('/\D/', '', $rawPhone);
+        if ($cleanPhone && !str_starts_with($cleanPhone, '55')) {
+            $cleanPhone = '55' . $cleanPhone;
+        }
+        $whatsUrl = 'https://wa.me/' . ($cleanPhone ?: '5561985220100') . '?text=' . urlencode('Olá! Gostaria de mais informações.');
+    @endphp
+    <a href="{{ $whatsUrl }}" target="_blank" rel="noopener noreferrer"
+        aria-label="Fale conosco no WhatsApp"
+        class="fixed bottom-24 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-full shadow-2xl shadow-emerald-600/40 hover:scale-110 active:scale-95 transition-all duration-300 group">
+        <span class="absolute -top-1 -right-1 flex size-3.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+            <span class="relative inline-flex rounded-full size-3.5 bg-emerald-400"></span>
+        </span>
+        <svg class="w-8 h-8 fill-current transition-transform group-hover:rotate-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72 1.144 3.763 1.748 5.8 1.748h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+        </svg>
+    </a>
+
     @stack('scripts')
 </body>
 

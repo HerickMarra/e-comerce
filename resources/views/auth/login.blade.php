@@ -1,15 +1,19 @@
 <x-guest-layout>
     <div class="flex min-h-screen">
-        <div class="hidden lg:block lg:w-1/2 relative">
-            <img alt="Sofá Moderno Verde Esmeralda em Sala de Estar" class="absolute inset-0 w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzEdqerwLlfQVj3pgmP4XT1RKA4w4lUhUOKPq3RvtsIukr-A2ipBJvmKxmZNckjkfYeMKdA1RWBt7jnAcxxfozKF8EXKXyk_4njL6Qunk7_muNcZXAKeLx0QAcUJbwGptNiB3yQUwB97ugZc6LjwGyUN_bTv2YHWeX05VhiaUzly3HaavW8VxL52_0IkJU2P9amPBQ4QsoyQmJkhB-kHnRihBUp86h2usJIYIvnERZW9KCV5m2R66TaFxO6lQtF8qwZLEsAZBWcdg" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+        <div class="hidden lg:block lg:w-1/2 relative bg-slate-950">
+            <img alt="Tênis de Corrida de Alta Performance" class="absolute inset-0 w-full h-full object-cover"
+                src="https://images.unsplash.com/photo-1597892657493-6847b9640bac?auto=format&fit=crop&q=80&w=2000" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20"></div>
             <div class="absolute bottom-16 left-16 right-16 text-white z-20">
-                <blockquote class="text-4xl font-light leading-tight italic drop-shadow-md">
-                    "Design is not just what it looks like and feels like. Design is how it works."
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[11px] font-black uppercase tracking-widest mb-4">
+                    <span class="material-symbols-outlined text-sm text-primary">directions_run</span>
+                    Tênis de Corrida & Performance
+                </div>
+                <blockquote class="text-3xl lg:text-4xl font-black leading-tight drop-shadow-md">
+                    "Supere seus limites a cada quilômetro com o máximo de amortecimento e resposta."
                 </blockquote>
-                <p class="mt-6 font-semibold uppercase tracking-[0.2em] text-sm opacity-90">—
-                    {{ $appSettings['store_name'] ?? 'VerveHome' }} Interiors
+                <p class="mt-4 font-bold uppercase tracking-[0.2em] text-xs opacity-80">
+                    — {{ $appSettings['store_name'] ?? 'DENNER Tênis' }} Running
                 </p>
             </div>
         </div>

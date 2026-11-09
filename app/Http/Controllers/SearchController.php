@@ -19,33 +19,45 @@ class SearchController extends Controller
         $inStockOnly = $request->has('in_stock');
         $sort = $request->input('sort', 'relevance');
 
-        $productsQuery = Product::where('is_active', true);
+        $baseQuery = Product::where('is_active', true);
 
         if ($query) {
-            $productsQuery->where(function ($q) use ($query) {
+            $baseQuery->where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
+                    ->orWhere('brand', 'like', "%{$query}%")
+                    ->orWhere('model_line', 'like', "%{$query}%")
                     ->orWhere('description', 'like', "%{$query}%");
             });
         }
 
         if (!empty($selectedCategories)) {
-            $productsQuery->whereHas('categories', function ($q) use ($selectedCategories) {
+            $baseQuery->whereHas('categories', function ($q) use ($selectedCategories) {
                 $q->whereIn('categories.id', $selectedCategories);
             });
         }
 
         if ($minPrice > 0 || $maxPrice < 50000) {
-            $productsQuery->whereBetween('price', [$minPrice, $maxPrice]);
+            $baseQuery->whereBetween('price', [$minPrice, $maxPrice]);
         }
+
+        if ($inStockOnly) {
+            $baseQuery->where('stock', '>', 0);
+        }
+
+        // As cores disponíveis na busca agora são estritamente as cores dos produtos filtrados
+        // e agrupadas por hex_code único para não exibir bolinhas repetidas
+        $availableColors = ProductColor::whereIn('product_id', (clone $baseQuery)->select('id'))
+            ->select('hex_code', \Illuminate\Support\Facades\DB::raw('MIN(color_name) as color_name'))
+            ->groupBy('hex_code')
+            ->orderBy('color_name')
+            ->get();
+
+        $productsQuery = clone $baseQuery;
 
         if (!empty($selectedColors)) {
             $productsQuery->whereHas('colors', function ($q) use ($selectedColors) {
                 $q->whereIn('hex_code', $selectedColors);
             });
-        }
-
-        if ($inStockOnly) {
-            $productsQuery->where('stock', '>', 0);
         }
 
         switch ($sort) {
@@ -63,11 +75,12 @@ class SearchController extends Controller
                 break;
         }
 
-        $products = $productsQuery->paginate(12)->withQueryString();
+        $products = $productsQuery->with(['colors', 'images'])->paginate(12)->withQueryString();
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
-                'html' => view('search._product_list', compact('products'))->render(),
+                'html' => view('search._product_list', compact('products', 'selectedColors'))->render(),
+                'colors_html' => view('search._color_filter', compact('availableColors', 'selectedColors'))->render(),
                 'pagination' => (string) $products->links(),
                 'total' => $products->total(),
                 'url' => $request->fullUrl()
@@ -79,13 +92,6 @@ class SearchController extends Controller
                 $query->where('is_active', true);
             }
         ])->get();
-
-        $availableColors = ProductColor::whereHas('product', function ($query) {
-            $query->where('is_active', true);
-        })
-            ->select('hex_code', 'color_name')
-            ->distinct()
-            ->get();
 
         return view('search.index', compact(
             'products',

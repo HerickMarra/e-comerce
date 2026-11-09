@@ -18,6 +18,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script defer src="https://unpkg.com/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -115,6 +116,12 @@
                         class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all {{ request()->routeIs('admin.orders.*') ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-slate-700/50 hover:text-white' }}">
                         <span class="material-symbols-outlined text-xl">shopping_cart</span>
                         <span class="font-medium text-sm">Pedidos</span>
+                    </a>
+
+                    <a href="{{ route('admin.banners.index') }}"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all {{ request()->routeIs('admin.banners.*') ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-slate-700/50 hover:text-white' }}">
+                        <span class="material-symbols-outlined text-xl">view_carousel</span>
+                        <span class="font-medium text-sm">Banners & Vídeos</span>
                     </a>
 
                     <div class="pt-6">

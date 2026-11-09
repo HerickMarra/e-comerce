@@ -103,18 +103,8 @@
                             Cor
                             <span class="material-symbols-outlined text-sm">remove</span>
                         </h3>
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($availableColors as $color)
-                                <label class="relative cursor-pointer">
-                                    <input type="checkbox" name="colors[]" value="{{ $color->hex_code }}"
-                                        {{ in_array($color->hex_code, $selectedColors) ? 'checked' : '' }}
-                                        @change="updateFilters()"
-                                        class="sr-only peer">
-                                    <div class="w-8 h-8 rounded-full border-2 border-transparent peer-checked:border-primary peer-checked:ring-2 peer-checked:ring-primary/20 peer-checked:ring-offset-2 transition-all hover:scale-110"
-                                         style="background-color: {{ $color->hex_code }}"
-                                         title="{{ $color->color_name }}"></div>
-                                </label>
-                            @endforeach
+                        <div id="color-filter-container">
+                            @include('search._color_filter', ['availableColors' => $availableColors, 'selectedColors' => $selectedColors])
                         </div>
                     </div>
 
@@ -184,6 +174,9 @@
                         
                         // Update UI
                         document.getElementById('product-list').innerHTML = data.html;
+                        if (data.colors_html && document.getElementById('color-filter-container')) {
+                            document.getElementById('color-filter-container').innerHTML = data.colors_html;
+                        }
                         this.totalItems = data.total;
                         
                         // Update URL without reload
