@@ -69,6 +69,8 @@ class ExplorePageTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee(route('explore'));
         $response->assertSee('Explorar');
+        $response->assertSee('Descubra todos os modelos na nova experiência');
+        $response->assertSee('Ir para o Explorar');
     }
 
     public function test_explore_ajax_request_returns_valid_json_with_html_cards(): void
@@ -183,3 +185,4 @@ class ExplorePageTest extends TestCase
         $response->assertSee(route('explore'));
     }
 }
+

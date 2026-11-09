@@ -402,6 +402,55 @@
                 </section>
             @endif
         @endforeach
+
+        <!-- Card / Banner CTA Explorar -->
+        <section class="mt-12 sm:mt-16 mb-8">
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 dark:from-slate-900 dark:via-slate-950 dark:to-black text-white p-6 sm:p-10 lg:p-12 shadow-2xl border border-slate-800">
+                {{-- Elementos visuais de fundo (glow / gradiente) --}}
+                <div class="absolute -right-16 -top-16 w-64 h-64 sm:w-96 sm:h-96 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 sm:gap-8">
+                    <div class="max-w-2xl space-y-3 sm:space-y-4">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary border border-primary/30 text-xs font-bold uppercase tracking-wider">
+                            <span class="material-symbols-outlined text-sm">explore</span>
+                            Feed Infinito de Tênis
+                        </div>
+
+                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight text-white">
+                            Descubra todos os modelos na nova experiência <span class="text-primary">Explorar</span>
+                        </h2>
+
+                        <p class="text-slate-300 text-xs sm:text-base leading-relaxed">
+                            Mergulhe em um feed contínuo com todos os tênis da loja em ordem dinâmica. Role sem parar, descubra novidades exclusivas e encontre seu próximo modelo favorito.
+                        </p>
+
+                        <div class="flex items-center gap-3 sm:gap-4 pt-1 flex-wrap text-xs text-slate-300">
+                            <span class="flex items-center gap-1.5 font-medium">
+                                <span class="material-symbols-outlined text-emerald-400 text-base">all_inclusive</span>
+                                Rolagem Infinita
+                            </span>
+                            <span class="flex items-center gap-1.5 font-medium">
+                                <span class="material-symbols-outlined text-amber-400 text-base">shuffle</span>
+                                Ordem Aleatória Dinâmica
+                            </span>
+                            <span class="flex items-center gap-1.5 font-medium">
+                                <span class="material-symbols-outlined text-primary text-base">verified</span>
+                                100% Originais
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="shrink-0 w-full lg:w-auto">
+                        <a href="{{ route('explore') }}"
+                           class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-sm sm:text-base shadow-xl shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
+                            <span>Ir para o Explorar</span>
+                            <span class="material-symbols-outlined text-lg sm:text-xl">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </section>
 
     <script>
