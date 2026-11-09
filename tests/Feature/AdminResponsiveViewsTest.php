@@ -216,3 +216,4 @@ class AdminResponsiveViewsTest extends TestCase
         $resSet->assertSee('Identidade Visual');
     }
 }
+
