@@ -104,4 +104,46 @@ class SiteSettingsTest extends TestCase
         // Check floating WhatsApp button has configured phone & message
         $response->assertSee('https://wa.me/5561985220100?text=Ol%C3%A1%21+Quero+um+cupom+de+desconto.');
     }
+
+    public function test_settings_page_renders_melhorenvio_balance_card_when_token_is_present()
+    {
+        Setting::set('melhorenvio_token', 'test-bearer-token', true);
+
+        \Illuminate\Support\Facades\Http::fake([
+            '*/api/v2/me/balance' => \Illuminate\Support\Facades\Http::response([
+                'balance' => 9840.46,
+                'reserved' => 0.0,
+                'debts' => 30.0,
+            ], 200),
+        ]);
+
+        $response = $this->actingAs($this->admin)->get(route('admin.settings.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Saldo da Melhor Carteira');
+        $response->assertSee('Saldo Disponível');
+    }
+
+    public function test_melhorenvio_balance_api_endpoint_returns_json()
+    {
+        Setting::set('melhorenvio_token', 'test-bearer-token', true);
+
+        \Illuminate\Support\Facades\Http::fake([
+            '*/api/v2/me/balance' => \Illuminate\Support\Facades\Http::response([
+                'balance' => 1500.50,
+                'reserved' => 50.0,
+                'debts' => 0.0,
+            ], 200),
+        ]);
+
+        $response = $this->actingAs($this->admin)->getJson(route('admin.settings.melhorenvio-balance', ['refresh' => 1]));
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'balance' => 1500.50,
+            'reserved' => 50.0,
+            'debts' => 0.0,
+        ]);
+    }
 }

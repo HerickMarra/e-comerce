@@ -62,6 +62,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('banners/{banner}/toggle-status', [App\Http\Controllers\Admin\BannerController::class, 'toggleStatus'])->name('banners.toggle-status');
     Route::get('/configuracoes', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
     Route::put('/configuracoes', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    Route::get('/configuracoes/melhorenvio-balance', [\App\Http\Controllers\Admin\SettingsController::class, 'getMelhorEnvioBalance'])->name('settings.melhorenvio-balance');
     Route::post('/configuracoes/test-melhorenvio', [\App\Http\Controllers\Admin\SettingsController::class, 'testMelhorEnvio'])->name('settings.test-melhorenvio');
     Route::post('/configuracoes/test-enviamais', [\App\Http\Controllers\Admin\SettingsController::class, 'testEnviaMais'])->name('settings.test-enviamais');
 

@@ -1006,6 +1006,111 @@
                             </p>
                         </div>
 
+                        {{-- Card de Saldo da Carteira do Melhor Envio --}}
+                        @if(!empty($settings['melhorenvio_token']))
+                            <div class="p-6 bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl border border-slate-800 text-white shadow-xl relative overflow-hidden"
+                                 x-data="{
+                                     balanceLoading: false,
+                                     balanceError: null,
+                                     balanceData: @js($melhorEnvioBalance),
+                                     refreshBalance() {
+                                         this.balanceLoading = true;
+                                         this.balanceError = null;
+                                         fetch('{{ route('admin.settings.melhorenvio-balance') }}?refresh=1')
+                                             .then(res => res.json())
+                                             .then(data => {
+                                                 this.balanceLoading = false;
+                                                 if (data && data.success) {
+                                                     this.balanceData = data;
+                                                 } else {
+                                                     this.balanceError = data.message || 'Erro ao carregar saldo.';
+                                                 }
+                                             })
+                                             .catch(err => {
+                                                 this.balanceLoading = false;
+                                                 this.balanceError = 'Falha de comunicação com a API do Melhor Envio.';
+                                             });
+                                     }
+                                 }">
+                                {{-- Background glow --}}
+                                <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800/80">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                                            <span class="material-symbols-outlined text-2xl">account_balance_wallet</span>
+                                        </div>
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <h3 class="text-sm font-bold text-white tracking-tight">Saldo da Melhor Carteira</h3>
+                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                                    Ao Vivo
+                                                </span>
+                                            </div>
+                                            <p class="text-[11px] text-slate-400">Saldo disponível para compra e emissão de etiquetas de frete</p>
+                                        </div>
+                                    </div>
+
+                                    <button type="button" @click="refreshBalance()"
+                                        :disabled="balanceLoading"
+                                        class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 self-start sm:self-auto border border-slate-700 hover:border-slate-600 disabled:opacity-50 cursor-pointer">
+                                        <span class="material-symbols-outlined text-sm" :class="{ 'animate-spin': balanceLoading }">refresh</span>
+                                        <span x-text="balanceLoading ? 'Atualizando...' : 'Atualizar Saldo'"></span>
+                                    </button>
+                                </div>
+
+                                <template x-if="balanceData && balanceData.success">
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        {{-- Saldo Livre --}}
+                                        <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1 flex items-center gap-1">
+                                                <span class="size-1.5 rounded-full bg-emerald-400"></span>
+                                                Saldo Disponível
+                                            </span>
+                                            <div class="text-xl sm:text-2xl font-black text-emerald-400 tracking-tight"
+                                                 x-text="'R$ ' + Number(balanceData.balance || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })">
+                                            </div>
+                                            <span class="text-[10px] text-slate-400 mt-1 block">Pronto para emitir fretes</span>
+                                        </div>
+
+                                        {{-- Reservado --}}
+                                        <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1 flex items-center gap-1">
+                                                <span class="size-1.5 rounded-full bg-amber-400"></span>
+                                                Saldo Reservado
+                                            </span>
+                                            <div class="text-xl sm:text-2xl font-black text-slate-200 tracking-tight"
+                                                 x-text="'R$ ' + Number(balanceData.reserved || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })">
+                                            </div>
+                                            <span class="text-[10px] text-slate-400 mt-1 block">Etiquetas em processamento</span>
+                                        </div>
+
+                                        {{-- Débitos --}}
+                                        <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1 flex items-center gap-1">
+                                                <span class="size-1.5 rounded-full bg-rose-400"></span>
+                                                Pendências / Débitos
+                                            </span>
+                                            <div class="text-xl sm:text-2xl font-black text-rose-300 tracking-tight"
+                                                 x-text="'R$ ' + Number(balanceData.debts || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })">
+                                            </div>
+                                            <span class="text-[10px] text-slate-400 mt-1 block">Pendências na conta</span>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template x-if="!balanceData || !balanceData.success">
+                                    <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-amber-400 text-xl">info</span>
+                                        <div class="flex-1">
+                                            <p class="font-bold" x-text="balanceError || (balanceData ? balanceData.message : 'Saldo indisponível')"></p>
+                                            <p class="text-[11px] text-amber-300/80 mt-0.5">Clique em "Atualizar Saldo" ou em "Testar Conexão" para verificar a comunicação com a API.</p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        @endif
+
                         {{-- Identificação da Aplicação (Header User-Agent exigido pelo Melhor Envio) --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>

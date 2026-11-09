@@ -66,6 +66,9 @@ class MelhorEnvioService
             $response = $this->request()->get('/shipment/services');
 
             if ($response->successful()) {
+                // Also refresh balance cache upon successful test
+                $this->getBalance(true);
+
                 return [
                     'success' => true,
                     'message' => 'Conexão com o Melhor Envio (' . ($this->environment === 'production' ? 'Produção' : 'Sandbox') . ') realizada com sucesso!',
@@ -87,6 +90,57 @@ class MelhorEnvioService
                 'message' => 'Exceção ao conectar com o Melhor Envio: ' . $e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * Get wallet balance from Melhor Envio.
+     *
+     * @param bool $forceRefresh Force fresh API call instead of cache
+     * @return array|null Returns ['success' => bool, 'balance' => float, 'reserved' => float, 'debts' => float] or null on failure.
+     */
+    public function getBalance(bool $forceRefresh = false): ?array
+    {
+        if (empty($this->token)) {
+            return null;
+        }
+
+        $cacheKey = 'melhorenvio_balance_' . md5($this->token . $this->environment);
+
+        if ($forceRefresh) {
+            \Illuminate\Support\Facades\Cache::forget($cacheKey);
+        }
+
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 60, function () {
+            try {
+                $response = $this->request()->timeout(5)->get('/balance');
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    return [
+                        'success' => true,
+                        'balance' => (float) ($data['balance'] ?? 0),
+                        'reserved' => (float) ($data['reserved'] ?? 0),
+                        'debts' => (float) ($data['debts'] ?? 0),
+                        'environment' => $this->environment,
+                    ];
+                }
+
+                $body = $response->json();
+                $errorMsg = $body['message'] ?? $body['error'] ?? 'Código HTTP ' . $response->status();
+
+                return [
+                    'success' => false,
+                    'message' => $errorMsg,
+                    'status' => $response->status(),
+                ];
+            } catch (\Throwable $e) {
+                Log::warning('Melhor Envio getBalance exception: ' . $e->getMessage());
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ];
+            }
+        });
     }
 
     /**

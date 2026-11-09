@@ -81,7 +81,12 @@ class SettingsController extends Controller
             'mail_from_name' => Setting::get('mail_from_name', config('mail.from.name')),
         ];
 
-        return view('admin.settings.index', compact('settings'));
+        $melhorEnvioBalance = null;
+        if (!empty($settings['melhorenvio_token'])) {
+            $melhorEnvioBalance = app(MelhorEnvioService::class)->getBalance();
+        }
+
+        return view('admin.settings.index', compact('settings', 'melhorEnvioBalance'));
     }
 
     public function testMelhorEnvio(MelhorEnvioService $melhorEnvio)
@@ -89,6 +94,21 @@ class SettingsController extends Controller
         $result = $melhorEnvio->validateToken();
 
         return response()->json($result, $result['success'] ? 200 : 422);
+    }
+
+    public function getMelhorEnvioBalance(Request $request, MelhorEnvioService $melhorEnvio)
+    {
+        $force = $request->boolean('refresh', false);
+        $balance = $melhorEnvio->getBalance($force);
+
+        if (!$balance) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token do Melhor Envio não configurado ou inacessível no momento.',
+            ], 422);
+        }
+
+        return response()->json($balance, ($balance['success'] ?? false) ? 200 : 422);
     }
 
     public function testEnviaMais(EnviaMaisService $enviaMais)
