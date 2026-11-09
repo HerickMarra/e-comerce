@@ -30,14 +30,27 @@ class SettingsController extends Controller
             'enviamais_api_key' => Setting::get('enviamais_api_key'),
             'enviamais_dev_mode' => Setting::get('enviamais_dev_mode', 'production'),
 
-            // Visual Identity
-            'store_name' => Setting::get('store_name', config('app.name')),
+            // Visual Identity & Store Presentation
+            'store_name' => Setting::get('store_name', config('app.name', 'Denner Tênis')),
+            'store_company_name' => Setting::get('store_company_name', ''),
             'store_tagline' => Setting::get('store_tagline', 'Móveis de alto padrão para sua casa'),
             'store_logo' => Setting::get('store_logo'),
             'store_logo_size' => Setting::get('store_logo_size', '100'),
             'store_icon' => Setting::get('store_icon', 'chair'),
             'primary_color' => Setting::get('primary_color', '#10b981'),
             'secondary_color' => Setting::get('secondary_color', '#0f172a'),
+
+            // Contact, Social & Customer Service
+            'store_phone' => Setting::get('store_phone', ''),
+            'store_whatsapp' => Setting::get('store_whatsapp', Setting::get('store_phone', '')),
+            'store_whatsapp_message' => Setting::get('store_whatsapp_message', 'Olá! Gostaria de mais informações sobre os produtos.'),
+            'store_email' => Setting::get('store_email', Setting::get('mail_from_address', '')),
+            'store_opening_hours' => Setting::get('store_opening_hours', 'Segunda a Sexta: 09h às 18h | Sábado: 09h às 13h'),
+            'store_instagram' => Setting::get('store_instagram', ''),
+            'store_facebook' => Setting::get('store_facebook', ''),
+            'store_tiktok' => Setting::get('store_tiktok', ''),
+            'store_youtube' => Setting::get('store_youtube', ''),
+            'store_footer_description' => Setting::get('store_footer_description', 'Sua loja especializada em tênis de corrida, treino e performance das melhores marcas mundiais, com envio rápido e garantia de originalidade.'),
 
             // Store Address & Pickup
             'store_street' => Setting::get('store_street'),
@@ -47,7 +60,6 @@ class SettingsController extends Controller
             'store_city' => Setting::get('store_city'),
             'store_state' => Setting::get('store_state'),
             'store_zip' => Setting::get('store_zip'),
-            'store_phone' => Setting::get('store_phone', ''),
             'store_document' => Setting::get('store_document', ''),
             'store_state_registration' => Setting::get('store_state_registration', ''),
             'shipping_additional_days' => Setting::get('shipping_additional_days', '0'),
@@ -119,13 +131,26 @@ class SettingsController extends Controller
             Setting::set('asaas_webhook_token', $request->asaas_webhook_token, true);
         }
 
-        // Visual Identity
+        // Visual Identity & Store Presentation
         Setting::set('store_name', $request->store_name ?? '');
+        Setting::set('store_company_name', $request->store_company_name ?? '');
         Setting::set('store_tagline', $request->store_tagline ?? '');
         Setting::set('store_logo_size', $request->store_logo_size ?? '100');
         Setting::set('store_icon', $request->store_icon ?? 'chair');
         Setting::set('primary_color', $request->primary_color ?? '#10b981');
         Setting::set('secondary_color', $request->secondary_color ?? '#0f172a');
+
+        // Contact, Social & Customer Service
+        Setting::set('store_phone', $request->store_phone ?? '');
+        Setting::set('store_whatsapp', $request->store_whatsapp ?? '');
+        Setting::set('store_whatsapp_message', $request->store_whatsapp_message ?? '');
+        Setting::set('store_email', $request->store_email ?? '');
+        Setting::set('store_opening_hours', $request->store_opening_hours ?? '');
+        Setting::set('store_instagram', $request->store_instagram ?? '');
+        Setting::set('store_facebook', $request->store_facebook ?? '');
+        Setting::set('store_tiktok', $request->store_tiktok ?? '');
+        Setting::set('store_youtube', $request->store_youtube ?? '');
+        Setting::set('store_footer_description', $request->store_footer_description ?? '');
 
         // Store Address & Pickup
         Setting::set('store_street', $request->store_street ?? '');
@@ -135,7 +160,6 @@ class SettingsController extends Controller
         Setting::set('store_city', $request->store_city ?? '');
         Setting::set('store_state', $request->store_state ?? '');
         Setting::set('store_zip', $request->store_zip ?? '');
-        Setting::set('store_phone', $request->store_phone ?? '');
         Setting::set('store_document', $request->store_document ?? '');
         Setting::set('store_state_registration', $request->store_state_registration ?? '');
         Setting::set('shipping_additional_days', $request->shipping_additional_days ?? '0');

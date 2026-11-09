@@ -1,0 +1,107 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\Setting;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
+
+class SiteSettingsTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected User $admin;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Role::findOrCreate('Super Admin');
+        $this->admin = User::factory()->create();
+        $this->admin->assignRole('Super Admin');
+    }
+
+    public function test_settings_page_renders_site_info_tab()
+    {
+        $response = $this->actingAs($this->admin)->get(route('admin.settings.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Informações do Site');
+        $response->assertSee('WhatsApp de Atendimento');
+        $response->assertSee('Instagram da Loja');
+        $response->assertSee('CNPJ ou CPF da Empresa');
+        $response->assertSee('Razão Social Oficial');
+        $response->assertSee('Endereço da Sede');
+    }
+
+    public function test_admin_can_update_site_information_including_social_and_company_data()
+    {
+        $payload = [
+            'store_name' => 'Denner Tênis Oficial',
+            'store_company_name' => 'Denner Calçados e Artigos Esportivos LTDA',
+            'store_document' => '12.345.678/0001-99',
+            'store_state_registration' => '10.987.654-3',
+            'store_phone' => '(61) 3333-4444',
+            'store_whatsapp' => '(61) 98522-0100',
+            'store_whatsapp_message' => 'Olá! Gostaria de tirar uma dúvida sobre um tênis.',
+            'store_email' => 'suporte@dennertenis.com.br',
+            'store_opening_hours' => 'Segunda a Sexta: 08h às 19h',
+            'store_instagram' => '@dennertenis_oficial',
+            'store_facebook' => 'https://facebook.com/dennertenis',
+            'store_tiktok' => 'https://tiktok.com/@dennertenis',
+            'store_youtube' => 'https://youtube.com/@dennertenis',
+            'store_footer_description' => 'A maior loja de calçados de alta performance do Centro-Oeste.',
+            'store_street' => 'Avenida Goiás',
+            'store_number' => '1500',
+            'store_complement' => 'Sala 302',
+            'store_neighborhood' => 'Setor Central',
+            'store_city' => 'Goiânia',
+            'store_state' => 'GO',
+            'store_zip' => '74000-000',
+        ];
+
+        $response = $this->actingAs($this->admin)->put(route('admin.settings.update'), $payload);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertEquals('Denner Tênis Oficial', Setting::get('store_name'));
+        $this->assertEquals('Denner Calçados e Artigos Esportivos LTDA', Setting::get('store_company_name'));
+        $this->assertEquals('12.345.678/0001-99', Setting::get('store_document'));
+        $this->assertEquals('(61) 98522-0100', Setting::get('store_whatsapp'));
+        $this->assertEquals('@dennertenis_oficial', Setting::get('store_instagram'));
+        $this->assertEquals('Avenida Goiás', Setting::get('store_street'));
+        $this->assertEquals('Goiânia', Setting::get('store_city'));
+    }
+
+    public function test_storefront_footer_and_whatsapp_button_render_configured_information()
+    {
+        Setting::set('store_name', 'Denner Tênis Teste');
+        Setting::set('store_company_name', 'Denner Tênis LTDA');
+        Setting::set('store_document', '11.222.333/0001-44');
+        Setting::set('store_whatsapp', '61985220100');
+        Setting::set('store_whatsapp_message', 'Olá! Quero um cupom de desconto.');
+        Setting::set('store_instagram', '@denner_tenis');
+        Setting::set('store_street', 'Rua das Palmeiras');
+        Setting::set('store_number', '100');
+        Setting::set('store_city', 'Brasília');
+        Setting::set('store_state', 'DF');
+        Setting::set('store_zip', '70000-000');
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+
+        // Check footer elements
+        $response->assertSee('Denner Tênis LTDA');
+        $response->assertSee('11.222.333/0001-44');
+        $response->assertSee('Rua das Palmeiras, 100');
+        $response->assertSee('Brasília/DF');
+        $response->assertSee('https://instagram.com/denner_tenis');
+
+        // Check floating WhatsApp button has configured phone & message
+        $response->assertSee('https://wa.me/5561985220100?text=Ol%C3%A1%21+Quero+um+cupom+de+desconto.');
+    }
+}

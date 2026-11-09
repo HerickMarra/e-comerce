@@ -2,13 +2,41 @@
     @section('page_title', 'Configurações do Sistema')
 
     <div class="max-w-4xl space-y-8" x-data="{
-        activeTab: 'branding',
+        activeTab: 'site_info',
         primaryColor: '{{ $settings['primary_color'] }}',
         logoPreview: '{{ $settings['store_logo'] ? asset('storage/' . $settings['store_logo']) : '' }}',
         logoSize: '{{ $settings['store_logo_size'] }}',
         storeIcon: '{{ $settings['store_icon'] }}',
         previewName: '{{ $settings['store_name'] }}',
-        showWebhookToken: false
+        showWebhookToken: false,
+        storeZip: '{{ $settings['store_zip'] ?? '' }}',
+        storeStreet: '{{ $settings['store_street'] ?? '' }}',
+        storeNeighborhood: '{{ $settings['store_neighborhood'] ?? '' }}',
+        storeCity: '{{ $settings['store_city'] ?? '' }}',
+        storeState: '{{ $settings['store_state'] ?? '' }}',
+        loadingCep: false,
+        searchCep() {
+            let zip = (this.storeZip || '').replace(/\D/g, '');
+            if (zip.length !== 8) return;
+            this.loadingCep = true;
+            fetch(`https://viacep.com.br/ws/${zip}/json/`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.erro) {
+                        this.storeStreet = data.logradouro || '';
+                        this.storeNeighborhood = data.bairro || '';
+                        this.storeCity = data.localidade || '';
+                        this.storeState = data.uf || '';
+                        this.$nextTick(() => {
+                            if (this.$refs.storeNumberInput) {
+                                this.$refs.storeNumberInput.focus();
+                            }
+                        });
+                    }
+                })
+                .catch(() => {})
+                .finally(() => this.loadingCep = false);
+        }
     }">
         @if(session('success'))
             <div class="p-4 bg-primary/10 border border-primary/20 text-primary rounded-xl flex items-center gap-3">
@@ -19,7 +47,13 @@
 
         {{-- Tab Navigation --}}
         <div
-            class="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 grid grid-cols-2 lg:grid-cols-5 gap-1 md:gap-2">
+            class="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1 md:gap-2">
+            <button type="button" @click="activeTab = 'site_info'"
+                class="w-full flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
+                :class="activeTab === 'site_info' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'">
+                <span class="material-symbols-outlined text-[1.2rem] md:text-lg">public</span>
+                <span>Informações do Site</span>
+            </button>
             <button type="button" @click="activeTab = 'branding'"
                 class="w-full flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
                 :class="activeTab === 'branding' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'">
@@ -45,7 +79,7 @@
                 <span>Loja Física</span>
             </button>
             <button type="button" @click="activeTab = 'email'"
-                class="w-full col-span-2 lg:col-span-1 flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
+                class="w-full flex flex-col md:flex-row items-center justify-center gap-2 px-3 py-3 rounded-xl text-xs md:text-sm font-bold transition-all text-center"
                 :class="activeTab === 'email' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'">
                 <span class="material-symbols-outlined text-[1.2rem] md:text-lg">mail</span>
                 <span>E-mail (SMTP)</span>
@@ -56,6 +90,349 @@
             class="space-y-8">
             @csrf
             @method('PUT')
+
+            {{-- ============================= --}}
+            {{-- TAB: INFORMAÇÕES DO SITE & REDES --}}
+            {{-- ============================= --}}
+            <div x-show="activeTab === 'site_info'" x-transition class="space-y-6">
+
+                {{-- Banner Informativo --}}
+                <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-sm">
+                    <div class="max-w-xl relative z-10 space-y-2">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-blue-200 text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+                            <span class="material-symbols-outlined text-sm">badge</span>
+                            <span>Dados Públicos da Loja</span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-black tracking-tight text-white">Informações da Empresa, Redes & Atendimento</h2>
+                        <p class="text-xs sm:text-sm text-blue-100/80 leading-relaxed">
+                            Configure os dados que aparecem no rodapé do site, botão do WhatsApp, cabeçalho, páginas institucionais e comprovantes de compras.
+                        </p>
+                    </div>
+                    <div class="absolute -right-6 -bottom-8 opacity-10 pointer-events-none">
+                        <span class="material-symbols-outlined text-[160px]">public</span>
+                    </div>
+                </div>
+
+                {{-- Card 1: Dados da Empresa & Identificação Fiscal --}}
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-slate-50 flex items-center gap-4 bg-slate-50/50">
+                        <div class="size-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                            <span class="material-symbols-outlined text-xl">domain</span>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Identificação da Empresa & Dados Fiscais</h3>
+                            <p class="text-xs text-slate-500">Nome fantasia, razão social e documentação oficial (CNPJ / CPF).</p>
+                        </div>
+                    </div>
+
+                    <div class="p-6 sm:p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Nome Fantasia do Site <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="store_name" value="{{ $settings['store_name'] ?? '' }}"
+                                    x-model="previewName"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
+                                    placeholder="Ex: Denner Tênis" required>
+                                <p class="text-[10px] text-slate-400 mt-1.5">Nome principal exibido na loja e nas comunicações.</p>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Razão Social Oficial
+                                </label>
+                                <input type="text" name="store_company_name" value="{{ $settings['store_company_name'] ?? '' }}"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
+                                    placeholder="Ex: Denner Comércio de Calçados LTDA">
+                                <p class="text-[10px] text-slate-400 mt-1.5">Razão social para exibição no rodapé e notas fiscais.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    CNPJ ou CPF da Empresa <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="store_document" value="{{ $settings['store_document'] ?? '' }}"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-mono font-bold"
+                                    placeholder="Ex: 08.351.723/0001-77 ou CPF">
+                                <p class="text-[10px] text-slate-400 mt-1.5">Exibido obrigatoriamente no rodapé (Lei do E-commerce) e usado para etiquetas.</p>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Inscrição Estadual (IE)
+                                </label>
+                                <input type="text" name="store_state_registration" value="{{ $settings['store_state_registration'] ?? '' }}"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-mono font-medium"
+                                    placeholder="Ex: ISENTO ou 10.123.456-7">
+                                <p class="text-[10px] text-slate-400 mt-1.5">Se isento de IE estadual, digite ISENTO.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card 2: Canais de Atendimento & WhatsApp --}}
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-slate-50 flex items-center gap-4 bg-slate-50/50">
+                        <div class="size-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
+                            <span class="material-symbols-outlined text-xl">support_agent</span>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Atendimento ao Cliente & WhatsApp</h3>
+                            <p class="text-xs text-slate-500">Configuração do botão flutuante de WhatsApp, telefones e e-mails de suporte.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-6 sm:p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block flex items-center justify-between">
+                                    <span>WhatsApp de Atendimento <span class="text-red-500">*</span></span>
+                                    <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Botão Flutuante + Rodapé</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="store_whatsapp" value="{{ $settings['store_whatsapp'] ?? '' }}"
+                                        class="w-full bg-slate-50 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-mono font-bold"
+                                        placeholder="(61) 98522-0100">
+                                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-600 text-lg">chat</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1.5">Número direto que abre ao clicar no botão verde flutuante e no rodapé.</p>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Mensagem Padrão do WhatsApp
+                                </label>
+                                <input type="text" name="store_whatsapp_message" value="{{ $settings['store_whatsapp_message'] ?? 'Olá! Gostaria de mais informações sobre os produtos.' }}"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
+                                    placeholder="Ex: Olá! Gostaria de mais informações sobre os tênis.">
+                                <p class="text-[10px] text-slate-400 mt-1.5">Texto inicial que já aparece digitado na conversa com o cliente.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Telefone Fixo / Comercial
+                                </label>
+                                <input type="text" name="store_phone" value="{{ $settings['store_phone'] ?? '' }}"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-mono font-bold"
+                                    placeholder="(61) 3333-0000">
+                                <p class="text-[10px] text-slate-400 mt-1.5">Telefone de contato exibido no rodapé.</p>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    E-mail de Atendimento
+                                </label>
+                                <input type="email" name="store_email" value="{{ $settings['store_email'] ?? '' }}"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
+                                    placeholder="contato@dennertenis.com.br">
+                                <p class="text-[10px] text-slate-400 mt-1.5">E-mail público onde os clientes enviam dúvidas.</p>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Horário de Atendimento
+                                </label>
+                                <input type="text" name="store_opening_hours" value="{{ $settings['store_opening_hours'] ?? '' }}"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
+                                    placeholder="Seg a Sex: 09h às 18h | Sáb: 09h às 13h">
+                                <p class="text-[10px] text-slate-400 mt-1.5">Horários de atendimento exibidos no rodapé.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card 3: Redes Sociais da Loja --}}
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-slate-50 flex items-center gap-4 bg-slate-50/50">
+                        <div class="size-12 bg-pink-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-pink-500/20">
+                            <span class="material-symbols-outlined text-xl">share</span>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Redes Sociais do E-commerce</h3>
+                            <p class="text-xs text-slate-500">Instagram, Facebook, TikTok e YouTube vinculados aos botões do rodapé e páginas.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-6 sm:p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block flex items-center justify-between">
+                                    <span>Instagram da Loja</span>
+                                    <span class="text-[9px] font-black text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full">Ex: @dennertenis</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="store_instagram" value="{{ $settings['store_instagram'] ?? '' }}"
+                                        class="w-full bg-slate-50 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
+                                        placeholder="@dennertenis ou https://instagram.com/dennertenis">
+                                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-pink-600 text-lg">photo_camera</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1.5">Insira seu @ do Instagram ou o link completo do seu perfil.</p>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Facebook (Página da Loja)
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="store_facebook" value="{{ $settings['store_facebook'] ?? '' }}"
+                                        class="w-full bg-slate-50 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
+                                        placeholder="https://facebook.com/dennertenis">
+                                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-blue-600 text-lg">thumb_up</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1.5">Link direto da sua página no Facebook.</p>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    TikTok
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="store_tiktok" value="{{ $settings['store_tiktok'] ?? '' }}"
+                                        class="w-full bg-slate-50 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
+                                        placeholder="https://tiktok.com/@dennertenis">
+                                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-900 text-lg">video_library</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1.5">Link do perfil no TikTok.</p>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Canal do YouTube
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="store_youtube" value="{{ $settings['store_youtube'] ?? '' }}"
+                                        class="w-full bg-slate-50 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
+                                        placeholder="https://youtube.com/@dennertenis">
+                                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-red-600 text-lg">smart_display</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1.5">Link do canal do YouTube da marca.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card 4: Endereço da Empresa / Sede / Loja Física --}}
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-slate-50 flex items-center gap-4 bg-slate-50/50">
+                        <div class="size-12 bg-amber-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-amber-500/20">
+                            <span class="material-symbols-outlined text-xl">location_on</span>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Endereço da Sede & Loja Física</h3>
+                            <p class="text-xs text-slate-500">Endereço impresso no rodapé e utilizado como ponto de partida dos fretes e retiradas.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-6 sm:p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    CEP da Loja / Sede <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="store_zip" x-model="storeZip" @blur="searchCep()"
+                                        class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-mono font-bold"
+                                        placeholder="00000-000">
+                                    <div class="absolute right-3 top-1/2 -translate-y-1/2" x-show="loadingCep">
+                                        <span class="material-symbols-outlined animate-spin text-sm text-primary">sync</span>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1.5">Digite o CEP para buscar o logradouro automaticamente.</p>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Rua / Logradouro <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="store_street" x-model="storeStreet"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
+                                    placeholder="Ex: Praça Doutor Pedro Ludovico Teixeira ou Rua Principal">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Número <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="store_number" x-ref="storeNumberInput"
+                                    value="{{ $settings['store_number'] ?? '' }}"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
+                                    placeholder="Ex: 24 ou S/N">
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Complemento
+                                </label>
+                                <input type="text" name="store_complement"
+                                    value="{{ $settings['store_complement'] ?? '' }}"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
+                                    placeholder="Ex: Sala 102, Galpão A">
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                    Bairro <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" name="store_neighborhood" x-model="storeNeighborhood"
+                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
+                                    placeholder="Ex: Centro">
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="col-span-2">
+                                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                        Cidade <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="store_city" x-model="storeCity"
+                                        class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
+                                        placeholder="Ex: Goiânia">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                        UF <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" name="store_state" x-model="storeState" maxlength="2"
+                                        class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold uppercase text-center"
+                                        placeholder="GO">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card 5: Textos Institucionais & Rodapé --}}
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-slate-50 flex items-center gap-4 bg-slate-50/50">
+                        <div class="size-12 bg-purple-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-purple-500/20">
+                            <span class="material-symbols-outlined text-xl">format_quote</span>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Textos do Rodapé & Apresentação</h3>
+                            <p class="text-xs text-slate-500">Texto descritivo sobre o e-commerce apresentado no rodapé público.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-6 sm:p-8 space-y-6">
+                        <div>
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
+                                Descrição Institucional no Rodapé
+                            </label>
+                            <textarea name="store_footer_description" rows="3"
+                                class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium leading-relaxed"
+                                placeholder="Sua loja especializada em tênis de corrida, treino e performance...">{{ $settings['store_footer_description'] ?? '' }}</textarea>
+                            <p class="text-[10px] text-slate-400 mt-1.5">Apresentação da loja exibida logo abaixo da logo no rodapé.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
 
             {{-- ============================= --}}
             {{-- TAB: IDENTIDADE VISUAL --}}
@@ -88,34 +465,34 @@
                     </div>
                 </div>
 
-                {{-- Store Identity --}}
+                {{-- Store Identity Shortcut --}}
                 <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-                    <div class="p-6 border-b border-slate-50 flex items-center gap-4 bg-slate-50/50">
-                        <div class="size-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white">
-                            <span class="material-symbols-outlined text-base">storefront</span>
+                    <div class="p-6 border-b border-slate-50 flex items-center justify-between gap-4 bg-slate-50/50">
+                        <div class="flex items-center gap-4">
+                            <div class="size-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white">
+                                <span class="material-symbols-outlined text-base">storefront</span>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-slate-900">Nome da Loja & Slogan</h2>
+                                <p class="text-xs text-slate-500">Exibidos na identidade visual e no cabeçalho.</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="font-bold text-slate-900">Informações da Loja</h2>
-                            <p class="text-xs text-slate-500">Nome, slogan e descrição exibidos publicamente.</p>
-                        </div>
+                        <button type="button" @click="activeTab = 'site_info'"
+                            class="px-3.5 py-1.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:border-slate-400 transition-all flex items-center gap-1">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                            <span>Editar em Informações do Site</span>
+                        </button>
                     </div>
-                    <div class="p-5 sm:p-8 space-y-6">
-                        <div>
-                            <label
-                                class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">Nome
-                                da Loja</label>
-                            <input type="text" name="store_name" value="{{ $settings['store_name'] }}"
-                                x-model="previewName"
-                                class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
-                                placeholder="Ex: VerveHome">
-                        </div>
-                        <div>
-                            <label
-                                class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">Tagline
-                                / Slogan</label>
-                            <input type="text" name="store_tagline" value="{{ $settings['store_tagline'] }}"
-                                class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all"
-                                placeholder="Ex: Móveis de alto padrão para sua casa">
+                    <div class="p-5 sm:p-8 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Nome da Loja</span>
+                                <span class="text-sm font-bold text-slate-900" x-text="previewName || '{{ $settings['store_name'] }}'"></span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Slogan / Tagline</span>
+                                <span class="text-sm font-medium text-slate-700">{{ $settings['store_tagline'] ?: 'Não cadastrado' }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -669,148 +1046,53 @@
 
                 {{-- Endereço de Origem (Remetente) --}}
                 <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden" x-show="shippingProvider === 'melhorenvio'">
-                    <div class="p-8 border-b border-slate-50 flex items-center gap-4 bg-slate-50/50">
-                        <div class="size-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200">
-                            <span class="material-symbols-outlined">warehouse</span>
+                    <div class="p-6 sm:p-8 border-b border-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-50/50">
+                        <div class="flex items-center gap-4">
+                            <div class="size-12 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200 shrink-0">
+                                <span class="material-symbols-outlined">warehouse</span>
+                            </div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900">Endereço de Origem & Remetente das Encomendas</h2>
+                                <p class="text-xs text-slate-500 font-medium">Ponto de partida das cotações de frete e remetente oficial impresso nas etiquetas de envio.</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-900">Endereço de Origem do Estoque (Remetente)</h2>
-                            <p class="text-xs text-slate-500 font-medium">Ponto de partida das cotações de frete e remetente oficial impresso nas etiquetas de envio.</p>
-                        </div>
+                        <button type="button" @click="activeTab = 'site_info'"
+                            class="px-4 py-2 bg-white border border-slate-200 hover:border-emerald-500 text-slate-700 hover:text-emerald-700 font-bold rounded-xl text-xs transition-all shadow-sm flex items-center gap-1.5 shrink-0">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                            <span>Editar em Informações do Site</span>
+                        </button>
                     </div>
 
-                    <div class="p-5 sm:p-8 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {{-- CEP de Origem --}}
+                    <div class="p-5 sm:p-8 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
                             <div>
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                    CEP de Origem (Estoque) <span class="text-red-500">*</span>
-                                </label>
-                                <div class="relative group">
-                                    <input type="text" name="store_zip" x-model="originAddress.zip" x-mask="99999-999"
-                                        @blur="searchOriginCep" @keyup.enter="searchOriginCep"
-                                        class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold tracking-wider"
-                                        placeholder="00000-000">
-                                    <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
-                                        <button type="button" @click="searchOriginCep" :disabled="loadingOriginCep"
-                                            class="text-[11px] font-bold px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition-colors">
-                                            Buscar
-                                        </button>
-                                        <div x-show="loadingOriginCep">
-                                            <span class="material-symbols-outlined animate-spin text-sm text-primary">sync</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="text-[10px] text-slate-400 mt-1.5">Preenche o logradouro, bairro e cidade automaticamente pelo ViaCEP.</p>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Logradouro / Número</span>
+                                <span class="text-sm font-bold text-slate-800" x-text="storeStreet ? (storeStreet + ', ' + (document.querySelector('input[name=store_number]')?.value || 'S/N')) : '{{ $settings['store_street'] ?: 'Não cadastrado' }}'"></span>
                             </div>
-
-                            <div class="md:col-span-2">
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                    Rua / Logradouro <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="store_street" x-model="originAddress.street"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
-                                    placeholder="Ex: Avenida Paulista ou Rua do Comércio">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Bairro / Cidade / UF</span>
+                                <span class="text-sm font-bold text-slate-800" x-text="(storeCity ? (storeCity + '/' + storeState) : '{{ $settings['store_city'] ? $settings['store_city'] . '/' . $settings['store_state'] : 'Não cadastrado' }}')"></span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">CEP de Origem</span>
+                                <span class="text-sm font-mono font-bold text-emerald-700" x-text="storeZip || '{{ $settings['store_zip'] ?: 'Não cadastrado' }}'"></span>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                            <div>
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                    Número <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="store_number" x-ref="shippingNumber"
-                                    value="{{ $settings['store_number'] ?? '' }}"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
-                                    placeholder="Ex: 500 ou S/N">
-                            </div>
-
-                            <div>
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                    Complemento (Opcional)
-                                </label>
-                                <input type="text" name="store_complement"
-                                    value="{{ $settings['store_complement'] ?? '' }}"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-medium"
-                                    placeholder="Ex: Galpão 3, Sala 12">
-                            </div>
-
-                            <div>
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                    Bairro <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="store_neighborhood" x-model="originAddress.neighborhood"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
-                                    placeholder="Ex: Centro">
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-3">
-                                <div class="col-span-2">
-                                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                        Cidade <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="store_city" x-model="originAddress.city"
-                                        class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold"
-                                        placeholder="Ex: São Paulo">
-                                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-2xl bg-blue-50/50 border border-blue-100 text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-600 text-base">badge</span>
                                 <div>
-                                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                        UF <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" name="store_state" x-model="originAddress.state" maxlength="2"
-                                        class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-bold uppercase text-center"
-                                        placeholder="SP">
+                                    <span class="text-[10px] uppercase font-bold text-blue-500 block">CPF / CNPJ do Remetente</span>
+                                    <span class="font-mono font-bold text-slate-800">{{ $settings['store_document'] ?: 'Preencha na aba Informações do Site' }}</span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Dados Fiscais e Contato do Remetente --}}
-                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden" x-show="shippingProvider === 'melhorenvio'">
-                    <div class="p-8 border-b border-slate-50 flex items-center gap-4 bg-slate-50/50">
-                        <div class="size-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                            <span class="material-symbols-outlined">badge</span>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-900">Dados do Remetente para Emissão de Etiquetas</h2>
-                            <p class="text-xs text-slate-500 font-medium">Exigidos pelas transportadoras (Correios, Jadlog, Azul Cargo) para emitir etiquetas e declaração de conteúdo/NF-e.</p>
-                        </div>
-                    </div>
-
-                    <div class="p-5 sm:p-8 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div>
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                    CPF ou CNPJ do Remetente <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="store_document"
-                                    value="{{ $settings['store_document'] ?? '' }}"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-mono font-bold"
-                                    placeholder="000.000.000-00 ou CNPJ">
-                                <p class="text-[10px] text-slate-400 mt-1.5">Documento do responsável ou da empresa emitente.</p>
-                            </div>
-
-                            <div>
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                    Telefone / WhatsApp de Contato <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" name="store_phone"
-                                    value="{{ $settings['store_phone'] ?? '' }}"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-mono font-bold"
-                                    placeholder="(00) 00000-0000">
-                                <p class="text-[10px] text-slate-400 mt-1.5">Contato do remetente impresso na etiqueta.</p>
-                            </div>
-
-                            <div>
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">
-                                    Inscrição Estadual (IE)
-                                </label>
-                                <input type="text" name="store_state_registration"
-                                    value="{{ $settings['store_state_registration'] ?? '' }}"
-                                    class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-slate-900 focus:border-slate-900 transition-all font-mono font-medium"
-                                    placeholder="Ex: ISENTO ou número da IE">
-                                <p class="text-[10px] text-slate-400 mt-1.5">Se não possuir IE jurídica, preencha ISENTO.</p>
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-emerald-600 text-base">call</span>
+                                <div>
+                                    <span class="text-[10px] uppercase font-bold text-emerald-600 block">Contato do Remetente</span>
+                                    <span class="font-mono font-bold text-slate-800">{{ $settings['store_phone'] ?: 'Preencha na aba Informações do Site' }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
