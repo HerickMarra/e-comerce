@@ -457,6 +457,8 @@ class VariationInventoryTest extends TestCase
         $response = $this->get(route('product.show', $product->slug));
         $response->assertStatus(200);
         $response->assertSee('Tênis Storefront Test');
+        $response->assertSee('x-data="productDetailComponent()"', false);
+        $response->assertDontSee('{ const matchSize = String(v.size)', false);
 
         // Verify stock matrix helper
         $matrix = $product->getStockMatrix();

@@ -12,118 +12,130 @@
                 'stock' => (int) $v->stock,
             ];
         })->values();
+        $initialImage = $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? '');
+        $productStock = (int) $product->stock;
+        $storageBaseUrl = asset('storage');
     @endphp
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 pb-24 sm:pb-10" x-data="{ 
-        variants: {!! json_encode($variantsJson) !!},
-        activeImage: '{{ $product->images->where('is_main', true)->first()?->path ?? ($product->images->first()?->path ?? '') }}',
-        quantity: 1,
-        selectedColor: '',
-        selectedName: '',
-        selectedSize: '',
-        showSizeGuide: false,
-        activeTab: 'specs',
-        hasSizes: {{ $hasSizes ? 'true' : 'false' }},
-        hasColors: {{ $hasColors ? 'true' : 'false' }},
-        errorField: '',
-        errorMessage: '',
+    <script>
+        function productDetailComponent() {
+            return {
+                variants: @json($variantsJson),
+                activeImage: @json($initialImage),
+                storageBaseUrl: @json($storageBaseUrl),
+                quantity: 1,
+                selectedColor: '',
+                selectedName: '',
+                selectedSize: '',
+                showSizeGuide: false,
+                activeTab: 'specs',
+                hasSizes: @json($hasSizes),
+                hasColors: @json($hasColors),
+                productStock: @json($productStock),
+                errorField: '',
+                errorMessage: '',
 
-        getVariant(size, colorName) {
-            if (!size) return null;
-            return this.variants.find(v => {
-                const matchSize = String(v.size) === String(size);
-                if (!colorName && !this.selectedColor) return matchSize;
-                const matchColor = (v.color_name && v.color_name === colorName) || (v.color_hex && v.color_hex === this.selectedColor);
-                return matchSize && matchColor;
-            });
-        },
+                getVariant(size, colorName) {
+                    if (!size) return null;
+                    return this.variants.find(function(v) {
+                        const matchSize = String(v.size) === String(size);
+                        if (!colorName && !this.selectedColor) return matchSize;
+                        const matchColor = (v.color_name && v.color_name === colorName) || (v.color_hex && v.color_hex === this.selectedColor);
+                        return matchSize && matchColor;
+                    }.bind(this));
+                },
 
-        getVariantStock(size, colorName) {
-            const v = this.getVariant(size, colorName);
-            return v ? v.stock : 0;
-        },
+                getVariantStock(size, colorName) {
+                    const v = this.getVariant(size, colorName);
+                    return v ? v.stock : 0;
+                },
 
-        isSizeInStockForColor(size) {
-            if (!this.selectedName && !this.selectedColor) {
-                return this.variants.some(v => String(v.size) === String(size) && v.stock > 0);
-            }
-            return this.getVariantStock(size, this.selectedName) > 0;
-        },
-
-        isColorInStockForSize(colorName, colorHex) {
-            if (!this.selectedSize) {
-                return this.variants.some(v => (v.color_name === colorName || v.color_hex === colorHex) && v.stock > 0);
-            }
-            const v = this.variants.find(v => String(v.size) === String(this.selectedSize) && (v.color_name === colorName || v.color_hex === colorHex));
-            return v ? v.stock > 0 : false;
-        },
-
-        get currentVariant() {
-            if (!this.selectedSize) return null;
-            if (this.hasColors && !this.selectedName && !this.selectedColor) return null;
-            return this.getVariant(this.selectedSize, this.selectedName);
-        },
-
-        get currentStock() {
-            if (this.currentVariant) {
-                return this.currentVariant.stock;
-            }
-            if (this.selectedSize && (!this.hasColors || this.selectedName)) {
-                return 0;
-            }
-            return {{ $product->stock }};
-        },
-
-        get isCombinationOutOfStock() {
-            if (this.selectedSize && (!this.hasColors || this.selectedName || this.selectedColor)) {
-                return this.currentStock <= 0;
-            }
-            return false;
-        },
-
-        validatePurchase(event) {
-            this.errorField = '';
-            this.errorMessage = '';
-
-            if (this.hasSizes && !this.selectedSize) {
-                if (event) event.preventDefault();
-                this.errorField = 'size';
-                this.errorMessage = 'Por favor, selecione o tamanho do tênis antes de comprar!';
-                this.$nextTick(() => {
-                    const el = document.getElementById('size-selector-block');
-                    if (el) {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                isSizeInStockForColor(size) {
+                    if (!this.selectedName && !this.selectedColor) {
+                        return this.variants.some(v => String(v.size) === String(size) && v.stock > 0);
                     }
-                });
-                return false;
-            }
+                    return this.getVariantStock(size, this.selectedName) > 0;
+                },
 
-            if (this.hasColors && !this.selectedColor) {
-                if (event) event.preventDefault();
-                this.errorField = 'color';
-                this.errorMessage = 'Por favor, selecione a cor desejada antes de comprar!';
-                this.$nextTick(() => {
-                    const el = document.getElementById('color-selector-block');
-                    if (el) {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                isColorInStockForSize(colorName, colorHex) {
+                    if (!this.selectedSize) {
+                        return this.variants.some(v => (v.color_name === colorName || v.color_hex === colorHex) && v.stock > 0);
                     }
-                });
-                return false;
-            }
+                    const v = this.variants.find(v => String(v.size) === String(this.selectedSize) && (v.color_name === colorName || v.color_hex === colorHex));
+                    return v ? v.stock > 0 : false;
+                },
 
-            if (this.isCombinationOutOfStock) {
-                if (event) event.preventDefault();
-                this.errorMessage = `Desculpe, a numeração ${this.selectedSize} ${this.selectedName ? 'na cor ' + this.selectedName : ''} está esgotada!`;
-                return false;
-            }
+                get currentVariant() {
+                    if (!this.selectedSize) return null;
+                    if (this.hasColors && !this.selectedName && !this.selectedColor) return null;
+                    return this.getVariant(this.selectedSize, this.selectedName);
+                },
 
-            return true;
-        },
-        mainImageUrl() {
-            if (!this.activeImage) return '';
-            return this.activeImage.startsWith('http') ? this.activeImage : '{{ asset('storage') }}/' + this.activeImage;
+                get currentStock() {
+                    if (this.currentVariant) {
+                        return this.currentVariant.stock;
+                    }
+                    if (this.selectedSize && (!this.hasColors || this.selectedName)) {
+                        return 0;
+                    }
+                    return this.productStock;
+                },
+
+                get isCombinationOutOfStock() {
+                    if (this.selectedSize && (!this.hasColors || this.selectedName || this.selectedColor)) {
+                        return this.currentStock <= 0;
+                    }
+                    return false;
+                },
+
+                validatePurchase(event) {
+                    this.errorField = '';
+                    this.errorMessage = '';
+
+                    if (this.hasSizes && !this.selectedSize) {
+                        if (event) event.preventDefault();
+                        this.errorField = 'size';
+                        this.errorMessage = 'Por favor, selecione o tamanho do tênis antes de comprar!';
+                        this.$nextTick(() => {
+                            const el = document.getElementById('size-selector-block');
+                            if (el) {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        });
+                        return false;
+                    }
+
+                    if (this.hasColors && !this.selectedColor) {
+                        if (event) event.preventDefault();
+                        this.errorField = 'color';
+                        this.errorMessage = 'Por favor, selecione a cor desejada antes de comprar!';
+                        this.$nextTick(() => {
+                            const el = document.getElementById('color-selector-block');
+                            if (el) {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        });
+                        return false;
+                    }
+
+                    if (this.isCombinationOutOfStock) {
+                        if (event) event.preventDefault();
+                        this.errorMessage = 'Desculpe, a numeração ' + this.selectedSize + (this.selectedName ? ' na cor ' + this.selectedName : '') + ' está esgotada!';
+                        return false;
+                    }
+
+                    return true;
+                },
+
+                mainImageUrl() {
+                    if (!this.activeImage) return '';
+                    return this.activeImage.startsWith('http') ? this.activeImage : this.storageBaseUrl + '/' + this.activeImage;
+                }
+            };
         }
-    }">
+    </script>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 pb-24 sm:pb-10" x-data="productDetailComponent()">
         {{-- Breadcrumb estruturado --}}
         <nav aria-label="Breadcrumb" class="flex mb-6 text-xs font-medium text-slate-400">
             <ol class="flex items-center space-x-2" itemscope itemtype="https://schema.org/BreadcrumbList">
