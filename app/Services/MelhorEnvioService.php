@@ -33,7 +33,13 @@ class MelhorEnvioService
      */
     protected function request()
     {
-        $userAgent = sprintf('%s (%s)', $this->appName ?: 'Ecommerce', $this->appEmail ?: 'contato@loja.com.br');
+        $appName = trim($this->appName ?: 'Denner Tenis');
+        $email = trim($this->appEmail ?: '');
+        if (empty($email) || str_contains($email, 'example.com') || str_contains($email, 'loja.com.br')) {
+            $email = 'contato@dennertenis.com.br';
+        }
+
+        $userAgent = sprintf('%s (%s)', $appName, $email);
 
         return Http::withHeaders([
             'Authorization' => 'Bearer ' . trim($this->token),
