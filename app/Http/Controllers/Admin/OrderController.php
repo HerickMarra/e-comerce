@@ -98,6 +98,9 @@ class OrderController extends Controller
                     ]);
                     return back()->with('success', 'Etiqueta do Melhor Envio sincronizada e disponível para impressão!');
                 }
+
+                $syncError = $melhorEnvio->getLastError();
+                return back()->with('warning', 'Etiqueta ainda não liberada no Melhor Envio. ' . ($syncError ? "Detalhe da API: {$syncError}. " : '') . 'Verifique se o frete foi pago na carteira do Melhor Envio.');
             }
 
             $cartResult = $melhorEnvio->createCartOrder($order);
@@ -135,12 +138,15 @@ class OrderController extends Controller
                         'provider' => 'melhorenvio',
                         'cart' => $cartResult,
                         'checkout' => $checkoutResult,
+                        'checkout_error' => !$checkoutResult ? $melhorEnvio->getLastError() : null,
                     ],
                 ]);
 
                 $msg = 'Envio gerado no Melhor Envio com sucesso! ID: ' . $cartId;
                 if ($labelUrl) {
                     $msg .= ' (Etiqueta disponível para impressão)';
+                } elseif (!$checkoutResult) {
+                    $msg .= ' (Atenção: Não foi possível pagar o frete automaticamente. ' . ($melhorEnvio->getLastError() ? 'API: ' . $melhorEnvio->getLastError() : 'Verifique se há saldo na carteira') . ')';
                 } else {
                     $msg .= ' (Acesse seu painel do Melhor Envio para liberar a etiqueta)';
                 }
@@ -148,7 +154,8 @@ class OrderController extends Controller
                 return back()->with('success', $msg);
             }
 
-            return back()->with('error', 'Falha ao contratar frete no Melhor Envio. Verifique os dados de endereço, o token e os logs.');
+            $errorMsg = $melhorEnvio->getLastError() ?: 'Falha ao contratar frete no Melhor Envio. Verifique os dados de endereço, o token e os logs.';
+            return back()->with('error', 'Melhor Envio: ' . $errorMsg);
         }
 
         // Fallback: EnviaMais

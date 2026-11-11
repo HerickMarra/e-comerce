@@ -130,4 +130,95 @@ class MelhorEnvioLabelTest extends TestCase
         $this->assertStringContainsString('public=true', $order->shipping_label_url);
         $this->assertEquals('BR123456789BR', $order->shipping_tracking_code);
     }
+
+    public function test_create_cart_order_uses_company_document_when_store_document_is_cnpj()
+    {
+        Setting::set('melhorenvio_token', 'test-token');
+        Setting::set('store_document', '69.772.203/0001-00'); // 14 digits (CNPJ)
+        Setting::set('store_state_registration', 'ISENTO');
+
+        Http::fake([
+            '*/cart' => function (\Illuminate\Http\Client\Request $request) {
+                $payload = $request->data();
+                $this->assertArrayHasKey('company_document', $payload['from']);
+                $this->assertEquals('69772203000100', $payload['from']['company_document']);
+                $this->assertEquals('ISENTO', $payload['from']['state_register']);
+                $this->assertArrayNotHasKey('document', $payload['from']);
+
+                return Http::response(['id' => 'cart-cnpj-test'], 201);
+            },
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'ORD-CNPJ-TEST',
+            'status' => 'paid',
+            'subtotal' => 100,
+            'shipping_amount' => 20,
+            'total_amount' => 120,
+            'address_info' => [
+                'recipient_name' => 'Cliente Teste',
+                'street' => 'Rua Teste',
+                'number' => '1',
+                'city' => 'Brasília',
+                'state' => 'DF',
+                'zip' => '70000000',
+            ],
+        ]);
+
+        $service = new MelhorEnvioService();
+        $result = $service->createCartOrder($order);
+
+        $this->assertNotNull($result);
+        $this->assertEquals('cart-cnpj-test', $result['id']);
+    }
+
+    public function test_failed_cart_order_stores_error_in_shipping_api_response_and_admin_sees_error()
+    {
+        \Spatie\Permission\Models\Role::findOrCreate('Super Admin');
+        $admin = User::factory()->create();
+        $admin->assignRole('Super Admin');
+
+        Setting::set('melhorenvio_token', 'test-token');
+
+        Http::fake([
+            '*/cart' => Http::response([
+                'message' => 'O campo from.document deve ter um CPF válido',
+                'errors' => [
+                    'from.document' => ['O campo from.document deve ter um CPF válido'],
+                ],
+            ], 422),
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'ORD-ERR-TEST',
+            'status' => 'paid',
+            'subtotal' => 100,
+            'shipping_amount' => 20,
+            'total_amount' => 120,
+            'address_info' => [
+                'recipient_name' => 'Cliente Teste',
+                'street' => 'Rua Teste',
+                'number' => '1',
+                'city' => 'Brasília',
+                'state' => 'DF',
+                'zip' => '70000000',
+            ],
+        ]);
+
+        $service = new MelhorEnvioService();
+        $result = $service->createCartOrder($order);
+
+        $this->assertNull($result);
+        $this->assertStringContainsString('O campo from.document deve ter um CPF válido', $service->getLastError());
+
+        $order->refresh();
+        $this->assertNotNull($order->shipping_api_response);
+        $this->assertStringContainsString('from.document', $order->shipping_api_response['error']);
+
+        // Check that admin order view shows the error alert
+        $response = $this->actingAs($admin)->get(route('admin.orders.show', $order));
+        $response->assertStatus(200);
+        $response->assertSee('Falha na API (MELHOR ENVIO)');
+        $response->assertSee('O campo from.document deve ter um CPF válido');
+    }
 }

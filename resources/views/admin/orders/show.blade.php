@@ -370,6 +370,31 @@
                             </div>
                         </div>
                     @else
+                        @if(!empty($order->shipping_api_response['error']))
+                            <div class="p-4 rounded-2xl bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-800/40 text-red-900 dark:text-red-200 mb-3 space-y-2">
+                                <div class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-xl shrink-0 mt-0.5">error</span>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <p class="text-xs font-bold uppercase tracking-wider text-red-700 dark:text-red-300">Falha na API ({{ strtoupper(($order->shipping_api_response['provider'] ?? '') === 'melhorenvio' ? 'Melhor Envio' : ($order->shipping_api_response['provider'] ?? 'Transportadora')) }})</p>
+                                            @if(!empty($order->shipping_api_response['status']))
+                                                <span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded bg-red-200/60 dark:bg-red-900/60 text-red-800 dark:text-red-200">HTTP {{ $order->shipping_api_response['status'] }}</span>
+                                            @endif
+                                        </div>
+                                        <p class="text-xs font-semibold mt-1 text-red-800 dark:text-red-200 leading-snug">{{ $order->shipping_api_response['error'] }}</p>
+                                        @if(!empty($order->shipping_api_response['errors']) && is_array($order->shipping_api_response['errors']))
+                                            <ul class="mt-2 text-[11px] list-disc list-inside space-y-0.5 text-red-700 dark:text-red-300 font-mono bg-red-100/50 dark:bg-red-900/20 p-2.5 rounded-xl">
+                                                @foreach($order->shipping_api_response['errors'] as $fld => $errList)
+                                                    <li><strong>{{ $fld }}:</strong> {{ is_array($errList) ? implode(', ', $errList) : $errList }}</li>
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                        <p class="text-[10px] text-red-600 dark:text-red-400 mt-2">Corrija o dado indicado e clique em <strong>Gerar Envio no Melhor Envio</strong> abaixo para tentar novamente.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
                         <div class="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/20">
                             <p class="text-xs text-amber-800 dark:text-amber-500 font-medium mb-3">
                                 Frete ainda não foi gerado/contratado na transportadora para este pedido.

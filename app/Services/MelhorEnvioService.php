@@ -14,6 +14,8 @@ class MelhorEnvioService
     protected string $appName;
     protected string $appEmail;
     protected string $environment;
+    protected ?string $lastError = null;
+    protected ?array $lastErrorDetails = null;
 
     const URL_PROD = 'https://melhorenvio.com.br/api/v2/me';
     const URL_SANDBOX = 'https://sandbox.melhorenvio.com.br/api/v2/me';
@@ -25,6 +27,49 @@ class MelhorEnvioService
         $this->token = Setting::get('melhorenvio_token', '');
         $this->appName = Setting::get('melhorenvio_app_name', Setting::get('store_name', config('app.name', 'Loja')));
         $this->appEmail = Setting::get('melhorenvio_app_email', Setting::get('mail_from_address', 'contato@loja.com.br'));
+    }
+
+    public function getLastError(): ?string
+    {
+        return $this->lastError;
+    }
+
+    public function getLastErrorDetails(): ?array
+    {
+        return $this->lastErrorDetails;
+    }
+
+    /**
+     * Format a descriptive error message from an API response.
+     */
+    public function formatResponseError($response): string
+    {
+        $status = $response->status();
+        $json = $response->json();
+
+        if ($status === 401) {
+            return 'Token de autenticação do Melhor Envio inválido ou expirado (HTTP 401). Atualize o token em Configurações > Frete.';
+        }
+
+        if (!is_array($json)) {
+            $raw = trim(strip_tags($response->body()));
+            return "Erro HTTP {$status}: " . (mb_substr($raw, 0, 200) ?: 'Sem detalhes adicionais da API.');
+        }
+
+        $message = $json['message'] ?? $json['error'] ?? "Erro HTTP {$status} retornado pelo Melhor Envio";
+
+        if (!empty($json['errors']) && is_array($json['errors'])) {
+            $details = [];
+            foreach ($json['errors'] as $field => $errList) {
+                $errText = is_array($errList) ? implode(', ', $errList) : (string) $errList;
+                $details[] = "{$field}: {$errText}";
+            }
+            if (!empty($details)) {
+                $message .= ' — Detalhes: ' . implode(' | ', $details);
+            }
+        }
+
+        return $message;
     }
 
     /**
@@ -318,37 +363,56 @@ class MelhorEnvioService
             $serviceId = 1; // Default to SEDEX or PAC
         }
 
+        $from = [
+            'name' => Setting::get('store_name', config('app.name', 'Loja Virtual')),
+            'phone' => preg_replace('/\D/', '', Setting::get('store_phone', '61999999999')),
+            'email' => Setting::get('mail_from_address', 'contato@loja.com.br'),
+            'address' => Setting::get('store_street', 'Rua Principal'),
+            'complement' => Setting::get('store_complement', ''),
+            'number' => Setting::get('store_number', '100'),
+            'district' => Setting::get('store_neighborhood', 'Centro'),
+            'city' => Setting::get('store_city', 'Brasília'),
+            'state_abbr' => Setting::get('store_state', 'DF'),
+            'country_id' => 'BR',
+            'postal_code' => $storeZip,
+        ];
+
+        // Melhor Envio rules:
+        // - CNPJ (14 digits) must be sent in company_document, along with state_register.
+        // - CPF (11 digits) must be sent in document.
+        if (strlen($storeDoc) === 14) {
+            $from['company_document'] = $storeDoc;
+            $from['state_register'] = Setting::get('store_state_registration') ?: 'ISENTO';
+        } else {
+            $from['document'] = $storeDoc;
+        }
+
+        $to = [
+            'name' => $user?->name ?? ($addr['recipient_name'] ?? 'Cliente Destinatário'),
+            'phone' => $recipientPhone,
+            'email' => $user?->email ?? ($addr['email'] ?? Setting::get('mail_from_address', 'contato@loja.com.br')),
+            'address' => $addr['street'] ?? '',
+            'complement' => $addr['complement'] ?? '',
+            'number' => $addr['number'] ?? 'S/N',
+            'district' => $addr['neighborhood'] ?? '',
+            'city' => $addr['city'] ?? '',
+            'state_abbr' => $addr['state'] ?? '',
+            'country_id' => 'BR',
+            'postal_code' => $recipientZip,
+        ];
+
+        if (strlen($recipientDoc) === 14) {
+            $to['company_document'] = $recipientDoc;
+            $to['state_register'] = $addr['state_registration'] ?? 'ISENTO';
+        } else {
+            $to['document'] = $recipientDoc;
+        }
+
         $payload = [
             'service' => $serviceId,
             'agency' => null,
-            'from' => [
-                'name' => Setting::get('store_name', config('app.name', 'Loja Virtual')),
-                'phone' => preg_replace('/\D/', '', Setting::get('store_phone', '61999999999')),
-                'email' => Setting::get('mail_from_address', 'contato@loja.com.br'),
-                'document' => $storeDoc,
-                'address' => Setting::get('store_street', 'Rua Principal'),
-                'complement' => Setting::get('store_complement', ''),
-                'number' => Setting::get('store_number', '100'),
-                'district' => Setting::get('store_neighborhood', 'Centro'),
-                'city' => Setting::get('store_city', 'Brasília'),
-                'state_abbr' => Setting::get('store_state', 'DF'),
-                'country_id' => 'BR',
-                'postal_code' => $storeZip,
-            ],
-            'to' => [
-                'name' => $user?->name ?? ($addr['recipient_name'] ?? 'Cliente Destinatário'),
-                'phone' => $recipientPhone,
-                'email' => $user?->email ?? ($addr['email'] ?? Setting::get('mail_from_address', 'contato@loja.com.br')),
-                'document' => $recipientDoc,
-                'address' => $addr['street'] ?? '',
-                'complement' => $addr['complement'] ?? '',
-                'number' => $addr['number'] ?? 'S/N',
-                'district' => $addr['neighborhood'] ?? '',
-                'city' => $addr['city'] ?? '',
-                'state_abbr' => $addr['state'] ?? '',
-                'country_id' => 'BR',
-                'postal_code' => $recipientZip,
-            ],
+            'from' => $from,
+            'to' => $to,
             'products' => $products,
             'volumes' => $volumes,
             'options' => [
@@ -363,19 +427,52 @@ class MelhorEnvioService
         try {
             $response = $this->request()->post('/cart', $payload);
 
+            // If the requested carrier service is unavailable on the route, fallback to service 1 (SEDEX)
+            if (!$response->successful() && $serviceId !== 1 && str_contains($response->body(), 'indispon')) {
+                Log::warning("Melhor Envio: Service #{$serviceId} is unavailable for order #{$order->order_number}. Retrying with service 1 (SEDEX)...");
+                $payload['service'] = 1;
+                $response = $this->request()->post('/cart', $payload);
+            }
+
             if ($response->successful()) {
                 $cartData = $response->json();
+                $this->lastError = null;
+                $this->lastErrorDetails = null;
                 Log::info('Melhor Envio createCartOrder success', ['order_id' => $order->id, 'cart_id' => $cartData['id'] ?? null]);
                 return $cartData;
             }
 
-            Log::error('Melhor Envio createCartOrder failed', [
+            $this->lastError = $this->formatResponseError($response);
+            $this->lastErrorDetails = $response->json('errors') ?? [];
+
+            // Record API error on the order so admin immediately sees WHY it failed
+            $order->update([
+                'shipping_api_response' => [
+                    'provider' => 'melhorenvio',
+                    'action' => 'create_cart',
+                    'status' => $response->status(),
+                    'error' => $this->lastError,
+                    'errors' => $this->lastErrorDetails,
+                    'failed_at' => now()->toIso8601String(),
+                ],
+            ]);
+
+            Log::error('Melhor Envio createCartOrder failed: ' . $this->lastError, [
                 'status' => $response->status(),
                 'body' => $response->body(),
                 'payload' => $payload,
             ]);
             return null;
         } catch (\Throwable $e) {
+            $this->lastError = 'Exceção na chamada de API do Melhor Envio: ' . $e->getMessage();
+            $order->update([
+                'shipping_api_response' => [
+                    'provider' => 'melhorenvio',
+                    'action' => 'create_cart',
+                    'error' => $this->lastError,
+                    'failed_at' => now()->toIso8601String(),
+                ],
+            ]);
             Log::error('Melhor Envio createCartOrder exception: ' . $e->getMessage());
             return null;
         }
@@ -392,12 +489,15 @@ class MelhorEnvioService
             ]);
 
             if ($response->successful()) {
+                $this->lastError = null;
                 return $response->json();
             }
 
-            Log::warning('Melhor Envio checkout response: ' . $response->body());
+            $this->lastError = $this->formatResponseError($response);
+            Log::warning('Melhor Envio checkout response: ' . $this->lastError . ' | ' . $response->body());
             return null;
         } catch (\Throwable $e) {
+            $this->lastError = 'Exceção no checkout de frete: ' . $e->getMessage();
             Log::error('Melhor Envio checkout exception: ' . $e->getMessage());
             return null;
         }
@@ -414,12 +514,15 @@ class MelhorEnvioService
             ]);
 
             if ($response->successful()) {
+                $this->lastError = null;
                 return $response->json();
             }
 
-            Log::warning('Melhor Envio generate response: ' . $response->body());
+            $this->lastError = $this->formatResponseError($response);
+            Log::warning('Melhor Envio generate response: ' . $this->lastError);
             return null;
         } catch (\Throwable $e) {
+            $this->lastError = 'Exceção ao gerar etiqueta: ' . $e->getMessage();
             Log::error('Melhor Envio generate exception: ' . $e->getMessage());
             return null;
         }
@@ -456,12 +559,17 @@ class MelhorEnvioService
             if ($response->successful()) {
                 $data = $response->json();
                 $url = $data['url'] ?? null;
-                return self::formatPublicLabelUrl($url);
+                if ($url) {
+                    $this->lastError = null;
+                    return self::formatPublicLabelUrl($url);
+                }
             }
 
-            Log::warning('Melhor Envio printLabel response: ' . $response->body());
+            $this->lastError = $this->formatResponseError($response);
+            Log::warning('Melhor Envio printLabel response: ' . $this->lastError);
             return null;
         } catch (\Throwable $e) {
+            $this->lastError = 'Exceção ao imprimir etiqueta: ' . $e->getMessage();
             Log::error('Melhor Envio printLabel exception: ' . $e->getMessage());
             return null;
         }

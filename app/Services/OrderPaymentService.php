@@ -168,7 +168,8 @@ class OrderPaymentService
                     'label_url' => $labelUrl,
                 ]);
             } else {
-                Log::warning("OrderPaymentService: Failed to create Melhor Envio cart order for order #{$order->order_number}");
+                $err = $melhorEnvio->getLastError() ?: 'Falha na resposta da API do Melhor Envio';
+                Log::warning("OrderPaymentService: Failed to create Melhor Envio cart order for order #{$order->order_number}: {$err}");
             }
         } catch (\Throwable $e) {
             Log::error("OrderPaymentService: Exception while auto-recruiting Melhor Envio shipping: " . $e->getMessage());
