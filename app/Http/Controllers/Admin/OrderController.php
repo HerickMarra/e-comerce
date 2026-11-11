@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Gateways\AsaasGateway;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Setting;
@@ -35,30 +36,53 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['user', 'items.product']);
+        $order->ensureInitialHistory();
+        $order->load(['user', 'items.product', 'histories.user']);
         return view('admin.orders.show', compact('order'));
     }
 
     public function update(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|string|in:pending,paid,processing,shipped,delivered,cancelled',
+            'status' => 'required|string|in:pending,paid,processing,shipped,delivered,cancelled,refunded',
         ]);
 
         $previousStatus = $order->status;
         $newStatus = $request->status;
 
-        if ($newStatus === 'paid') {
-            OrderPaymentService::finalize($order);
-        } else {
-            // Restore inventory when cancelling order
-            if ($newStatus === 'cancelled' && $previousStatus !== 'cancelled') {
-                $order->restoreStock();
+        if ($newStatus !== $previousStatus) {
+            $statusLabels = [
+                'pending' => 'Pendente',
+                'paid' => 'Pago',
+                'processing' => 'Em Processamento',
+                'shipped' => 'Enviado',
+                'delivered' => 'Entregue',
+                'cancelled' => 'Cancelado',
+                'refunded' => 'Reembolsado',
+            ];
+            $oldLabel = $statusLabels[$previousStatus] ?? $previousStatus;
+            $newLabel = $statusLabels[$newStatus] ?? $newStatus;
+
+            if ($newStatus === 'paid') {
+                OrderPaymentService::finalize($order);
+            } else {
+                // Restore inventory when cancelling or refunding order
+                if (in_array($newStatus, ['cancelled', 'refunded']) && !in_array($previousStatus, ['cancelled', 'refunded'])) {
+                    $order->restoreStock();
+                }
+
+                $order->update([
+                    'status' => $newStatus
+                ]);
             }
 
-            $order->update([
-                'status' => $newStatus
-            ]);
+            $order->recordHistory(
+                action: $newStatus === 'refunded' ? 'refund_processed' : 'status_changed',
+                title: $newStatus === 'refunded' ? 'Pedido Marcado como Reembolsado' : 'Status do Pedido Alterado',
+                description: "Status alterado de '{$oldLabel}' para '{$newLabel}'.",
+                metadata: ['from' => $previousStatus, 'to' => $newStatus],
+                user: auth()->user()
+            );
         }
 
         return back()->with('success', 'Status do pedido atualizado com sucesso!');
@@ -142,6 +166,14 @@ class OrderController extends Controller
                     ],
                 ]);
 
+                $order->recordHistory(
+                    action: 'shipping_label_created',
+                    title: 'Etiqueta Gerada no Melhor Envio',
+                    description: "Frete contratado no Melhor Envio pelo administrador. ID: {$cartId}" . ($trackingCode ? " • Rastreio: {$trackingCode}" : ''),
+                    metadata: ['cart_id' => $cartId, 'tracking' => $trackingCode, 'service' => $serviceName],
+                    user: auth()->user()
+                );
+
                 $msg = 'Envio gerado no Melhor Envio com sucesso! ID: ' . $cartId;
                 if ($labelUrl) {
                     $msg .= ' (Etiqueta disponível para impressão)';
@@ -155,6 +187,15 @@ class OrderController extends Controller
             }
 
             $errorMsg = $melhorEnvio->getLastError() ?: 'Falha ao contratar frete no Melhor Envio. Verifique os dados de endereço, o token e os logs.';
+
+            $order->recordHistory(
+                action: 'shipping_label_failed',
+                title: 'Falha na Emissão de Etiqueta (Melhor Envio)',
+                description: $errorMsg,
+                metadata: ['error' => $errorMsg],
+                user: auth()->user()
+            );
+
             return back()->with('error', 'Melhor Envio: ' . $errorMsg);
         }
 
@@ -217,9 +258,90 @@ class OrderController extends Controller
                 'shipping_api_response' => $result,
             ]);
 
+            $order->recordHistory(
+                action: 'shipping_label_created',
+                title: 'Etiqueta Gerada na EnviaMais',
+                description: "Frete contratado na EnviaMais. ID: {$result['id']}",
+                metadata: ['shipping_id' => $result['id']],
+                user: auth()->user()
+            );
+
             return back()->with('success', 'Frete contratado com sucesso! ID: ' . $result['id']);
         }
 
+        $order->recordHistory(
+            action: 'shipping_label_failed',
+            title: 'Falha na Emissão de Etiqueta (EnviaMais)',
+            description: 'Falha ao contratar frete na EnviaMais.',
+            metadata: ['provider' => 'enviamais'],
+            user: auth()->user()
+        );
+
         return back()->with('error', 'Falha ao contratar frete na EnviaMais. Verifique os logs.');
+    }
+
+    public function refund(Request $request, Order $order, AsaasGateway $gateway)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        if (!$order->payment_id) {
+            return back()->with('error', 'Este pedido não possui identificador de pagamento no gateway para estorno.');
+        }
+
+        try {
+            $gateway->refundPayment(
+                paymentId: $order->payment_id,
+                amount: (float) $order->total_amount,
+                reason: $request->reason
+            );
+
+            $order->restoreStock();
+            $order->update(['status' => 'refunded']);
+
+            $order->recordHistory(
+                action: 'refund_requested',
+                title: 'Reembolso Solicitado e Processado',
+                description: "Reembolso no valor de R$ " . number_format($order->total_amount, 2, ',', '.') . " processado no gateway. Motivo: {$request->reason}",
+                metadata: [
+                    'amount' => $order->total_amount,
+                    'reason' => $request->reason,
+                    'payment_id' => $order->payment_id,
+                ],
+                user: auth()->user()
+            );
+
+            return back()->with('success', 'Reembolso solicitado e processado com sucesso no gateway!');
+        } catch (\Throwable $e) {
+            \Log::error('Erro ao estornar pedido no Asaas: ' . $e->getMessage(), ['order_id' => $order->id]);
+
+            $order->recordHistory(
+                action: 'refund_failed',
+                title: 'Falha na Solicitação de Reembolso',
+                description: 'Tentativa de estorno no gateway falhou: ' . $e->getMessage(),
+                metadata: ['error' => $e->getMessage()],
+                user: auth()->user()
+            );
+
+            return back()->with('error', 'Erro ao processar estorno no gateway: ' . $e->getMessage());
+        }
+    }
+
+    public function addNote(Request $request, Order $order)
+    {
+        $request->validate([
+            'note' => 'required|string|max:1000',
+        ]);
+
+        $order->recordHistory(
+            action: 'note_added',
+            title: 'Anotação Interna da Equipe',
+            description: $request->note,
+            metadata: ['note' => $request->note],
+            user: auth()->user()
+        );
+
+        return back()->with('success', 'Anotação adicionada ao histórico com sucesso!');
     }
 }

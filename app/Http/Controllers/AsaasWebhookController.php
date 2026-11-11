@@ -112,6 +112,37 @@ class AsaasWebhookController extends Controller
                 'status' => $newStatus,
                 'payment_id' => $paymentId ?? $order->payment_id,
             ]);
+
+            // Record History from Webhook
+            $action = match ($newStatus) {
+                'refunded' => 'refund_processed',
+                'cancelled' => 'status_changed',
+                default => 'status_changed',
+            };
+            $title = match ($newStatus) {
+                'refunded' => 'Estorno / Reembolso Confirmado',
+                'cancelled' => 'Pedido Cancelado pelo Gateway',
+                default => "Status Atualizado via Webhook ({$newStatus})",
+            };
+            $description = match ($newStatus) {
+                'refunded' => "Estorno de pagamento processado e confirmado no Asaas via Webhook (Evento: {$event}).",
+                'cancelled' => "Pedido cancelado pelo gateway Asaas (Evento: {$event}).",
+                default => "Status alterado de '{$previousStatus}' para '{$newStatus}' pelo Webhook do Asaas (Evento: {$event}).",
+            };
+
+            $order->recordHistory(
+                action: $action,
+                title: $title,
+                description: $description,
+                metadata: [
+                    'event' => $event,
+                    'payment_id' => $paymentId,
+                    'from' => $previousStatus,
+                    'to' => $newStatus,
+                ],
+                user: null,
+                actorName: 'Webhook Asaas'
+            );
         }
 
         Log::info('Asaas Webhook: order updated', [

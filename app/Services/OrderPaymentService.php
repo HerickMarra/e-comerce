@@ -27,6 +27,19 @@ class OrderPaymentService
                 'status' => 'paid',
             ]);
 
+            $currentUser = auth()->check() ? auth()->user() : null;
+            $order->recordHistory(
+                action: 'payment_confirmed',
+                title: 'Pagamento Confirmado',
+                description: 'Pagamento recebido e confirmado com sucesso no valor de R$ ' . number_format($order->total_amount, 2, ',', '.') . '.',
+                metadata: [
+                    'payment_id' => $order->payment_id,
+                    'payment_method' => $order->payment_method,
+                ],
+                user: $currentUser,
+                actorName: $currentUser ? $currentUser->name : 'Sistema (Gateway Asaas)'
+            );
+
             Log::info("OrderPaymentService: Order #{$order->order_number} marked as PAID.");
 
             // Send Payment Confirmed Email
@@ -167,9 +180,32 @@ class OrderPaymentService
                     'tracking' => $trackingCode,
                     'label_url' => $labelUrl,
                 ]);
+
+                $order->recordHistory(
+                    action: 'shipping_label_created',
+                    title: 'Etiqueta Contratada no Melhor Envio',
+                    description: "Envio contratado no Melhor Envio (ID #{$cartId})" . ($trackingCode ? " • Rastreio: {$trackingCode}" : '') . ($labelUrl ? ' • Etiqueta disponível para impressão.' : ''),
+                    metadata: [
+                        'shipping_id' => $cartId,
+                        'service' => $serviceName,
+                        'tracking_code' => $trackingCode,
+                        'label_url' => $labelUrl,
+                    ],
+                    user: auth()->check() ? auth()->user() : null,
+                    actorName: auth()->check() ? auth()->user()->name : 'Sistema Automático'
+                );
             } else {
                 $err = $melhorEnvio->getLastError() ?: 'Falha na resposta da API do Melhor Envio';
                 Log::warning("OrderPaymentService: Failed to create Melhor Envio cart order for order #{$order->order_number}: {$err}");
+
+                $order->recordHistory(
+                    action: 'shipping_label_failed',
+                    title: 'Falha na Geração da Etiqueta',
+                    description: "Erro retornado pela API do Melhor Envio: {$err}",
+                    metadata: ['error' => $err],
+                    user: null,
+                    actorName: 'Sistema Automático'
+                );
             }
         } catch (\Throwable $e) {
             Log::error("OrderPaymentService: Exception while auto-recruiting Melhor Envio shipping: " . $e->getMessage());

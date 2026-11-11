@@ -228,6 +228,23 @@ class CheckoutController extends Controller
                 'shipping_descricao_conteudo' => 'Calçados / Tênis', // Sneaker store description
             ]);
 
+            // Audit history: order created by customer
+            $client = Auth::user();
+            $order->recordHistory(
+                action: 'order_created',
+                title: 'Pedido Gerado no Sistema',
+                description: 'Pedido gerado pelo cliente no checkout com total de R$ ' . number_format($total, 2, ',', '.') . '.',
+                metadata: [
+                    'subtotal' => $subtotal,
+                    'shipping_amount' => $shippingAmount,
+                    'total_amount' => $total,
+                    'payment_method' => $request->payment_method,
+                    'ip' => $request->ip(),
+                ],
+                user: $client,
+                actorName: $client ? $client->name : 'Cliente'
+            );
+
             foreach ($orderItemsToCreate as $entry) {
                 $product = $entry['product'];
                 $variant = $entry['variant'];
@@ -279,6 +296,23 @@ class CheckoutController extends Controller
                 $order->update([
                     'payment_id' => $paymentResult['payment_id'],
                 ]);
+
+                // Audit history: gateway billing / PIX generated
+                $isPix = strtolower($request->payment_method ?? '') === 'pix';
+                $order->recordHistory(
+                    action: $isPix ? 'pix_generated' : 'credit_card_processed',
+                    title: $isPix ? 'Código PIX Gerado no Gateway' : 'Cobrança Criada no Gateway',
+                    description: $isPix 
+                        ? "Código PIX gerado com sucesso no gateway Asaas (ID: {$paymentResult['payment_id']})."
+                        : "Cobrança de cartão criada no gateway Asaas (ID: {$paymentResult['payment_id']}).",
+                    metadata: [
+                        'gateway' => 'asaas',
+                        'payment_id' => $paymentResult['payment_id'],
+                        'status' => $paymentResult['status'] ?? null,
+                    ],
+                    user: null,
+                    actorName: 'Gateway Asaas'
+                );
 
                 // Check if payment was approved immediately (e.g. Credit Card)
                 $asaasStatus = $paymentResult['status'] ?? '';

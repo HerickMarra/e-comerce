@@ -1,7 +1,7 @@
 <x-admin-layout>
     @section('page_title', 'Detalhes do Pedido #' . $order->order_number)
 
-    <div class="space-y-6">
+    <div class="space-y-6" x-data="{ showNoteModal: false, showRefundModal: false }">
         <!-- Back Link -->
         <a href="{{ route('admin.orders.index') }}"
             class="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-primary transition-colors">
@@ -17,37 +17,57 @@
                     class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Pedido
-                                #{{ $order->order_number }}</h2>
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Pedido
+                                    #{{ $order->order_number }}</h2>
+                                @if($order->status === 'refunded')
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-black uppercase bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                                        Reembolsado
+                                    </span>
+                                @endif
+                            </div>
                             <p class="text-sm text-slate-500 mt-1">Realizado em
                                 {{ $order->created_at->format('d/m/Y \à\s H:i') }}
                             </p>
                         </div>
 
-                        <form action="{{ route('admin.orders.update', $order) }}" method="POST"
-                            class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                            @csrf
-                            @method('PUT')
-                            <select name="status"
-                                class="w-full sm:w-auto px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-bold">
-                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pendente
-                                </option>
-                                <option value="paid" {{ $order->status == 'paid' ? 'selected' : '' }}>Pago</option>
-                                <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>
-                                    Processando</option>
-                                <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Em trânsito
-                                </option>
-                                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Entregue
-                                </option>
-                                <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelado
-                                </option>
-                            </select>
-                            <button type="submit"
-                                class="w-full sm:w-auto justify-center bg-primary text-white font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
-                                <span class="material-symbols-outlined text-sm">save</span>
-                                Atualizar
-                            </button>
-                        </form>
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                            <form action="{{ route('admin.orders.update', $order) }}" method="POST"
+                                class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                                @csrf
+                                @method('PUT')
+                                <select name="status"
+                                    class="w-full sm:w-auto px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm font-bold">
+                                    <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pendente
+                                    </option>
+                                    <option value="paid" {{ $order->status == 'paid' ? 'selected' : '' }}>Pago</option>
+                                    <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>
+                                        Processando</option>
+                                    <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Em trânsito
+                                    </option>
+                                    <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Entregue
+                                    </option>
+                                    <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelado
+                                    </option>
+                                    <option value="refunded" {{ $order->status == 'refunded' ? 'selected' : '' }}>Reembolsado
+                                    </option>
+                                </select>
+                                <button type="submit"
+                                    class="w-full sm:w-auto justify-center bg-primary text-white font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center gap-2 cursor-pointer">
+                                    <span class="material-symbols-outlined text-sm">save</span>
+                                    Atualizar
+                                </button>
+                            </form>
+
+                            @if($order->payment_id && $order->status !== 'refunded')
+                                <button type="button" @click="showRefundModal = true"
+                                    class="w-full sm:w-auto justify-center bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800 font-bold px-4 py-2 rounded-xl transition-all hover:bg-rose-100 dark:hover:bg-rose-900/50 flex items-center gap-2 cursor-pointer"
+                                    title="Solicitar estorno/reembolso no gateway">
+                                    <span class="material-symbols-outlined text-sm">currency_exchange</span>
+                                    Reembolsar
+                                </button>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -153,6 +173,117 @@
                                     {{ number_format($order->total_amount, 2, ',', '.') }}</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Histórico do Pedido & Auditoria (Linha do Tempo) -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 sm:p-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                            <div class="flex items-center gap-2.5">
+                                <div class="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-xl">history</span>
+                                </div>
+                                <h3 class="font-extrabold text-xl text-slate-900 dark:text-white">Histórico do Pedido & Auditoria</h3>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                    {{ $order->histories->count() }} {{ Str::plural('evento', $order->histories->count()) }}
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Rastreabilidade auditável de eventos: checkout, cobrança gateway, emissão de frete, estornos e intervenções manuais.
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button type="button" @click="showNoteModal = true"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all cursor-pointer">
+                                <span class="material-symbols-outlined text-base">edit_note</span>
+                                <span>Nova Nota Interna</span>
+                            </button>
+
+                            @if($order->payment_id && $order->status !== 'refunded')
+                                <button type="button" @click="showRefundModal = true"
+                                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/50 hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-base">currency_exchange</span>
+                                    <span>Solicitar Reembolso</span>
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Timeline Content -->
+                    <div class="pt-6">
+                        @if($order->histories->isEmpty())
+                            <div class="text-center py-10 text-slate-400">
+                                <span class="material-symbols-outlined text-4xl mb-2 text-slate-300">timeline</span>
+                                <p class="text-sm">Nenhum evento registrado no histórico até o momento.</p>
+                            </div>
+                        @else
+                            <div class="relative pl-6 sm:pl-8 space-y-6 before:content-[''] before:absolute before:left-3 sm:before:left-4 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800">
+                                @foreach($order->histories as $history)
+                                    <div class="relative group">
+                                        <!-- Icon Bullet -->
+                                        <div class="absolute -left-6 sm:-left-8 top-1 size-7 sm:size-8 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center shadow-sm {{ $history->color_classes['bg'] }} {{ $history->color_classes['text'] }}">
+                                            <span class="material-symbols-outlined text-sm sm:text-base">{{ $history->icon }}</span>
+                                        </div>
+
+                                        <!-- Event Card -->
+                                        <div class="bg-slate-50/70 dark:bg-slate-800/40 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 transition-all hover:border-slate-300 dark:hover:border-slate-700">
+                                            <!-- Top Line: Title, Actor Badge, Timestamp -->
+                                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                                                <div class="flex items-center gap-2 flex-wrap">
+                                                    <h4 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
+                                                        {{ $history->title }}
+                                                    </h4>
+
+                                                    <!-- Actor Badge: Sistema vs Usuário -->
+                                                    @if($history->isSystem())
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                                                            <span class="material-symbols-outlined text-[13px] text-indigo-500">smart_toy</span>
+                                                            <span>Sistema ({{ $history->actor_name }})</span>
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100/90 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800/50">
+                                                            <span class="material-symbols-outlined text-[13px] text-amber-600 dark:text-amber-400">person</span>
+                                                            <span>Usuário: <strong>{{ $history->actor_name }}</strong></span>
+                                                            @if($history->user)
+                                                                <span class="text-[10px] opacity-75 font-normal">({{ $history->user->email }})</span>
+                                                            @endif
+                                                        </span>
+                                                    @endif
+                                                </div>
+
+                                                <div class="text-xs text-slate-400 dark:text-slate-500 whitespace-nowrap flex items-center gap-1" title="{{ $history->created_at->format('d/m/Y H:i:s') }}">
+                                                    <span class="material-symbols-outlined text-xs">schedule</span>
+                                                    <span>{{ $history->created_at->format('d/m/Y H:i:s') }}</span>
+                                                    <span class="text-[10px] text-slate-400">({{ $history->created_at->diffForHumans() }})</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Description -->
+                                            @if($history->description)
+                                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                                                    {{ $history->description }}
+                                                </p>
+                                            @endif
+
+                                            <!-- Metadata details -->
+                                            @if(!empty($history->metadata) && is_array($history->metadata))
+                                                <div class="mt-3 flex items-center gap-2 flex-wrap text-[11px]">
+                                                    @foreach($history->metadata as $key => $val)
+                                                        @if(is_scalar($val) && !empty($val))
+                                                            <span class="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-500">
+                                                                <strong class="text-slate-700 dark:text-slate-300">{{ ucfirst(str_replace('_', ' ', $key)) }}:</strong> {{ $val }}
+                                                            </span>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -447,6 +578,124 @@
                         <p class="text-sm text-amber-900 dark:text-amber-400 leading-relaxed">{{ $order->notes }}</p>
                     </div>
                 @endif
+            </div>
+        </div>
+
+        <!-- Modal: Adicionar Nota Interna -->
+        <div x-show="showNoteModal" 
+            style="display: none;"
+            class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0">
+            
+            <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-lg w-full p-6 sm:p-8"
+                @click.away="showNoteModal = false">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                            <span class="material-symbols-outlined text-xl">edit_note</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base text-slate-900 dark:text-white">Adicionar Anotação Interna</h4>
+                            <p class="text-xs text-slate-500">Registrado no histórico auditável com seu usuário.</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="showNoteModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <form action="{{ route('admin.orders.add-note', $order) }}" method="POST" class="mt-4 space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                            Mensagem / Detalhes da Ocorrência
+                        </label>
+                        <textarea name="note" rows="4" required
+                            placeholder="Ex: Cliente solicitou entrega urgente por WhatsApp ou alteração de instrução..."
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="showNoteModal = false"
+                            class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-bold hover:opacity-90 shadow-lg shadow-primary/20 transition-all flex items-center gap-1.5 cursor-pointer">
+                            <span class="material-symbols-outlined text-sm">save</span>
+                            Salvar no Histórico
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal: Solicitar Reembolso -->
+        <div x-show="showRefundModal" 
+            style="display: none;"
+            class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0">
+            
+            <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-lg w-full p-6 sm:p-8"
+                @click.away="showRefundModal = false">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="size-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-xl">currency_exchange</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-base text-slate-900 dark:text-white">Solicitar Reembolso / Estorno</h4>
+                            <p class="text-xs text-slate-500">Integração oficial Asaas Gateway</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="showRefundModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <div class="mt-4 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/40 text-rose-800 dark:text-rose-200 text-xs space-y-1">
+                    <p class="font-bold flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm">warning</span>
+                        Atenção: Ação Irreversível
+                    </p>
+                    <p>
+                        Esta ação solicitará o estorno de <strong>R$ {{ number_format($order->total_amount, 2, ',', '.') }}</strong> no Asaas. O status do pedido passará para <strong>Reembolsado</strong> e os itens retornarão ao estoque.
+                    </p>
+                </div>
+
+                <form action="{{ route('admin.orders.refund', $order) }}" method="POST" class="mt-4 space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                            Motivo do Reembolso (obrigatório)
+                        </label>
+                        <textarea name="reason" rows="3" required
+                            placeholder="Ex: Desistência do comprador antes do envio / Produto com defeito..."
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all text-sm"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2">
+                        <button type="button" @click="showRefundModal = false"
+                            class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-rose-600 text-white rounded-xl text-xs font-bold hover:bg-rose-700 shadow-lg shadow-rose-600/20 transition-all flex items-center gap-1.5 cursor-pointer">
+                            <span class="material-symbols-outlined text-sm">check_circle</span>
+                            Confirmar Reembolso
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

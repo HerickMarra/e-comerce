@@ -58,6 +58,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('emails', App\Http\Controllers\Admin\EmailTemplateController::class);
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update']);
     Route::post('orders/{order}/recruit-shipping', [App\Http\Controllers\Admin\OrderController::class, 'recruitShipping'])->name('orders.recruit-shipping');
+    Route::post('orders/{order}/refund', [App\Http\Controllers\Admin\OrderController::class, 'refund'])->name('orders.refund');
+    Route::post('orders/{order}/notes', [App\Http\Controllers\Admin\OrderController::class, 'addNote'])->name('orders.add-note');
     Route::resource('banners', App\Http\Controllers\Admin\BannerController::class);
     Route::post('banners/{banner}/toggle-status', [App\Http\Controllers\Admin\BannerController::class, 'toggleStatus'])->name('banners.toggle-status');
     Route::get('/configuracoes', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
