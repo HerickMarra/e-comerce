@@ -196,4 +196,18 @@ class SiteSettingsTest extends TestCase
         $response->assertSee('#654321');
         $response->assertSee('#fedcba');
     }
+
+    public function test_storefront_and_admin_render_favicon_links()
+    {
+        $storefront = $this->get('/');
+        $storefront->assertStatus(200);
+        $storefront->assertSee('favicon.svg');
+        $storefront->assertSee('favicon.ico');
+        $storefront->assertSee('apple-touch-icon.png');
+
+        $admin = $this->actingAs($this->admin)->get(route('admin.dashboard'));
+        $admin->assertStatus(200);
+        $admin->assertSee('favicon.svg');
+        $admin->assertSee('favicon.ico');
+    }
 }
