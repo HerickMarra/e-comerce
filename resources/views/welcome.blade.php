@@ -157,15 +157,6 @@
 
         <!-- Categories -->
         <section class="mb-20">
-            <div class="flex items-end justify-between mb-10">
-                <div>
-                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">Compre por Categoria</h2>
-                    <p class="text-slate-500">As melhores marcas e modelos de tênis para você</p>
-                </div>
-                <a class="text-primary font-bold text-sm hover:underline flex items-center gap-1 whitespace-nowrap" href="{{ route('categories.index') }}">
-                    Ver todas<span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </a>
-            </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 @forelse($categories as $category)
                     <div class="group cursor-pointer">
