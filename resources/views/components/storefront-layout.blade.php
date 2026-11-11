@@ -349,60 +349,202 @@
         {{ $slot }}
     </main>
 
-    <footer class="border-t pt-10 sm:pt-16 pb-8 sm:pb-10 transition-colors"
-        style="background-color: {{ $ftrBg }} !important; color: {{ $ftrText }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.12)' }};">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 sm:mb-12">
-                {{-- Coluna 1: Marca & Dados da Loja --}}
-                <div class="lg:col-span-4 space-y-4">
-                    <div class="flex items-center gap-2">
+    <footer class="border-t transition-colors relative overflow-hidden"
+        style="background-color: {{ $ftrBg }} !important; color: {{ $ftrText }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.8)' : 'rgba(255, 255, 255, 0.1)' }};">
+        
+        {{-- 1. Faixa Superior de Vantagens e Confiança (Trust Strip) --}}
+        <div class="border-b" style="border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.08)' }};">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                    {{-- Vantagem 1 --}}
+                    <div class="flex items-start gap-4 p-4 rounded-2xl transition-all"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(248, 250, 252, 0.7)' : 'rgba(255, 255, 255, 0.03)' }};">
+                        <div class="size-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm"
+                            style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.08)' }}; border: 1px solid {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.8)' : 'rgba(255, 255, 255, 0.12)' }};">
+                            <span class="material-symbols-outlined text-2xl text-primary">local_shipping</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm leading-tight" style="color: {{ $ftrText }};">Envio Seguro para Todo Brasil</h4>
+                            <p class="text-xs mt-1 leading-relaxed opacity-75" style="color: {{ $ftrText }};">Entrega rastreada via Correios e transportadoras com seguro total.</p>
+                        </div>
+                    </div>
+
+                    {{-- Vantagem 2 --}}
+                    <div class="flex items-start gap-4 p-4 rounded-2xl transition-all"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(248, 250, 252, 0.7)' : 'rgba(255, 255, 255, 0.03)' }};">
+                        <div class="size-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm"
+                            style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.08)' }}; border: 1px solid {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.8)' : 'rgba(255, 255, 255, 0.12)' }};">
+                            <span class="material-symbols-outlined text-2xl text-emerald-500">verified</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm leading-tight" style="color: {{ $ftrText }};">100% Original Garantido</h4>
+                            <p class="text-xs mt-1 leading-relaxed opacity-75" style="color: {{ $ftrText }};">Produtos autênticos com nota fiscal e garantia oficial de fábrica.</p>
+                        </div>
+                    </div>
+
+                    {{-- Vantagem 3 --}}
+                    <div class="flex items-start gap-4 p-4 rounded-2xl transition-all"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(248, 250, 252, 0.7)' : 'rgba(255, 255, 255, 0.03)' }};">
+                        <div class="size-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm"
+                            style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.08)' }}; border: 1px solid {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.8)' : 'rgba(255, 255, 255, 0.12)' }};">
+                            <span class="material-symbols-outlined text-2xl text-amber-500">payments</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm leading-tight" style="color: {{ $ftrText }};">Pagamento Descomplicado</h4>
+                            <p class="text-xs mt-1 leading-relaxed opacity-75" style="color: {{ $ftrText }};">Desconto exclusivo no PIX ou parcele em até 10x sem juros no cartão.</p>
+                        </div>
+                    </div>
+
+                    {{-- Vantagem 4 --}}
+                    <div class="flex items-start gap-4 p-4 rounded-2xl transition-all"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(248, 250, 252, 0.7)' : 'rgba(255, 255, 255, 0.03)' }};">
+                        <div class="size-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm"
+                            style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.08)' }}; border: 1px solid {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.8)' : 'rgba(255, 255, 255, 0.12)' }};">
+                            <span class="material-symbols-outlined text-2xl text-cyan-500">sync_alt</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm leading-tight" style="color: {{ $ftrText }};">Troca Fácil em até 7 Dias</h4>
+                            <p class="text-xs mt-1 leading-relaxed opacity-75" style="color: {{ $ftrText }};">Tamanho não serviu? Solicite a troca ou devolução sem burocracia.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- 2. Faixa de Newsletter & Cupons VIP --}}
+        <div class="border-b" style="border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.08)' }};">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+                <div class="p-6 sm:p-8 rounded-3xl border flex flex-col lg:flex-row items-center justify-between gap-6 relative overflow-hidden"
+                    style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.02)' }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.9)' : 'rgba(255, 255, 255, 0.09)' }}; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);">
+                    
+                    {{-- Texto Chamada --}}
+                    <div class="space-y-1.5 text-center lg:text-left max-w-xl">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-primary/10 text-primary mb-1">
+                            <span class="material-symbols-outlined text-sm">mail</span>
+                            Clube VIP & Lançamentos
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-black tracking-tight" style="color: {{ $ftrText }};">
+                            Receba drops exclusivos e cupons especiais
+                        </h3>
+                        <p class="text-xs sm:text-sm leading-relaxed opacity-80" style="color: {{ $ftrText }};">
+                            Cadastre seu e-mail para receber novidades sobre os tênis mais concorridos e promoções em primeira mão.
+                        </p>
+                    </div>
+
+                    {{-- Form de Inscrição --}}
+                    <div class="w-full lg:max-w-md">
+                        <form class="space-y-2" x-data="{ 
+                            email: '', 
+                            loading: false, 
+                            message: '', 
+                            success: false,
+                            subscribe() {
+                                if (!this.email) return;
+                                this.loading = true;
+                                this.message = '';
+                                
+                                fetch('{{ route('newsletter.subscribe') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({ email: this.email })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    this.loading = false;
+                                    this.message = data.message;
+                                    this.success = data.success;
+                                    if (data.success) this.email = '';
+                                })
+                                .catch(() => {
+                                    this.loading = false;
+                                    this.message = 'Erro ao processar inscrição. Tente novamente.';
+                                    this.success = false;
+                                });
+                            }
+                        }" @submit.prevent="subscribe()">
+                            <div class="flex flex-col sm:flex-row items-stretch gap-2">
+                                <div class="relative flex-1">
+                                    <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">mail</span>
+                                    <input
+                                        class="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-2xl text-xs sm:text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-medium"
+                                        placeholder="Digite seu melhor e-mail..." type="email" x-model="email" required />
+                                </div>
+                                <button type="submit" :disabled="loading"
+                                    class="bg-primary hover:opacity-95 text-white font-bold py-3 px-6 rounded-2xl text-xs sm:text-sm transition-all shadow-lg shadow-primary/25 disabled:opacity-50 shrink-0 flex items-center justify-center gap-1.5 cursor-pointer">
+                                    <template x-if="!loading">
+                                        <span class="flex items-center gap-1">
+                                            <span>Quero Participar</span>
+                                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                        </span>
+                                    </template>
+                                    <template x-if="loading">
+                                        <span class="material-symbols-outlined animate-spin text-lg">sync</span>
+                                    </template>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between text-[11px] px-1 opacity-70" style="color: {{ $ftrText }};">
+                                <span>🔒 Seus dados estão 100% protegidos.</span>
+                                <span>Livre de spam.</span>
+                            </div>
+                            <p x-show="message" x-cloak :class="success ? 'text-emerald-500 font-bold' : 'text-rose-500 font-bold'"
+                                class="text-xs pt-1" x-text="message"></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- 3. Conteúdo Principal das Colunas --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
+                
+                {{-- Coluna 1: Marca & Apresentação (lg:col-span-4) --}}
+                <div class="lg:col-span-4 space-y-5">
+                    {{-- Logo --}}
+                    <div class="flex items-center gap-3">
                         @if($appSettings['store_logo'])
                             <img src="{{ str_starts_with($appSettings['store_logo'], 'http') ? $appSettings['store_logo'] : asset('storage/' . $appSettings['store_logo']) }}"
                                 class="w-auto object-contain"
-                                style="height: {{ min(48, ($appSettings['store_logo_size'] ?? 100) * 0.35) }}px; max-height: 52px;"
+                                style="height: {{ min(52, ($appSettings['store_logo_size'] ?? 100) * 0.4) }}px; max-height: 56px;"
                                 alt="{{ $appSettings['store_name'] }}">
                         @else
-                            <div class="size-9 bg-primary rounded-xl flex items-center justify-center text-white">
-                                <span class="material-symbols-outlined text-lg">{{ $appSettings['store_icon'] ?? 'steps' }}</span>
+                            <div class="size-10 bg-primary rounded-2xl flex items-center justify-center text-white shadow-md shadow-primary/20">
+                                <span class="material-symbols-outlined text-xl">{{ $appSettings['store_icon'] ?? 'steps' }}</span>
                             </div>
-                            <span class="text-xl font-black tracking-tight uppercase" style="color: {{ $ftrText }};">
+                            <span class="text-2xl font-black tracking-tight uppercase" style="color: {{ $ftrText }};">
                                 {{ $appSettings['store_name'] ?? config('app.name') }}
                             </span>
                         @endif
                     </div>
-                    <p class="text-xs leading-relaxed max-w-sm" style="color: {{ $ftrText }}; opacity: 0.8;">
-                        {{ $appSettings['store_footer_description'] ?? 'Sua loja especializada em tênis de corrida, treino e performance das melhores marcas mundiais, com envio rápido e garantia de originalidade.' }}
+
+                    {{-- Descrição --}}
+                    <p class="text-xs sm:text-sm leading-relaxed max-w-sm opacity-80" style="color: {{ $ftrText }};">
+                        {{ $appSettings['store_footer_description'] ?? 'Especialistas em tênis originais de alta performance, corrida e casual. Garantia de qualidade, envio rápido e suporte humano do pedido à entrega.' }}
                     </p>
-                    <div class="text-[11px] space-y-0.5" style="color: {{ $ftrText }}; opacity: 0.75;">
-                        @if(!empty($appSettings['store_company_name']))
-                            <p class="font-bold">{{ $appSettings['store_company_name'] }}</p>
-                        @endif
-                        @if(!empty($appSettings['store_document']))
-                            <p>CNPJ/CPF: {{ $appSettings['store_document'] }}</p>
-                        @endif
-                        @if(!empty($appSettings['store_city']))
-                            <p>{{ !empty($appSettings['store_street']) ? $appSettings['store_street'] . ', ' . ($appSettings['store_number'] ?? 'S/N') . ' • ' : '' }}{{ !empty($appSettings['store_neighborhood']) ? $appSettings['store_neighborhood'] . ' • ' : '' }}{{ $appSettings['store_city'] }}/{{ $appSettings['store_state'] }}{{ !empty($appSettings['store_zip']) ? ' • CEP: ' . $appSettings['store_zip'] : '' }}</p>
-                        @endif
-                        @if(!empty($appSettings['store_phone']))
-                            <p>Telefone: {{ $appSettings['store_phone'] }}</p>
-                        @endif
-                        @if(!empty($appSettings['store_email']))
-                            <p>E-mail: {{ $appSettings['store_email'] }}</p>
-                        @endif
-                        @if(!empty($appSettings['store_opening_hours']))
-                            <p class="text-[10px]">Horário: {{ $appSettings['store_opening_hours'] }}</p>
-                        @endif
-                    </div>
-                    {{-- Redes Sociais --}}
+
+                    {{-- Selo de Suporte WhatsApp em Destaque --}}
                     @php
                         $whatsPhone = $appSettings['store_whatsapp'] ?? $appSettings['store_phone'] ?? '5561985220100';
                         $cleanWhats = preg_replace('/\D/', '', $whatsPhone);
                         if ($cleanWhats && !str_starts_with($cleanWhats, '55')) {
                             $cleanWhats = '55' . $cleanWhats;
                         }
-                        $whatsMsg = $appSettings['store_whatsapp_message'] ?? 'Olá! Gostaria de mais informações.';
+                        $whatsMsg = $appSettings['store_whatsapp_message'] ?? 'Olá! Gostaria de mais informações sobre os tênis.';
                         $whatsFooter = 'https://wa.me/' . ($cleanWhats ?: '5561985220100') . '?text=' . urlencode($whatsMsg);
+                    @endphp
+                    @if($cleanWhats)
+                        <a href="{{ $whatsFooter }}" target="_blank"
+                            class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-all text-xs font-bold w-fit">
+                            <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Atendimento no WhatsApp: {{ $appSettings['store_whatsapp'] ?? $appSettings['store_phone'] ?? '(61) 98522-0100' }}</span>
+                        </a>
+                    @endif
 
+                    {{-- Redes Sociais --}}
+                    @php
                         $instagram = $appSettings['store_instagram'] ?? '';
                         $instagramUrl = '';
                         if ($instagram) {
@@ -418,153 +560,281 @@
                         $tiktokUrl = $appSettings['store_tiktok'] ?? '';
                         $youtubeUrl = $appSettings['store_youtube'] ?? '';
                     @endphp
-                    <div class="flex items-center gap-2.5 pt-1 flex-wrap">
-                        @if($cleanWhats)
-                            <a class="size-8 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-[#25D366] hover:text-white transition-all shadow-sm"
-                                href="{{ $whatsFooter }}" target="_blank" title="WhatsApp">
-                                <svg class="size-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72 1.144 3.763 1.748 5.8 1.748h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                                </svg>
-                            </a>
-                        @endif
-                        @if($instagramUrl)
-                            <a class="size-8 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-[#E4405F] hover:text-white transition-all shadow-sm"
-                                href="{{ $instagramUrl }}" target="_blank" title="Instagram">
-                                <svg class="size-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                                </svg>
-                            </a>
-                        @endif
-                        @if($facebookUrl)
-                            <a class="size-8 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-[#1877F2] hover:text-white transition-all shadow-sm"
-                                href="{{ $facebookUrl }}" target="_blank" title="Facebook">
-                                <svg class="size-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                                </svg>
-                            </a>
-                        @endif
-                        @if($tiktokUrl)
-                            <a class="size-8 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-black hover:text-white transition-all shadow-sm"
-                                href="{{ $tiktokUrl }}" target="_blank" title="TikTok">
-                                <svg class="size-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
-                                </svg>
-                            </a>
-                        @endif
-                        @if($youtubeUrl)
-                            <a class="size-8 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-[#FF0000] hover:text-white transition-all shadow-sm"
-                                href="{{ $youtubeUrl }}" target="_blank" title="YouTube">
-                                <svg class="size-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                                </svg>
-                            </a>
-                        @endif
-                    </div>
-                </div>
-
-                {{-- Coluna 2 e 3: Links Institucionais e Atendimento (No mobile: grid lado a lado!) --}}
-                <div class="lg:col-span-4 grid grid-cols-2 gap-6">
                     <div>
-                        <h5 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: {{ $ftrText }};">
-                            Institucional
-                        </h5>
-                        <ul class="space-y-2 text-xs font-medium" style="color: {{ $ftrText }};">
-                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/">Página Inicial</a></li>
-                            <li><a class="hover:text-primary transition-colors {{ request()->routeIs('explore') ? 'text-primary font-bold opacity-100' : 'opacity-80 hover:opacity-100' }}" href="{{ route('explore') }}">Explorar</a></li>
-                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="{{ route('categories.index') }}">Categorias</a></li>
-                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="{{ route('search') }}">Todos os Tênis</a></li>
-                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="{{ route('customer.orders') }}">Meus Pedidos</a></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h5 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: {{ $ftrText }};">
-                            Atendimento
-                        </h5>
-                        <ul class="space-y-2 text-xs font-medium" style="color: {{ $ftrText }};">
-                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="{{ $whatsFooter }}" target="_blank">Fale no WhatsApp</a></li>
-                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Prazos & Frete</a></li>
-                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Trocas e Devoluções</a></li>
-                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Retirada na Loja</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                {{-- Coluna 4: Newsletter Compacta --}}
-                <div class="lg:col-span-4 space-y-3">
-                    <h5 class="font-bold text-xs uppercase tracking-wider" style="color: {{ $ftrText }};">
-                        Novidades & Ofertas
-                    </h5>
-                    <p class="text-xs" style="color: {{ $ftrText }}; opacity: 0.8;">
-                        Receba cupons exclusivos e lançamentos de tênis direto no seu e-mail.
-                    </p>
-                    <form class="space-y-2" x-data="{ 
-                        email: '', 
-                        loading: false, 
-                        message: '', 
-                        success: false,
-                        subscribe() {
-                            if (!this.email) return;
-                            this.loading = true;
-                            this.message = '';
-                            
-                            fetch('{{ route('newsletter.subscribe') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                body: JSON.stringify({ email: this.email })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                this.loading = false;
-                                this.message = data.message;
-                                this.success = data.success;
-                                if (data.success) this.email = '';
-                            })
-                            .catch(() => {
-                                this.loading = false;
-                                this.message = 'Erro ao processar inscrição.';
-                                this.success = false;
-                            });
-                        }
-                    }" @submit.prevent="subscribe()">
-                        <div class="flex items-center gap-1.5">
-                            <input
-                                class="flex-1 min-w-0 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-medium"
-                                placeholder="Seu melhor e-mail..." type="email" x-model="email" required />
-                            <button type="submit" :disabled="loading"
-                                class="bg-primary text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all shadow-md shadow-primary/20 disabled:opacity-50 shrink-0 flex items-center justify-center">
-                                <template x-if="!loading"><span>Cadastrar</span></template>
-                                <template x-if="loading"><span class="material-symbols-outlined animate-spin text-sm">sync</span></template>
-                            </button>
+                        <span class="text-[10px] font-black uppercase tracking-widest opacity-60 block mb-2.5" style="color: {{ $ftrText }};">
+                            Siga nossas redes
+                        </span>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            @if($cleanWhats)
+                                <a class="size-9 rounded-2xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-[#25D366] hover:text-white transition-all shadow-sm hover:scale-105"
+                                    href="{{ $whatsFooter }}" target="_blank" title="WhatsApp Oficial">
+                                    <svg class="size-4.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72 1.144 3.763 1.748 5.8 1.748h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                                    </svg>
+                                </a>
+                            @endif
+                            @if($instagramUrl)
+                                <a class="size-9 rounded-2xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-[#E4405F] hover:text-white transition-all shadow-sm hover:scale-105"
+                                    href="{{ $instagramUrl }}" target="_blank" title="Instagram Oficial">
+                                    <svg class="size-4.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                    </svg>
+                                </a>
+                            @endif
+                            @if($facebookUrl)
+                                <a class="size-9 rounded-2xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-[#1877F2] hover:text-white transition-all shadow-sm hover:scale-105"
+                                    href="{{ $facebookUrl }}" target="_blank" title="Facebook Oficial">
+                                    <svg class="size-4.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                    </svg>
+                                </a>
+                            @endif
+                            @if($tiktokUrl)
+                                <a class="size-9 rounded-2xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-black hover:text-white transition-all shadow-sm hover:scale-105"
+                                    href="{{ $tiktokUrl }}" target="_blank" title="TikTok Oficial">
+                                    <svg class="size-4.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                                    </svg>
+                                </a>
+                            @endif
+                            @if($youtubeUrl)
+                                <a class="size-9 rounded-2xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-[#FF0000] hover:text-white transition-all shadow-sm hover:scale-105"
+                                    href="{{ $youtubeUrl }}" target="_blank" title="YouTube Oficial">
+                                    <svg class="size-4.5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                    </svg>
+                                </a>
+                            @endif
                         </div>
-                        <p x-show="message" x-cloak :class="success ? 'text-emerald-500' : 'text-red-500'"
-                            class="text-[11px] font-bold" x-text="message"></p>
-                    </form>
+                    </div>
+                </div>
+
+                {{-- Coluna 2: Departamentos & Categorias (lg:col-span-3) --}}
+                <div class="lg:col-span-3 space-y-4">
+                    <h5 class="font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5" style="color: {{ $ftrText }};">
+                        <span class="material-symbols-outlined text-base text-primary">category</span>
+                        Departamentos
+                    </h5>
+                    <ul class="space-y-2.5 text-xs font-semibold" style="color: {{ $ftrText }};">
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'corrida']) }}">
+                                <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
+                                <span>Tênis de Corrida</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'treino']) }}">
+                                <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
+                                <span>Treino & Academia</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'casual']) }}">
+                                <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
+                                <span>Casual & Streetwear</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('explore') }}">
+                                <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
+                                <span>Lançamentos 2026</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search') }}">
+                                <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
+                                <span>Todos os Modelos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5 font-bold text-primary" href="{{ route('categories.index') }}">
+                                <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                                <span>Ver Todas as Categorias</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Coluna 3: Atendimento & Suporte (lg:col-span-3) --}}
+                <div class="lg:col-span-3 space-y-4">
+                    <h5 class="font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5" style="color: {{ $ftrText }};">
+                        <span class="material-symbols-outlined text-base text-primary">support_agent</span>
+                        Atendimento ao Cliente
+                    </h5>
+                    <ul class="space-y-2.5 text-xs font-semibold" style="color: {{ $ftrText }};">
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ $whatsFooter }}" target="_blank">
+                                <span class="material-symbols-outlined text-xs opacity-60">chat</span>
+                                <span>Falar no WhatsApp</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('customer.orders') }}">
+                                <span class="material-symbols-outlined text-xs opacity-60">package_2</span>
+                                <span>Meus Pedidos & Rastreio</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="#">
+                                <span class="material-symbols-outlined text-xs opacity-60">sync</span>
+                                <span>Trocas e Devoluções</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="#">
+                                <span class="material-symbols-outlined text-xs opacity-60">schedule</span>
+                                <span>Prazos e Entregas</span>
+                            </a>
+                        </li>
+                        @if(!empty($appSettings['store_street']))
+                            <li>
+                                <span class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-xs opacity-60">storefront</span>
+                                    <span>Retirada na Loja Física</span>
+                                </span>
+                            </li>
+                        @endif
+                    </ul>
+
+                    {{-- Horário de Atendimento --}}
+                    @if(!empty($appSettings['store_opening_hours']))
+                        <div class="pt-2 text-[11px] opacity-75 leading-relaxed" style="color: {{ $ftrText }};">
+                            <span class="font-bold block text-[10px] uppercase tracking-wider opacity-90">Horário de Atendimento:</span>
+                            <span>{{ $appSettings['store_opening_hours'] }}</span>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Coluna 4: Institucional & Segurança (lg:col-span-2) --}}
+                <div class="lg:col-span-2 space-y-4">
+                    <h5 class="font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5" style="color: {{ $ftrText }};">
+                        <span class="material-symbols-outlined text-base text-primary">policy</span>
+                        Institucional
+                    </h5>
+                    <ul class="space-y-2.5 text-xs font-semibold" style="color: {{ $ftrText }};">
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="/">
+                                <span class="material-symbols-outlined text-xs opacity-60">home</span>
+                                <span>Página Inicial</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('customer.dashboard') }}">
+                                <span class="material-symbols-outlined text-xs opacity-60">person</span>
+                                <span>Minha Conta</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="#">
+                                <span class="material-symbols-outlined text-xs opacity-60">lock</span>
+                                <span>Segurança e Privacidade</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="#">
+                                <span class="material-symbols-outlined text-xs opacity-60">description</span>
+                                <span>Termos de Uso</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
-            {{-- Barra Inferior: Pagamentos & Copyright --}}
-            <div class="pt-6 border-t flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left"
-                style="border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.12)' }};">
-                <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[11px] font-medium" style="color: {{ $ftrText }}; opacity: 0.8;">
-                    <p>© {{ date('Y') }} {{ $appSettings['store_name'] ?? 'Denner Tênis' }}. Todos os direitos reservados.</p>
+            {{-- 4. Informações Fiscais & Endereço Oficial (Decreto 7.962/2013 - Lei do E-commerce) --}}
+            <div class="mt-12 pt-8 border-t text-[11px] leading-relaxed opacity-75 space-y-2"
+                style="border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.08)' }}; color: {{ $ftrText }};">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-medium">
+                    <p>
+                        @if(!empty($appSettings['store_company_name']))
+                            <strong class="font-bold">{{ $appSettings['store_company_name'] }}</strong>
+                        @else
+                            <strong class="font-bold">{{ $appSettings['store_name'] ?? 'Denner Tênis' }}</strong>
+                        @endif
+                        @if(!empty($appSettings['store_document']))
+                            • CNPJ/CPF: <strong>{{ $appSettings['store_document'] }}</strong>
+                        @endif
+                        @if(!empty($appSettings['store_state_register']) && strtolower($appSettings['store_state_register']) !== 'isento')
+                            • IE: {{ $appSettings['store_state_register'] }}
+                        @endif
+                    </p>
+                    @if(!empty($appSettings['store_email']))
+                        <p class="flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-xs">mail</span>
+                            <span>{{ $appSettings['store_email'] }}</span>
+                        </p>
+                    @endif
                 </div>
 
-                {{-- Formas de Pagamento --}}
-                <div class="flex items-center gap-2 flex-wrap justify-center text-[10px] font-black text-slate-500">
-                    <span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-emerald-600 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-xs">qr_code_2</span> PIX
+                @if(!empty($appSettings['store_city']))
+                    <p class="opacity-80">
+                        Sede: {{ !empty($appSettings['store_street']) ? $appSettings['store_street'] . ', ' . ($appSettings['store_number'] ?? 'S/N') : '' }}{{ !empty($appSettings['store_neighborhood']) ? ' - ' . $appSettings['store_neighborhood'] : '' }} • {{ $appSettings['store_city'] }}/{{ $appSettings['store_state'] }}{{ !empty($appSettings['store_zip']) ? ' • CEP: ' . $appSettings['store_zip'] : '' }}
+                    </p>
+                @endif
+                <p class="text-[10px] opacity-60">
+                    Os preços, ofertas e condições de pagamento são válidos exclusivamente para compras realizadas neste site e podem sofrer alterações sem aviso prévio. Imagens meramente ilustrativas.
+                </p>
+            </div>
+
+            {{-- 5. Barra Inferior: Pagamentos, Envio & Segurança --}}
+            <div class="mt-8 pt-6 border-t flex flex-col lg:flex-row justify-between items-center gap-6"
+                style="border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.08)' }};">
+                
+                {{-- Formas de Pagamento Aceitas --}}
+                <div class="flex items-center gap-2 flex-wrap justify-center lg:justify-start">
+                    <span class="text-[10px] font-black uppercase tracking-wider opacity-60 mr-1" style="color: {{ $ftrText }};">Pagamento:</span>
+                    
+                    {{-- PIX --}}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-[11px] font-bold shadow-xs"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.05)' }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.9)' : 'rgba(255, 255, 255, 0.12)' }}; color: #10b981;">
+                        <span class="material-symbols-outlined text-sm">qr_code_2</span>
+                        <span>PIX</span>
                     </span>
-                    <span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-xs">credit_card</span> Cartão até 10x
+
+                    {{-- Cartões --}}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-[11px] font-bold shadow-xs"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.05)' }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.9)' : 'rgba(255, 255, 255, 0.12)' }}; color: {{ $ftrText }};">
+                        <span class="material-symbols-outlined text-sm text-sky-500">credit_card</span>
+                        <span>Cartão até 10x</span>
                     </span>
-                    <span class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-xs">lock</span> 100% Seguro
+
+                    {{-- Boleto --}}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border text-[11px] font-bold shadow-xs"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.05)' }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.9)' : 'rgba(255, 255, 255, 0.12)' }}; color: {{ $ftrText }};">
+                        <span class="material-symbols-outlined text-sm text-amber-500">receipt</span>
+                        <span>Boleto</span>
                     </span>
                 </div>
+
+                {{-- Selos de Segurança & Logística --}}
+                <div class="flex items-center gap-2 flex-wrap justify-center lg:justify-end text-[10px] font-bold">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.05)' }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.9)' : 'rgba(255, 255, 255, 0.12)' }}; color: #10b981;">
+                        <span class="material-symbols-outlined text-xs">lock</span>
+                        <span>SSL 256-Bit</span>
+                    </span>
+
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.05)' }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.9)' : 'rgba(255, 255, 255, 0.12)' }}; color: {{ $ftrText }};">
+                        <span class="material-symbols-outlined text-xs text-primary">security</span>
+                        <span>Gateway Seguro</span>
+                    </span>
+
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl border"
+                        style="background-color: {{ strtolower($ftrBg) === '#ffffff' ? '#ffffff' : 'rgba(255, 255, 255, 0.05)' }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(226, 232, 240, 0.9)' : 'rgba(255, 255, 255, 0.12)' }}; color: {{ $ftrText }};">
+                        <span class="material-symbols-outlined text-xs text-sky-500">local_shipping</span>
+                        <span>Melhor Envio</span>
+                    </span>
+                </div>
+            </div>
+
+            {{-- 6. Linha Final de Copyright --}}
+            <div class="mt-8 pt-6 border-t flex flex-col sm:flex-row justify-between items-center gap-3 text-center sm:text-left text-[11px] opacity-70"
+                style="border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.06)' }}; color: {{ $ftrText }};">
+                <p>© {{ date('Y') }} {{ $appSettings['store_name'] ?? 'Denner Tênis' }}. Todos os direitos reservados.</p>
+                <p class="flex items-center gap-1">
+                    <span>Desenvolvido para máxima performance</span>
+                    <span class="material-symbols-outlined text-xs text-rose-500">favorite</span>
+                </p>
             </div>
         </div>
     </footer>
