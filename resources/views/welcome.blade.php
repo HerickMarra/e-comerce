@@ -179,15 +179,15 @@
         </section>
 
 
-        <!-- Im Feeling Lucky -->
+        <!-- Lançamentos -->
         <section class="mb-20 md:mb-24 mt-16 md:mt-28">
             <div class="flex items-center justify-between mb-8 md:mb-10">
                 <div>
-                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Estou com Sorte</h2>
-                    <p class="text-slate-500 text-sm mt-1">Lançamentos exclusivos e modelos selecionados para seu estilo</p>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Lançamentos</h2>
+                    <p class="text-slate-500 text-sm mt-1">Os modelos mais recentes e exclusivos que acabaram de chegar</p>
                 </div>
-                <div class="flex items-center justify-center size-12 rounded-2xl bg-amber-100 text-amber-600">
-                    <span class="material-symbols-outlined text-2xl animate-bounce">casino</span>
+                <div class="flex items-center justify-center size-12 rounded-2xl bg-primary/10 text-primary">
+                    <span class="material-symbols-outlined text-2xl">rocket_launch</span>
                 </div>
             </div>
 
