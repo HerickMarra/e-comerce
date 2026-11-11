@@ -89,7 +89,7 @@
                     </div>
                 @endif
             @endif
-            <div class="relative z-20 h-full flex flex-col justify-between py-6 md:py-10 px-6 md:px-14 max-w-2xl">
+            <div class="relative z-20 h-full flex flex-col justify-between py-6 md:py-10 px-6 md:px-14 max-w-2xl pointer-events-none">
                 <div>
                     {{-- No mobile exibe o logo sutil, no desktop uma tag discreta sem poluir com logo duplo --}}
                     @if($appSettings['store_logo'])
@@ -101,15 +101,6 @@
                         <span class="size-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                         <span class="uppercase tracking-widest text-[11px] font-bold">Lançamentos 2026</span>
                     </div>
-                </div>
-
-                {{-- Botão de Ação Único e Minimalista --}}
-                <div>
-                    <a href="{{ $heroSettings['btn_link'] }}"
-                        class="inline-flex items-center gap-2.5 bg-white text-slate-900 hover:bg-slate-100 font-bold px-7 sm:px-8 py-3.5 sm:py-4 rounded-full shadow-2xl transition-all tracking-wide text-xs sm:text-sm uppercase hover:scale-[1.02] active:scale-[0.98]">
-                        <span>{{ $heroSettings['btn_text'] ?? 'Explorar Catálogo' }}</span>
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
-                    </a>
                 </div>
             </div>
         </div>
