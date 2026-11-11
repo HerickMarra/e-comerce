@@ -91,13 +91,21 @@
 
 <body x-data="{ mobileMenuOpen: false }" :class="{ 'overflow-hidden': mobileMenuOpen }"
     class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased">
+    @php
+        $hdrBg = $appSettings['header_bg_color'] ?? '#ffffff';
+        $hdrText = $appSettings['header_text_color'] ?? '#0f172a';
+        $ftrBg = $appSettings['footer_bg_color'] ?? '#ffffff';
+        $ftrText = $appSettings['footer_text_color'] ?? '#0f172a';
+    @endphp
     <header
-        class="sticky top-0 z-50 w-full bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-slate-100 dark:border-slate-800">
+        class="sticky top-0 z-50 w-full backdrop-blur-md border-b transition-colors"
+        style="background-color: {{ $hdrBg }} !important; color: {{ $hdrText }}; border-color: {{ strtolower($hdrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.12)' }};">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20 gap-8">
                 <div class="flex items-center gap-1 md:gap-2">
                     <button @click="mobileMenuOpen = true"
-                        class="md:hidden p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                        class="md:hidden p-1.5 hover:opacity-80 rounded-full transition-colors"
+                        style="color: {{ $hdrText }};"
                         aria-label="Abrir menu">
                         <span class="material-symbols-outlined text-2xl">menu</span>
                     </button>
@@ -114,7 +122,8 @@
                                     class="material-symbols-outlined text-xl md:text-2xl">{{ $appSettings['store_icon'] ?? 'chair' }}</span>
                             </div>
                             <span
-                                class="text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-white uppercase">
+                                class="text-xl md:text-2xl font-bold tracking-tight uppercase"
+                                style="color: {{ $hdrText }};">
                                 {{ $appSettings['store_name'] ?? config('app.name') }}
                             </span>
                         @endif
@@ -124,17 +133,21 @@
                 <!-- Navigation -->
                 <nav class="hidden md:flex items-center gap-6 lg:gap-8">
                     <a class="text-sm font-semibold hover:text-primary transition-colors flex items-center gap-1.5 {{ request()->routeIs('explore') ? 'text-primary font-bold' : '' }}"
+                        style="{{ request()->routeIs('explore') ? '' : 'color: ' . $hdrText . ';' }}"
                         href="{{ route('explore') }}">
                         <span class="material-symbols-outlined text-base">explore</span>
                         Explorar
                     </a>
                     @foreach(collect($navCategories ?? [])->take(3) as $navCat)
                         <a class="text-sm font-semibold hover:text-primary transition-colors"
+                            style="color: {{ $hdrText }};"
                             href="{{ route('search', ['categories' => [$navCat->id]]) }}">{{ $navCat->name }}</a>
                     @endforeach
                     <a class="text-sm font-semibold hover:text-primary transition-colors"
+                        style="color: {{ $hdrText }};"
                         href="{{ route('categories.index') }}">Categorias</a>
                     <a class="text-sm font-semibold hover:text-primary transition-colors"
+                        style="color: {{ $hdrText }};"
                         href="{{ route('customer.orders') }}">Meus Pedidos</a>
                 </nav>
 
@@ -154,18 +167,21 @@
                     @auth
                         @if(auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Admin') || auth()->user()->hasRole('Manager'))
                             <a href="{{ route('admin.dashboard') }}"
-                                class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                                class="p-2 hover:opacity-80 rounded-full transition-colors"
+                                style="color: {{ $hdrText }};"
                                 title="Painel Admin">
                                 <span class="material-symbols-outlined text-2xl">admin_panel_settings</span>
                             </a>
                         @endif
                     @else
                         <a href="{{ route('login') }}"
-                            class="text-sm font-bold hover:text-primary transition-colors px-2">Entrar</a>
+                            class="text-sm font-bold hover:text-primary transition-colors px-2"
+                            style="color: {{ $hdrText }};">Entrar</a>
                     @endauth
 
                     <a href="{{ route('cart.index') }}"
-                        class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors relative">
+                        class="p-2 hover:opacity-80 rounded-full transition-colors relative"
+                        style="color: {{ $hdrText }};">
                         <span class="material-symbols-outlined text-2xl">shopping_cart</span>
                         @if(count(session()->get('cart', [])) > 0)
                             <span id="cart-count-badge"
@@ -326,7 +342,8 @@
         {{ $slot }}
     </main>
 
-    <footer class="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 pt-10 sm:pt-16 pb-8 sm:pb-10">
+    <footer class="border-t pt-10 sm:pt-16 pb-8 sm:pb-10 transition-colors"
+        style="background-color: {{ $ftrBg }} !important; color: {{ $ftrText }}; border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.12)' }};">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 mb-8 sm:mb-12">
                 {{-- Coluna 1: Marca & Dados da Loja --}}
@@ -341,17 +358,17 @@
                             <div class="size-9 bg-primary rounded-xl flex items-center justify-center text-white">
                                 <span class="material-symbols-outlined text-lg">{{ $appSettings['store_icon'] ?? 'steps' }}</span>
                             </div>
-                            <span class="text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
+                            <span class="text-xl font-black tracking-tight uppercase" style="color: {{ $ftrText }};">
                                 {{ $appSettings['store_name'] ?? config('app.name') }}
                             </span>
                         @endif
                     </div>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm">
+                    <p class="text-xs leading-relaxed max-w-sm" style="color: {{ $ftrText }}; opacity: 0.8;">
                         {{ $appSettings['store_footer_description'] ?? 'Sua loja especializada em tênis de corrida, treino e performance das melhores marcas mundiais, com envio rápido e garantia de originalidade.' }}
                     </p>
-                    <div class="text-[11px] text-slate-400 space-y-0.5">
+                    <div class="text-[11px] space-y-0.5" style="color: {{ $ftrText }}; opacity: 0.75;">
                         @if(!empty($appSettings['store_company_name']))
-                            <p class="font-bold text-slate-300">{{ $appSettings['store_company_name'] }}</p>
+                            <p class="font-bold">{{ $appSettings['store_company_name'] }}</p>
                         @endif
                         @if(!empty($appSettings['store_document']))
                             <p>CNPJ/CPF: {{ $appSettings['store_document'] }}</p>
@@ -366,7 +383,7 @@
                             <p>E-mail: {{ $appSettings['store_email'] }}</p>
                         @endif
                         @if(!empty($appSettings['store_opening_hours']))
-                            <p class="text-[10px] text-slate-500">Horário: {{ $appSettings['store_opening_hours'] }}</p>
+                            <p class="text-[10px]">Horário: {{ $appSettings['store_opening_hours'] }}</p>
                         @endif
                     </div>
                     {{-- Redes Sociais --}}
@@ -441,37 +458,37 @@
                 {{-- Coluna 2 e 3: Links Institucionais e Atendimento (No mobile: grid lado a lado!) --}}
                 <div class="lg:col-span-4 grid grid-cols-2 gap-6">
                     <div>
-                        <h5 class="font-bold text-slate-900 dark:text-white mb-3 text-xs uppercase tracking-wider">
+                        <h5 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: {{ $ftrText }};">
                             Institucional
                         </h5>
-                        <ul class="space-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                            <li><a class="hover:text-primary transition-colors" href="/">Página Inicial</a></li>
-                            <li><a class="hover:text-primary transition-colors {{ request()->routeIs('explore') ? 'text-primary font-bold' : '' }}" href="{{ route('explore') }}">Explorar</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="{{ route('categories.index') }}">Categorias</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="{{ route('search') }}">Todos os Tênis</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="{{ route('customer.orders') }}">Meus Pedidos</a></li>
+                        <ul class="space-y-2 text-xs font-medium" style="color: {{ $ftrText }};">
+                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="/">Página Inicial</a></li>
+                            <li><a class="hover:text-primary transition-colors {{ request()->routeIs('explore') ? 'text-primary font-bold opacity-100' : 'opacity-80 hover:opacity-100' }}" href="{{ route('explore') }}">Explorar</a></li>
+                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="{{ route('categories.index') }}">Categorias</a></li>
+                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="{{ route('search') }}">Todos os Tênis</a></li>
+                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="{{ route('customer.orders') }}">Meus Pedidos</a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h5 class="font-bold text-slate-900 dark:text-white mb-3 text-xs uppercase tracking-wider">
+                        <h5 class="font-bold mb-3 text-xs uppercase tracking-wider" style="color: {{ $ftrText }};">
                             Atendimento
                         </h5>
-                        <ul class="space-y-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                            <li><a class="hover:text-primary transition-colors" href="{{ $whatsFooter }}" target="_blank">Fale no WhatsApp</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Prazos & Frete</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Trocas e Devoluções</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Retirada na Loja</a></li>
+                        <ul class="space-y-2 text-xs font-medium" style="color: {{ $ftrText }};">
+                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="{{ $whatsFooter }}" target="_blank">Fale no WhatsApp</a></li>
+                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Prazos & Frete</a></li>
+                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Trocas e Devoluções</a></li>
+                            <li><a class="hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Retirada na Loja</a></li>
                         </ul>
                     </div>
                 </div>
 
                 {{-- Coluna 4: Newsletter Compacta --}}
                 <div class="lg:col-span-4 space-y-3">
-                    <h5 class="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
+                    <h5 class="font-bold text-xs uppercase tracking-wider" style="color: {{ $ftrText }};">
                         Novidades & Ofertas
                     </h5>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                    <p class="text-xs" style="color: {{ $ftrText }}; opacity: 0.8;">
                         Receba cupons exclusivos e lançamentos de tênis direto no seu e-mail.
                     </p>
                     <form class="space-y-2" x-data="{ 
@@ -523,8 +540,9 @@
             </div>
 
             {{-- Barra Inferior: Pagamentos & Copyright --}}
-            <div class="pt-6 border-t border-slate-100 dark:border-slate-900 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-                <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[11px] text-slate-400 font-medium">
+            <div class="pt-6 border-t flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left"
+                style="border-color: {{ strtolower($ftrBg) === '#ffffff' ? 'rgba(241, 245, 249, 1)' : 'rgba(255, 255, 255, 0.12)' }};">
+                <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[11px] font-medium" style="color: {{ $ftrText }}; opacity: 0.8;">
                     <p>© {{ date('Y') }} {{ $appSettings['store_name'] ?? 'Denner Tênis' }}. Todos os direitos reservados.</p>
                 </div>
 

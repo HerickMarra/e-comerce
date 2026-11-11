@@ -4,6 +4,10 @@
     <div class="max-w-6xl mx-auto space-y-8" x-data="{
         activeTab: 'site_info',
         primaryColor: '{{ $settings['primary_color'] }}',
+        headerBgColor: '{{ $settings['header_bg_color'] ?? '#ffffff' }}',
+        headerTextColor: '{{ $settings['header_text_color'] ?? '#0f172a' }}',
+        footerBgColor: '{{ $settings['footer_bg_color'] ?? '#ffffff' }}',
+        footerTextColor: '{{ $settings['footer_text_color'] ?? '#0f172a' }}',
         logoPreview: '{{ $settings['store_logo'] ? asset('storage/' . $settings['store_logo']) : '' }}',
         logoSize: '{{ $settings['store_logo_size'] }}',
         storeIcon: '{{ $settings['store_icon'] }}',
@@ -657,8 +661,8 @@
                             <span class="material-symbols-outlined text-base">palette</span>
                         </div>
                         <div>
-                            <h2 class="font-bold text-slate-900">Paleta de Cores</h2>
-                            <p class="text-xs text-slate-500">Cor principal usada em botões, links e destaques.</p>
+                            <h2 class="font-bold text-slate-900">Paleta de Cores da Marca</h2>
+                            <p class="text-xs text-slate-500">Cor principal usada em botões, links de destaque e badges.</p>
                         </div>
                     </div>
                     <div class="p-5 sm:p-8">
@@ -666,7 +670,7 @@
                             <div>
                                 <label
                                     class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4 block">Cor
-                                    Principal</label>
+                                    Principal (Destaque & Botões)</label>
                                 <div class="flex gap-3 flex-wrap mb-5">
                                     @foreach(['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16'] as $color)
                                         <button type="button" @click="primaryColor = '{{ $color }}'"
@@ -686,7 +690,7 @@
                             <div>
                                 <label
                                     class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4 block">Cor
-                                    Secundária (Fundo escuro)</label>
+                                    Secundária (Contrastes)</label>
                                 <div class="flex gap-3 flex-wrap mb-5">
                                     @foreach(['#0f172a', '#1e293b', '#111827', '#1c1917', '#0c0a09', '#030712', '#1a1a2e', '#0a0a0a'] as $color)
                                         <button type="button" x-data="{ sec: '{{ $settings['secondary_color'] }}' }"
@@ -702,6 +706,201 @@
                                     <input type="text" value="{{ $settings['secondary_color'] }}" readonly
                                         class="flex-1 bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-mono font-bold">
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Header / Menu Customization --}}
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-slate-50 flex items-center justify-between gap-4 bg-slate-50/50">
+                        <div class="flex items-center gap-4">
+                            <div class="size-10 rounded-xl flex items-center justify-center text-white bg-slate-900">
+                                <span class="material-symbols-outlined text-base">web_asset</span>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-slate-900">Cores do Menu (Cabeçalho Superior)</h2>
+                                <p class="text-xs text-slate-500">Defina a cor de fundo e a cor dos textos e ícones da barra de navegação superior.</p>
+                            </div>
+                        </div>
+                        <div class="hidden sm:flex items-center gap-2">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Preview ao vivo abaixo</span>
+                        </div>
+                    </div>
+                    <div class="p-5 sm:p-8 space-y-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {{-- Cor de Fundo do Menu --}}
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 block">
+                                    Cor de Fundo do Menu
+                                </label>
+                                <div class="flex gap-2.5 flex-wrap mb-4">
+                                    @foreach(['#ffffff', '#f8fafc', '#f1f5f9', '#0f172a', '#1e293b', '#000000', '#10b981', '#064e3b'] as $c)
+                                        <button type="button" @click="headerBgColor = '{{ $c }}'"
+                                            class="size-9 rounded-xl transition-all hover:scale-110 ring-2 ring-offset-2 border border-slate-200"
+                                            :class="headerBgColor.toLowerCase() === '{{ strtolower($c) }}' ? 'ring-slate-900 scale-110' : 'ring-transparent'"
+                                            style="background: {{ $c }}"
+                                            title="{{ $c }}"></button>
+                                    @endforeach
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" name="header_bg_color" x-model="headerBgColor"
+                                        class="size-12 rounded-xl cursor-pointer border-2 border-slate-200 p-0.5">
+                                    <input type="text" x-model="headerBgColor" name="header_bg_color_hex"
+                                        @input="headerBgColor = $event.target.value"
+                                        class="flex-1 bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-mono font-bold"
+                                        placeholder="#ffffff">
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-2">Padrão da loja: Branco (<span class="font-mono">#ffffff</span>).</p>
+                            </div>
+
+                            {{-- Cor dos Textos/Links do Menu --}}
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 block">
+                                    Cor dos Textos e Ícones do Menu
+                                </label>
+                                <div class="flex gap-2.5 flex-wrap mb-4">
+                                    @foreach(['#0f172a', '#ffffff', '#334155', '#64748b', '#10b981', '#f59e0b', '#ef4444'] as $c)
+                                        <button type="button" @click="headerTextColor = '{{ $c }}'"
+                                            class="size-9 rounded-xl transition-all hover:scale-110 ring-2 ring-offset-2 border border-slate-200"
+                                            :class="headerTextColor.toLowerCase() === '{{ strtolower($c) }}' ? 'ring-slate-900 scale-110' : 'ring-transparent'"
+                                            style="background: {{ $c }}"
+                                            title="{{ $c }}"></button>
+                                    @endforeach
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" name="header_text_color" x-model="headerTextColor"
+                                        class="size-12 rounded-xl cursor-pointer border-2 border-slate-200 p-0.5">
+                                    <input type="text" x-model="headerTextColor" name="header_text_color_hex"
+                                        @input="headerTextColor = $event.target.value"
+                                        class="flex-1 bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-mono font-bold"
+                                        placeholder="#0f172a">
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-2">Dica: Use texto claro (<span class="font-mono">#ffffff</span>) se o fundo for escuro.</p>
+                            </div>
+                        </div>
+
+                        {{-- Header Live Simulation --}}
+                        <div class="rounded-2xl p-4 sm:p-5 border border-slate-200 transition-all shadow-sm"
+                            :style="'background-color: ' + headerBgColor + '; color: ' + headerTextColor + '; border-color: ' + (headerBgColor === '#ffffff' ? '#e2e8f0' : 'rgba(255,255,255,0.15)')">
+                            <div class="flex items-center justify-between gap-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="size-8 rounded-lg flex items-center justify-center text-white"
+                                        :style="'background: ' + primaryColor">
+                                        <span class="material-symbols-outlined text-lg" x-text="storeIcon || 'steps'"></span>
+                                    </div>
+                                    <span class="text-sm font-black tracking-tight uppercase" x-text="previewName || '{{ $settings['store_name'] }}'"></span>
+                                </div>
+                                <div class="hidden sm:flex items-center gap-5 text-xs font-semibold">
+                                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">explore</span> Explorar</span>
+                                    <span>Lançamentos</span>
+                                    <span>Corrida</span>
+                                    <span>Meus Pedidos</span>
+                                </div>
+                                <div class="flex items-center gap-2.5">
+                                    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs"
+                                        :style="'background: ' + (headerBgColor === '#ffffff' ? '#f1f5f9' : 'rgba(255,255,255,0.15)') + '; color: ' + headerTextColor">
+                                        <span class="material-symbols-outlined text-sm">search</span>
+                                        <span class="text-[11px] opacity-70">Buscar...</span>
+                                    </div>
+                                    <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                                    <span class="material-symbols-outlined text-xl">account_circle</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Footer / Rodapé Customization --}}
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-slate-50 flex items-center justify-between gap-4 bg-slate-50/50">
+                        <div class="flex items-center gap-4">
+                            <div class="size-10 rounded-xl flex items-center justify-center text-white bg-slate-800">
+                                <span class="material-symbols-outlined text-base">dock</span>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-slate-900">Cores do Rodapé (Footer)</h2>
+                                <p class="text-xs text-slate-500">Defina a cor de fundo do rodapé institucional e a cor de suas fontes e links.</p>
+                            </div>
+                        </div>
+                        <div class="hidden sm:flex items-center gap-2">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Preview ao vivo abaixo</span>
+                        </div>
+                    </div>
+                    <div class="p-5 sm:p-8 space-y-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {{-- Cor de Fundo do Rodapé --}}
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 block">
+                                    Cor de Fundo do Rodapé
+                                </label>
+                                <div class="flex gap-2.5 flex-wrap mb-4">
+                                    @foreach(['#ffffff', '#f8fafc', '#0f172a', '#1e293b', '#000000', '#111827', '#064e3b', '#312e81'] as $c)
+                                        <button type="button" @click="footerBgColor = '{{ $c }}'"
+                                            class="size-9 rounded-xl transition-all hover:scale-110 ring-2 ring-offset-2 border border-slate-200"
+                                            :class="footerBgColor.toLowerCase() === '{{ strtolower($c) }}' ? 'ring-slate-900 scale-110' : 'ring-transparent'"
+                                            style="background: {{ $c }}"
+                                            title="{{ $c }}"></button>
+                                    @endforeach
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" name="footer_bg_color" x-model="footerBgColor"
+                                        class="size-12 rounded-xl cursor-pointer border-2 border-slate-200 p-0.5">
+                                    <input type="text" x-model="footerBgColor" name="footer_bg_color_hex"
+                                        @input="footerBgColor = $event.target.value"
+                                        class="flex-1 bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-mono font-bold"
+                                        placeholder="#ffffff">
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-2">Escolha fundo claro ou escuro (ex: <span class="font-mono">#0f172a</span> para visual dark moderno).</p>
+                            </div>
+
+                            {{-- Cor dos Textos do Rodapé --}}
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3 block">
+                                    Cor dos Textos e Links do Rodapé
+                                </label>
+                                <div class="flex gap-2.5 flex-wrap mb-4">
+                                    @foreach(['#0f172a', '#ffffff', '#cbd5e1', '#94a3b8', '#64748b', '#334155', '#fbbf24'] as $c)
+                                        <button type="button" @click="footerTextColor = '{{ $c }}'"
+                                            class="size-9 rounded-xl transition-all hover:scale-110 ring-2 ring-offset-2 border border-slate-200"
+                                            :class="footerTextColor.toLowerCase() === '{{ strtolower($c) }}' ? 'ring-slate-900 scale-110' : 'ring-transparent'"
+                                            style="background: {{ $c }}"
+                                            title="{{ $c }}"></button>
+                                    @endforeach
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="color" name="footer_text_color" x-model="footerTextColor"
+                                        class="size-12 rounded-xl cursor-pointer border-2 border-slate-200 p-0.5">
+                                    <input type="text" x-model="footerTextColor" name="footer_text_color_hex"
+                                        @input="footerTextColor = $event.target.value"
+                                        class="flex-1 bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-mono font-bold"
+                                        placeholder="#0f172a">
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-2">Dica: Use texto claro (<span class="font-mono">#ffffff</span> ou <span class="font-mono">#cbd5e1</span>) se o fundo for escuro.</p>
+                            </div>
+                        </div>
+
+                        {{-- Footer Live Simulation --}}
+                        <div class="rounded-2xl p-5 sm:p-6 border border-slate-200 transition-all space-y-4 shadow-sm"
+                            :style="'background-color: ' + footerBgColor + '; color: ' + footerTextColor + '; border-color: ' + (footerBgColor === '#ffffff' ? '#e2e8f0' : 'rgba(255,255,255,0.15)')">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                                <div>
+                                    <p class="font-black uppercase tracking-tight text-sm mb-1" x-text="previewName || '{{ $settings['store_name'] }}'"></p>
+                                    <p class="text-[11px] leading-relaxed opacity-75">Sua loja de calçados esportivos e performance.</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold uppercase tracking-wider text-[10px] mb-1.5 opacity-90">Institucional</p>
+                                    <p class="text-[11px] opacity-75">Página Inicial • Explorar • Contato</p>
+                                </div>
+                                <div>
+                                    <p class="font-bold uppercase tracking-wider text-[10px] mb-1.5 opacity-90">Atendimento</p>
+                                    <p class="text-[11px] opacity-75">Seg à Sex: 09h às 18h • WhatsApp</p>
+                                </div>
+                            </div>
+                            <div class="pt-3 border-t flex flex-col sm:flex-row items-center justify-between text-[10px] opacity-70"
+                                :style="'border-color: ' + (footerBgColor === '#ffffff' ? '#e2e8f0' : 'rgba(255,255,255,0.1)')">
+                                <span>© {{ date('Y') }} {{ $settings['store_name'] ?? 'Denner Tênis' }}. Todos os direitos reservados.</span>
+                                <span>PIX • Cartão até 10x • Compra 100% Segura</span>
                             </div>
                         </div>
                     </div>

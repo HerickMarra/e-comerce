@@ -146,4 +146,54 @@ class SiteSettingsTest extends TestCase
             'debts' => 0.0,
         ]);
     }
+
+    public function test_settings_page_renders_menu_and_footer_color_customizers()
+    {
+        $response = $this->actingAs($this->admin)->get(route('admin.settings.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Cores do Menu (Cabeçalho Superior)');
+        $response->assertSee('Cor de Fundo do Menu');
+        $response->assertSee('Cor dos Textos e Ícones do Menu');
+        $response->assertSee('Cores do Rodapé (Footer)');
+        $response->assertSee('Cor de Fundo do Rodapé');
+        $response->assertSee('Cor dos Textos e Links do Rodapé');
+    }
+
+    public function test_admin_can_update_menu_and_footer_colors()
+    {
+        $payload = [
+            'store_name' => 'Denner Tênis',
+            'header_bg_color' => '#1e293b',
+            'header_text_color' => '#ffffff',
+            'footer_bg_color' => '#0f172a',
+            'footer_text_color' => '#cbd5e1',
+        ];
+
+        $response = $this->actingAs($this->admin)->put(route('admin.settings.update'), $payload);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertEquals('#1e293b', Setting::get('header_bg_color'));
+        $this->assertEquals('#ffffff', Setting::get('header_text_color'));
+        $this->assertEquals('#0f172a', Setting::get('footer_bg_color'));
+        $this->assertEquals('#cbd5e1', Setting::get('footer_text_color'));
+    }
+
+    public function test_storefront_applies_custom_header_and_footer_colors()
+    {
+        Setting::set('header_bg_color', '#123456');
+        Setting::set('header_text_color', '#abcdef');
+        Setting::set('footer_bg_color', '#654321');
+        Setting::set('footer_text_color', '#fedcba');
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('#123456');
+        $response->assertSee('#abcdef');
+        $response->assertSee('#654321');
+        $response->assertSee('#fedcba');
+    }
 }

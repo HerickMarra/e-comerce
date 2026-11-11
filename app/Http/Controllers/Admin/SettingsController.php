@@ -39,6 +39,10 @@ class SettingsController extends Controller
             'store_icon' => Setting::get('store_icon', 'chair'),
             'primary_color' => Setting::get('primary_color', '#10b981'),
             'secondary_color' => Setting::get('secondary_color', '#0f172a'),
+            'header_bg_color' => Setting::get('header_bg_color', '#ffffff'),
+            'header_text_color' => Setting::get('header_text_color', '#0f172a'),
+            'footer_bg_color' => Setting::get('footer_bg_color', '#ffffff'),
+            'footer_text_color' => Setting::get('footer_text_color', '#0f172a'),
 
             // Contact, Social & Customer Service
             'store_phone' => Setting::get('store_phone', ''),
@@ -159,6 +163,10 @@ class SettingsController extends Controller
         Setting::set('store_icon', $request->store_icon ?? 'chair');
         Setting::set('primary_color', $request->primary_color ?? '#10b981');
         Setting::set('secondary_color', $request->secondary_color ?? '#0f172a');
+        Setting::set('header_bg_color', $request->header_bg_color ?? '#ffffff');
+        Setting::set('header_text_color', $request->header_text_color ?? '#0f172a');
+        Setting::set('footer_bg_color', $request->footer_bg_color ?? '#ffffff');
+        Setting::set('footer_text_color', $request->footer_text_color ?? '#0f172a');
 
         // Contact, Social & Customer Service
         Setting::set('store_phone', $request->store_phone ?? '');
