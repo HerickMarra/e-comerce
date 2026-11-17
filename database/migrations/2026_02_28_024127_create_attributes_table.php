@@ -16,6 +16,13 @@ return new class extends Migration {
                 $table->timestamps();
             });
         }
+
+        if (!Schema::hasTable('attribute_values')) {
+            Schema::create('attribute_values', function (Blueprint $table) {
+                $table->id();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -23,6 +30,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::dropIfExists('attribute_values');
         Schema::dropIfExists('attributes');
     }
 };

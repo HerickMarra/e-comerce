@@ -131,7 +131,7 @@
                 <span class="font-semibold text-slate-500 dark:text-slate-400 shrink-0">Em alta:</span>
                 <div class="flex items-center gap-2 shrink-0">
                     @php
-                        $trendingTags = ['Pegasus 40', 'Ultraboost Light', 'Corre 3', 'Vaporfly 3', 'Gel-Nimbus', 'Deviate Nitro'];
+                        $trendingTags = ['Rifle M4A1', 'Pistola Glock G17', 'Vara de Carbono', 'Carretilha 11 Rolamentos', 'Barraca Indy GT', 'Colete Molle', 'BBs 0.25g'];
                     @endphp
                     @foreach($trendingTags as $tag)
                         <a href="{{ route('search', ['q' => $tag]) }}"
@@ -154,7 +154,7 @@
                         <a href="{{ route('search', ['categories' => [$category->id]]) }}" class="block">
                             <div class="relative aspect-[3/4] rounded-2xl overflow-hidden mb-4 shadow-lg">
                                 @if($category->image_path)
-                                    <img alt="Categoria de Tênis {{ $category->name }}"
+                                    <img alt="Categoria {{ $category->name }}"
                                         loading="lazy"
                                         decoding="async"
                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -204,7 +204,7 @@
                                     $mainImage = $product->images->where('is_main', true)->first() ?? $product->images->first();
                                 @endphp
                                 @if($mainImage)
-                                    <img alt="Tênis {{ $product->name }}{{ $product->brand ? ' - ' . $product->brand : '' }}"
+                                    <img alt="{{ $product->name }}{{ $product->brand ? ' - ' . $product->brand : '' }}"
                                         loading="lazy"
                                         decoding="async"
                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -228,7 +228,7 @@
                                 <h4 class="font-bold text-slate-900 dark:text-white line-clamp-1 text-base sm:text-lg">{{ $product->name }}</h4>
                             </div>
                             <div class="flex justify-between items-center px-2">
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ $product->categories->first()?->name ?? 'Tênis' }}</p>
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ $product->categories->first()?->name ?? 'Equipamento' }}</p>
                                 <p class="font-black text-primary text-base sm:text-lg">R$ {{ number_format($product->price, 2, ',', '.') }}</p>
                             </div>
                         </div>
@@ -406,7 +406,7 @@
 
                         {{-- Título Principal com Gradiente e Destaque --}}
                         <h2 class="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-white">
-                            Descubra seu próximo tênis no feed que 
+                            Descubra seu próximo equipamento no feed que 
                             <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-emerald-400 to-teal-300">
                                 nunca acaba.
                             </span>
@@ -414,7 +414,7 @@
 
                         {{-- Subtítulo --}}
                         <p class="text-slate-300 text-xs sm:text-base leading-relaxed max-w-xl font-medium">
-                            Navegue por todos os modelos da loja em ordem dinâmica e aleatória a cada visita. Uma experiência imersiva com rolagem contínua, fotos reais, cores e estoque em tempo real.
+                            Navegue por todos os modelos e equipamentos da loja em ordem dinâmica e aleatória a cada visita. Uma experiência imersiva com rolagem contínua, fotos reais, cores e estoque em tempo real.
                         </p>
 
                         {{-- Badges de Recursos Exclusivos --}}
@@ -454,7 +454,7 @@
                         <div class="pt-2 sm:pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                             <a href="{{ route('explore') }}"
                                class="group/btn relative inline-flex items-center justify-center gap-3 px-8 py-4 sm:py-4.5 rounded-2xl bg-primary hover:bg-primary/95 text-white font-black text-sm sm:text-base shadow-2xl shadow-primary/35 hover:shadow-primary/50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] overflow-hidden text-center">
-                                <span class="relative z-10">Explorar Todos os Tênis</span>
+                                <span class="relative z-10">Explorar Todo o Catálogo</span>
                                 <span class="material-symbols-outlined text-xl transition-transform duration-300 group-hover/btn:translate-x-1 relative z-10">arrow_forward</span>
                                 {{-- Shimmer effect no hover --}}
                                 <div class="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
@@ -462,12 +462,12 @@
 
                             <div class="flex items-center gap-2 text-xs text-slate-400 justify-center sm:justify-start">
                                 <span class="size-2 rounded-full bg-emerald-400"></span>
-                                <span>+{{ $totalActiveProducts ?? 40 }} tênis disponíveis no catálogo</span>
+                                <span>+{{ $totalActiveProducts ?? 24 }} produtos disponíveis no catálogo</span>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Coluna Visual: Deck 3D de Tênis em Destaque (5 colunas no desktop) --}}
+                    {{-- Coluna Visual: Deck 3D de Produtos em Destaque (5 colunas no desktop) --}}
                     <div class="lg:col-span-5 relative mt-4 lg:mt-0 flex items-center justify-center">
                         <div class="relative w-full max-w-sm sm:max-w-md h-64 sm:h-80 flex items-center justify-center select-none">
                             

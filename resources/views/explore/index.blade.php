@@ -12,7 +12,7 @@
                     Explorar
                 </h1>
                 <p class="text-xs sm:text-base text-slate-500 dark:text-slate-400 mt-1 sm:mt-2">
-                    Descubra seu próximo tênis favorito
+                    Descubra os melhores equipamentos de airsoft, pescaria e aventura
                 </p>
 
                 {{-- Barra de Ações Rápidas --}}
@@ -35,9 +35,9 @@
             @if($products->isEmpty())
                 <div class="bg-white dark:bg-slate-900 rounded-3xl p-10 sm:p-16 text-center border border-slate-100 dark:border-slate-800 max-w-md mx-auto shadow-sm">
                     <div class="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <span class="material-symbols-outlined text-3xl">steps</span>
+                        <span class="material-symbols-outlined text-3xl">inventory_2</span>
                     </div>
-                    <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Nenhum tênis disponível no momento</h2>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Nenhum produto disponível no momento</h2>
                     <p class="text-xs sm:text-sm text-slate-500 mb-6">Estamos abastecendo o catálogo com novos lançamentos. Volte em breve!</p>
                     <a href="/" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold shadow-md hover:opacity-90 transition-all">
                         <span class="material-symbols-outlined text-sm">home</span>

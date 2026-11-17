@@ -617,33 +617,33 @@
                     </h5>
                     <ul class="space-y-2.5 text-xs font-semibold" style="color: {{ $ftrText }};">
                         <li>
-                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'corrida']) }}">
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'airsoft']) }}">
                                 <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
-                                <span>Tênis de Corrida</span>
+                                <span>Armas de Airsoft</span>
                             </a>
                         </li>
                         <li>
-                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'treino']) }}">
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'pesca']) }}">
                                 <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
-                                <span>Treino & Academia</span>
+                                <span>Pescaria & Carretilhas</span>
                             </a>
                         </li>
                         <li>
-                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'casual']) }}">
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'barraca']) }}">
                                 <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
-                                <span>Casual & Streetwear</span>
+                                <span>Barracas & Camping</span>
                             </a>
                         </li>
                         <li>
-                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('explore') }}">
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'tatico']) }}">
                                 <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
-                                <span>Lançamentos 2026</span>
+                                <span>Equipamentos Táticos</span>
                             </a>
                         </li>
                         <li>
-                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search') }}">
+                            <a class="hover:text-primary transition-colors opacity-80 hover:opacity-100 flex items-center gap-1.5" href="{{ route('search', ['q' => 'sobrevivencia']) }}">
                                 <span class="material-symbols-outlined text-xs opacity-60">chevron_right</span>
-                                <span>Todos os Modelos</span>
+                                <span>Cutelaria & Sobrevivência</span>
                             </a>
                         </li>
                         <li>

@@ -32,7 +32,7 @@ class ExplorePageTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Explorar');
-        $response->assertSee('Descubra seu próximo tênis favorito');
+        $response->assertSee('Descubra os melhores equipamentos');
         $response->assertSee('grid-cols-2');
         $response->assertSee('Tênis Nike Zoom Fly 5');
         $response->assertSee('R$ 799,90');
@@ -70,7 +70,7 @@ class ExplorePageTest extends TestCase
         $response->assertSee(route('explore'));
         $response->assertSee('Explorar');
         $response->assertSee('Feed Infinito de Descoberta');
-        $response->assertSee('Explorar Todos os Tênis');
+        $response->assertSee('Explorar Todo o Catálogo');
         // Check banner button links to explore
         $this->assertStringContainsString(route('explore'), $response->getContent());
     }
@@ -176,7 +176,7 @@ class ExplorePageTest extends TestCase
         $response = $this->get('/explorar');
 
         $response->assertStatus(200);
-        $response->assertSee('Nenhum tênis disponível no momento');
+        $response->assertSee('Nenhum produto disponível no momento');
     }
 
     public function test_sitemap_includes_explore_route(): void
