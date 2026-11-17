@@ -110,13 +110,30 @@
             </div>
         </div>
 
-        {{-- Barra de Pesquisa Flutuante Moderna com Busca Instantânea e Pills em Alta --}}
+        {{-- Barra de Pesquisa Flutuante Moderna com Busca Instantânea e Sugestões --}}
         <section class="relative -mt-6 sm:-mt-9 mb-12 sm:mb-16 z-30 max-w-2xl sm:max-w-3xl mx-auto px-3 sm:px-4"
                  x-data="{
                      query: '{{ request('q') }}',
                      focused: false,
                      loading: false,
                      suggestions: { products: [], categories: [], total: 0 },
+                     placeholders: [
+                         'Buscar armas de airsoft, rifles, pistolas GBB...',
+                         'Buscar barracas de camping, colchões, lanternas...',
+                         'Buscar carretilhas, molinetes, varas de pesca...',
+                         'Buscar coletes táticos, coturnos, mochilas militares...',
+                         'Buscar por marca (Cyma, Rossi, Nautika, Shimano, Invictus...)'
+                     ],
+                     placeholderIndex: 0,
+                     currentPlaceholder: 'Buscar armas de airsoft, rifles, barracas, pesca...',
+                     initPlaceholderRotation() {
+                         setInterval(() => {
+                             if (!this.focused && !this.query) {
+                                 this.placeholderIndex = (this.placeholderIndex + 1) % this.placeholders.length;
+                                 this.currentPlaceholder = this.placeholders[this.placeholderIndex];
+                             }
+                         }, 3500);
+                     },
                      async fetchSuggestions() {
                          const q = this.query.trim();
                          if (q.length < 2) {
@@ -141,10 +158,12 @@
                          $refs.searchInput.focus();
                      }
                  }"
+                 x-init="initPlaceholderRotation()"
                  @click.away="focused = false"
                  @keydown.escape="focused = false">
             
-            <div class="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-2xl sm:rounded-full p-2 sm:p-2.5 pl-4 sm:pl-6 border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/10 hover:border-slate-300 dark:hover:border-slate-700 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+            {{-- Container da Barra com Vidro / Glassmorphism e Sombra Profunda --}}
+            <div class="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-2xl sm:rounded-full p-2 sm:p-2.5 pl-4 sm:pl-6 border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/15 hover:border-slate-300 dark:hover:border-slate-700 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20 transition-all duration-300">
                 <form action="{{ route('search') }}" method="GET" class="flex items-center gap-2.5 sm:gap-3">
                     <div class="size-8 sm:size-9 rounded-xl sm:rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
                         <span class="material-symbols-outlined text-lg sm:text-xl">search</span>
@@ -156,9 +175,14 @@
                         x-model="query"
                         @focus="focused = true; if(query.trim().length >= 2) fetchSuggestions()"
                         @input.debounce.250ms="fetchSuggestions()"
-                        placeholder="O que você procura hoje? (ex: Rifle M4, Carretilha, Barraca, Faca...)"
-                        class="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm font-medium focus:outline-none border-none ring-0 focus:ring-0 p-0"
+                        :placeholder="currentPlaceholder"
+                        class="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm font-medium focus:outline-none border-none ring-0 focus:ring-0 p-0 transition-opacity duration-300"
                         autocomplete="off" />
+
+                    {{-- Tecla ESC sutil no desktop --}}
+                    <span x-show="focused" x-cloak class="hidden sm:inline-block px-1.5 py-0.5 text-[9px] font-black uppercase text-slate-400 bg-slate-100 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 select-none">
+                        ESC
+                    </span>
 
                     {{-- Botão Limpar Texto --}}
                     <button type="button"
@@ -171,7 +195,7 @@
                     </button>
 
                     <button type="submit"
-                        class="bg-slate-950 dark:bg-primary hover:bg-primary text-white font-bold text-xs sm:text-sm px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl sm:rounded-full transition-all shadow-md hover:shadow-primary/20 flex items-center gap-1.5 shrink-0 uppercase tracking-wider select-none active:scale-[0.98]">
+                        class="bg-slate-950 dark:bg-primary hover:bg-primary text-white font-bold text-xs sm:text-sm px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl sm:rounded-full transition-all shadow-md hover:shadow-primary/30 flex items-center gap-1.5 shrink-0 uppercase tracking-wider select-none active:scale-[0.98]">
                         <span>Buscar</span>
                         <span class="material-symbols-outlined text-sm hidden sm:inline">arrow_forward</span>
                     </button>
@@ -244,19 +268,27 @@
                 </div>
             </div>
 
-            {{-- Tags em Alta / Sugestões Populares (Pills Modernas sem barra cinza) --}}
+            {{-- Tags em Alta & Acessos Rápidos (Pills Modernas sem barra cinza de rolagem) --}}
             <div class="mt-4 flex items-center justify-center flex-wrap gap-2 text-xs select-none">
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-900/5 dark:bg-white/10 text-slate-600 dark:text-slate-300 font-bold text-[11px] uppercase tracking-wider">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-900/5 dark:bg-white/10 text-slate-700 dark:text-slate-200 font-bold text-[11px] uppercase tracking-wider">
                     <span class="material-symbols-outlined text-sm text-amber-500">local_fire_department</span>
                     Em alta:
                 </span>
                 @php
-                    $trendingTags = ['Rifle M4A1', 'Pistola Glock G17', 'Vara de Carbono', 'Carretilha 11 Rolamentos', 'Barraca Indy GT', 'Colete Molle', 'BBs 0.25g'];
+                    $trendingTags = [
+                        ['label' => 'Rifle M4A1', 'q' => 'Rifle M4A1'],
+                        ['label' => 'Pistola Glock G17', 'q' => 'Glock'],
+                        ['label' => 'Barraca Indy GT', 'q' => 'Barraca'],
+                        ['label' => 'Carretilha 11 Rolamentos', 'q' => 'Carretilha'],
+                        ['label' => 'Vara de Carbono', 'q' => 'Vara'],
+                        ['label' => 'Colete Tático Molle', 'q' => 'Colete'],
+                        ['label' => 'BBs 0.25g', 'q' => '0.25g'],
+                    ];
                 @endphp
                 @foreach($trendingTags as $tag)
-                    <a href="{{ route('search', ['q' => $tag]) }}"
+                    <a href="{{ route('search', ['q' => $tag['q']]) }}"
                        class="inline-flex items-center px-3 py-1 rounded-full bg-white dark:bg-slate-900 hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-800 font-semibold text-xs transition-all shadow-2xs hover:shadow-sm hover:scale-105 active:scale-95">
-                        {{ $tag }}
+                        {{ $tag['label'] }}
                     </a>
                 @endforeach
             </div>

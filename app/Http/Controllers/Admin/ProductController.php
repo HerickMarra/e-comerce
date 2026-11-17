@@ -210,7 +210,7 @@ class ProductController extends Controller
         // Sync colors & variation inventory matrix
         $this->syncVariants($product, $sizes, $request->input('colors', []), $request->input('matrix', []), (int) $validated['stock']);
 
-        return redirect()->route('admin.products.index')->with('success', 'Tênis cadastrado com sucesso!');
+        return redirect()->route('admin.products.index')->with('success', 'Produto cadastrado com sucesso!');
     }
 
     /**
@@ -342,7 +342,7 @@ class ProductController extends Controller
         // Sync colors & variation inventory matrix
         $this->syncVariants($product, $sizes, $request->input('colors', []), $request->input('matrix', []), (int) $validated['stock']);
 
-        return redirect()->route('admin.products.index')->with('success', 'Tênis atualizado com sucesso!');
+        return redirect()->route('admin.products.index')->with('success', 'Produto atualizado com sucesso!');
     }
 
     /**
@@ -393,7 +393,7 @@ class ProductController extends Controller
         }
 
         if (empty($sizes)) {
-            $sizes = ['38', '39', '40', '41', '42', '43'];
+            $sizes = ['Único'];
         }
 
         foreach ($savedColors as $colorIndex => $colorModel) {
@@ -471,6 +471,6 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('admin.products.index')->with('success', 'Tênis removido com sucesso!');
+        return redirect()->route('admin.products.index')->with('success', 'Produto removido com sucesso!');
     }
 }

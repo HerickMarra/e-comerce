@@ -110,13 +110,13 @@ class AdminResponsiveViewsTest extends TestCase
         $resIndex = $this->actingAs($this->admin)->get(route('admin.products.index'));
         $resIndex->assertStatus(200);
         $resIndex->assertSee('Tênis Responsivo Pro');
-        $resIndex->assertSee('Cadastrar Novo Tênis');
+        $resIndex->assertSee('Cadastrar Novo Produto');
 
         // Create
         $resCreate = $this->actingAs($this->admin)->get(route('admin.products.create'));
         $resCreate->assertStatus(200);
         $resCreate->assertSee('Controle de Estoque por Variação');
-        $resCreate->assertSee('Tamanhos Disponíveis');
+        $resCreate->assertSee('Grade de Tamanhos');
 
         // Edit
         $resEdit = $this->actingAs($this->admin)->get(route('admin.products.edit', $this->product));

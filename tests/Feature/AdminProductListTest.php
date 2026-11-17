@@ -102,7 +102,7 @@ class AdminProductListTest extends TestCase
         $resIndex->assertStatus(200);
         $resIndex->assertSee('Modelos');
         $resIndex->assertSee('Ativos na Loja');
-        $resIndex->assertSee('Pares em Estoque');
+        $resIndex->assertSee('Estoque Total');
         $resIndex->assertSee('Alerta Estoque');
     }
 }

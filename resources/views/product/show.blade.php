@@ -95,7 +95,7 @@
                     if (this.hasSizes && !this.selectedSize) {
                         if (event) event.preventDefault();
                         this.errorField = 'size';
-                        this.errorMessage = 'Por favor, selecione o tamanho do tênis antes de comprar!';
+                        this.errorMessage = 'Por favor, selecione o tamanho ou variação antes de comprar!';
                         this.$nextTick(() => {
                             const el = document.getElementById('size-selector-block');
                             if (el) {
@@ -219,7 +219,7 @@
                             class="text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 pb-3 -mb-3"
                             :class="activeTab === 'desc' ? 'text-primary border-b-2 border-primary' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'">
                             <span class="material-symbols-outlined text-base">description</span>
-                            Detalhes do Tênis
+                            Detalhes do Produto
                         </button>
                         <button type="button" @click="activeTab = 'warranty'"
                             class="text-xs font-black uppercase tracking-wider transition-all flex items-center gap-2 pb-3 -mb-3"
@@ -304,7 +304,7 @@
                             @if($product->stock > 0 && $product->stock <= 5)
                                 <span class="text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                                     <span class="material-symbols-outlined text-xs">local_fire_department</span>
-                                    Últimos {{ $product->stock }} pares
+                                    Últimas {{ $product->stock }} unidades
                                 </span>
                             @endif
                         </div>
@@ -346,7 +346,7 @@
                                     <span class="material-symbols-outlined text-base" :class="errorField === 'size' ? 'text-red-500' : 'text-primary'">straighten</span>
                                     <span>Tamanho:</span>
                                     <template x-if="selectedSize">
-                                        <span class="text-primary font-black text-sm" x-text="'Nº ' + selectedSize"></span>
+                                        <span class="text-primary font-black text-sm" x-text="/^\d+$/.test(selectedSize) ? 'Nº ' + selectedSize : selectedSize"></span>
                                     </template>
                                     <template x-if="!selectedSize">
                                         <span class="font-bold text-xs" :class="errorField === 'size' ? 'text-red-600 dark:text-red-400 font-black animate-pulse' : 'text-slate-400'"
@@ -519,14 +519,14 @@
                                         <span>Tamanho <strong x-text="selectedSize"></strong><span x-show="selectedName" x-text="' • ' + selectedName"></span>: Em estoque</span>
                                     </span>
                                     <span class="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-[10px] font-black">
-                                        <span x-text="currentStock"></span> pares disponíveis
+                                        <span x-text="currentStock"></span> unidades disponíveis
                                     </span>
                                 </div>
                             </template>
                             <template x-if="isCombinationOutOfStock">
                                 <div class="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 rounded-xl text-xs font-bold text-red-700 dark:text-red-300 flex items-center gap-2 shadow-sm">
                                     <span class="material-symbols-outlined text-base text-red-500 shrink-0">block</span>
-                                    <span>Tamanho <strong x-text="selectedSize"></strong><span x-show="selectedName" x-text="' na cor ' + selectedName"></span> está <strong>Esgotado</strong> no momento.</span>
+                                    <span>Variação <strong x-text="selectedSize"></strong><span x-show="selectedName" x-text="' na cor ' + selectedName"></span> está <strong>Esgotada</strong> no momento.</span>
                                 </div>
                             </template>
                         </div>
@@ -556,7 +556,7 @@
                                 : 'bg-primary hover:opacity-95 text-white shadow-lg shadow-primary/30 active:scale-[0.99]'"
                             class="w-full font-black py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-3 text-base uppercase tracking-wider">
                             <span class="material-symbols-outlined text-2xl" x-text="(isCombinationOutOfStock || {{ $product->stock <= 0 ? 'true' : 'false' }}) ? 'block' : 'shopping_bag'"></span>
-                            <span x-text="isCombinationOutOfStock ? 'Variação Esgotada' : ({{ $product->stock <= 0 ? 'true' : 'false' }} ? 'Tênis Esgotado' : 'Comprar Agora')"></span>
+                            <span x-text="isCombinationOutOfStock ? 'Variação Esgotada' : ({{ $product->stock <= 0 ? 'true' : 'false' }} ? 'Produto Esgotado' : 'Comprar Agora')"></span>
                         </button>
                     </form>
 
@@ -710,7 +710,7 @@
                         </div>
                         <div>
                             <h3 class="text-base font-black text-slate-900 dark:text-white">Tabela de Medidas (Padrão BR)</h3>
-                            <p class="text-xs text-slate-400">Encontre o tamanho perfeito para seu tênis</p>
+                            <p class="text-xs text-slate-400">Guia de referência de medidas e conversão</p>
                         </div>
                     </div>
                     <button type="button" @click="showSizeGuide = false"
@@ -744,12 +744,12 @@
                 </div>
 
                 <div class="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-2xl text-[11px] text-slate-500 leading-relaxed">
-                    💡 <strong>Como medir seu pé:</strong> Pise descalço sobre uma folha de papel com o calcanhar apoiado na parede, risque na ponta do dedo mais longo e meça com uma régua em centímetros.
+                    💡 <strong>Como medir:</strong> Meça com uma régua ou fita métrica em centímetros para conferir as dimensões adequadas ao seu perfil.
                 </div>
 
                 <button type="button" @click="showSizeGuide = false"
                     class="w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold text-xs uppercase tracking-wider">
-                    Entendi, Voltar para o Tênis
+                    Entendi, Voltar para o Produto
                 </button>
             </div>
         </div>

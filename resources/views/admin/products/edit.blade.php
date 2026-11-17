@@ -1,7 +1,7 @@
 <x-admin-layout>
-    @section('page_title', 'Editar Tênis: ' . $product->name)
+    @section('page_title', 'Editar Produto: ' . $product->name)
 
-    <div class="max-w-6xl mx-auto space-y-8" x-data="sneakerEditForm()">
+    <div class="max-w-6xl mx-auto space-y-8" x-data="productEditForm()">
         <!-- Header -->
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -11,11 +11,11 @@
                 </a>
                 <div>
                     <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider mb-1">
-                        <span class="material-symbols-outlined text-xs">steps</span>
-                        Gerenciar Tênis #{{ $product->id }}
+                        <span class="material-symbols-outlined text-xs">inventory_2</span>
+                        Gerenciar Produto #{{ $product->id }}
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Editar Tênis</h1>
-                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Atualize a numeração, cores, fotos e especificações do modelo.</p>
+                    <h1 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Editar Produto</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Atualize variações, estoque, fotos, ficha técnica e dimensões.</p>
                 </div>
             </div>
 
@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <form id="sneakerFormTag" x-ref="sneakerFormRef" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-8" @submit.prevent="validateAndSubmit($event)">
+        <form id="productFormTag" x-ref="productFormRef" action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-8" @submit.prevent="validateAndSubmit($event)">
             @csrf
             @method('PUT')
 
@@ -36,23 +36,23 @@
                 <!-- Coluna Principal (2/3) -->
                 <div class="lg:col-span-2 space-y-8">
 
-                    <!-- CARD 1: Dados Principais do Tênis -->
+                    <!-- CARD 1: Dados Principais do Produto -->
                     <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                             <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                                <span class="material-symbols-outlined">steps</span>
+                                <span class="material-symbols-outlined">inventory_2</span>
                             </div>
-                            Informações do Tênis
+                            Informações Principais do Produto
                         </h2>
 
                         <div class="space-y-5">
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
-                                    Nome do Modelo <span class="text-red-500">*</span>
+                                    Nome do Produto <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="name" value="{{ old('name', $product->name) }}" required
                                     class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-bold py-3.5 px-5 border-2 text-base text-slate-900 dark:text-white"
-                                    placeholder="Ex: Tênis Nike Air Force 1 '07 LV8">
+                                    placeholder="Ex: Rifle Airsoft M4A1, Barraca Indy 4P, Camiseta RipStop, Carretilha 11 Rolamentos...">
                                 @error('name') <p class="mt-1.5 text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
                             </div>
 
@@ -64,38 +64,42 @@
                                     <div class="relative">
                                         <input type="text" name="brand" x-model="brand" list="brands-list"
                                             class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-semibold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white"
-                                            placeholder="Ex: Nike, Adidas, Olympikus...">
+                                            placeholder="Ex: Cyma, Rossi, Nautika, Shimano, Invictus, Nike...">
                                         <datalist id="brands-list">
+                                            <option value="Cyma">
+                                            <option value="Rossi">
+                                            <option value="Nautika">
+                                            <option value="Shimano">
+                                            <option value="Invictus">
+                                            <option value="Coleman">
+                                            <option value="Guepardo">
+                                            <option value="Marine Sports">
+                                            <option value="Daiwa">
+                                            <option value="Taurus">
                                             <option value="Nike">
                                             <option value="Adidas">
-                                            <option value="Olympikus">
-                                            <option value="Puma">
                                             <option value="Asics">
-                                            <option value="Mizuno">
-                                            <option value="New Balance">
-                                            <option value="Vans">
-                                            <option value="Converse">
-                                            <option value="Fila">
+                                            <option value="Olympikus">
                                         </datalist>
                                     </div>
                                 </div>
 
                                 <div>
                                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
-                                        Linha / Coleção
+                                        Linha / Coleção / Categoria
                                     </label>
                                     <input type="text" name="model_line" value="{{ old('model_line', $product->model_line) }}"
                                         class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-semibold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white"
-                                        placeholder="Ex: Running / Casual / Streetwear">
+                                        placeholder="Ex: Tático / Aventura / Alta Performance">
                                 </div>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
-                                    Gênero do Calçado
+                                    Gênero / Público-Alvo
                                 </label>
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                    @foreach(['Masculino', 'Feminino', 'Unissex', 'Infantil'] as $genderOption)
+                                    @foreach(['Unissex', 'Masculino', 'Feminino', 'Infantil'] as $genderOption)
                                         <label class="flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all text-xs font-bold"
                                             :class="gender === '{{ $genderOption }}' ? 'border-primary bg-primary/10 text-primary' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300'">
                                             <input type="radio" name="gender" value="{{ $genderOption }}" class="hidden" x-model="gender">
@@ -107,75 +111,101 @@
 
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
-                                    Descrição e Detalhes do Calçado
+                                    Descrição e Detalhes do Produto
                                 </label>
                                 <textarea name="description" rows="5"
                                     class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-medium p-4 border-2 text-sm text-slate-900 dark:text-white"
-                                    placeholder="Descreva o conforto, tipo de pisada, tecnologias de amortecimento e estilo do tênis...">{{ old('description', $product->description) }}</textarea>
+                                    placeholder="Descreva as características técnicas, materiais, diferenciais e recomendações de uso...">{{ old('description', $product->description) }}</textarea>
                             </div>
                         </div>
                     </div>
 
-                    <!-- CARD 2: Tamanhos Disponíveis (BR) -->
+                    <!-- CARD 2: Grade de Variações e Tamanhos (Universal) -->
                     <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                             <div>
                                 <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center">
-                                        <span class="material-symbols-outlined">straighten</span>
+                                        <span class="material-symbols-outlined">dashboard_customize</span>
                                     </div>
-                                    Tamanhos Disponíveis (Padrão BR)
+                                    Grade de Tamanhos & Variações
                                 </h2>
-                                <p class="text-xs text-slate-400 mt-1">Selecione as numerações que você tem em estoque para este tênis.</p>
+                                <p class="text-xs text-slate-400 mt-1">Defina as opções disponíveis (tamanhos de roupa, calçados, calibres, gramaturas ou tamanho único).</p>
                             </div>
                             <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-xs font-black text-slate-700 dark:text-slate-300 w-fit">
-                                <span x-text="selectedSizes.length"></span> tamanhos ativos
+                                <span x-text="selectedSizes.length"></span> variações ativas
                             </span>
                         </div>
 
-                        {{-- Botões de Seleção Rápida --}}
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mr-1">Predefinições:</span>
-                            <button type="button" @click="setSizes(['38','39','40','41','42','43'])"
-                                class="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold transition-colors">
-                                🔥 Mais Vendidos (38 ao 43)
-                            </button>
-                            <button type="button" @click="setSizes(['36','37','38','39','40','41','42','43','44'])"
-                                class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors">
-                                👟 Adulto Padrão (36 ao 44)
-                            </button>
-                            <button type="button" @click="selectAllSizes()"
-                                class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors">
-                                Todos
-                            </button>
-                            <button type="button" @click="selectedSizes = []"
-                                class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold transition-colors">
-                                Limpar
-                            </button>
-                        </div>
-
-                        {{-- Grade de Numerações Interativa --}}
-                        <div class="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-6 md:grid-cols-7 gap-2">
-                            <template x-for="size in allSizes" :key="size">
-                                <button type="button" @click="toggleSize(size)"
-                                    :class="selectedSizes.includes(size) 
-                                        ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-md ring-2 ring-primary/40' 
-                                        : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400'"
-                                    class="py-2.5 sm:py-3 px-1.5 sm:px-2 rounded-xl text-center font-black text-xs sm:text-sm border-2 transition-all hover:scale-105 active:scale-95 flex flex-col items-center justify-center">
-                                    <span x-text="size"></span>
-                                    <span class="text-[9px] uppercase font-bold tracking-tight opacity-60">BR</span>
+                        {{-- Botões de Predefinições Rápidas por Nicho --}}
+                        <div class="space-y-2">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Predefinições Rápidas:</span>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" @click="setSizes(['PP','P','M','G','GG','XG','XXG'])"
+                                    class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all flex items-center gap-1.5">
+                                    <span>👕</span> Roupas (PP ao XXG)
                                 </button>
-                            </template>
+                                <button type="button" @click="setSizes(['36','37','38','39','40','41','42','43','44'])"
+                                    class="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 text-xs font-bold transition-all flex items-center gap-1.5">
+                                    <span>👟</span> Calçados (36 ao 44)
+                                </button>
+                                <button type="button" @click="setSizes(['Único'])"
+                                    class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 text-xs font-bold transition-all flex items-center gap-1.5">
+                                    <span>📦</span> Tamanho Único
+                                </button>
+                                <button type="button" @click="setSizes(['0.20g','0.25g','0.28g','6mm'])"
+                                    class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all flex items-center gap-1.5">
+                                    <span>🎯</span> Airsoft (Gramaturas)
+                                </button>
+                                <button type="button" @click="setSizes(['Manivela Direita','Manivela Esquerda'])"
+                                    class="px-3 py-1.5 rounded-xl bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-200 text-xs font-bold transition-all flex items-center gap-1.5">
+                                    <span>🎣</span> Pesca (Manivelas)
+                                </button>
+                                <button type="button" @click="selectedSizes = []"
+                                    class="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-400 text-xs font-bold transition-all">
+                                    Limpar
+                                </button>
+                            </div>
                         </div>
 
-                        {{-- Adicionar Numeração Customizada --}}
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2">
+                        {{-- Lista Visual de Variações Ativas Selecionadas --}}
+                        <div x-show="selectedSizes.length > 0" class="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-2">
+                            <span class="text-[11px] font-bold text-slate-500 block uppercase tracking-wider">Variações selecionadas para a matriz de estoque:</span>
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="size in selectedSizes" :key="'badge_' + size">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-bold text-xs shadow-sm">
+                                        <span x-text="size"></span>
+                                        <button type="button" @click="toggleSize(size)" class="hover:text-red-400 text-sm font-black leading-none ml-1" title="Remover variação">×</button>
+                                    </span>
+                                </template>
+                            </div>
+                        </div>
+
+                        {{-- Grade de Variações Comuns Clicáveis --}}
+                        <div>
+                            <span class="text-[11px] font-bold text-slate-400 block uppercase tracking-wider mb-2">Clique para ativar ou desativar opções comuns:</span>
+                            <div class="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                                <template x-for="size in allSizes" :key="size">
+                                    <button type="button" @click="toggleSize(size)"
+                                        :class="selectedSizes.includes(size) 
+                                            ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-md ring-2 ring-primary/40' 
+                                            : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400'"
+                                        class="py-2 px-1 rounded-xl text-center font-bold text-xs border transition-all hover:scale-105 active:scale-95 flex items-center justify-center">
+                                        <span x-text="size"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+
+                        {{-- Adicionar Variação / Tamanho Personalizado --}}
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                             <input type="text" x-model="customSizeInput" @keydown.enter.prevent="addCustomSize()"
-                                placeholder="Outro tamanho (ex: 33, 47, 39.5)"
-                                class="w-full sm:w-64 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2 text-xs font-bold focus:ring-primary focus:border-primary border text-slate-900 dark:text-white">
+                                placeholder="Digite outro tamanho ou especificação (ex: XG, 3000mm, 6mm, 4 Pessoas...)"
+                                class="w-full sm:flex-1 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-bold focus:ring-primary focus:border-primary border text-slate-900 dark:text-white">
                             <button type="button" @click="addCustomSize()"
-                                class="w-full sm:w-auto px-4 py-2 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors">
-                                + Adicionar Tamanho
+                                class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors flex items-center justify-center gap-1.5">
+                                <span class="material-symbols-outlined text-base">add</span>
+                                <span>Adicionar Opção</span>
                             </button>
                         </div>
 
@@ -185,7 +215,7 @@
                         </template>
                     </div>
 
-                    <!-- CARD 3: Cores & Colorways do Tênis -->
+                    <!-- CARD 3: Cores & Colorways do Produto -->
                     <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
                         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                             <div>
@@ -193,9 +223,9 @@
                                     <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center">
                                         <span class="material-symbols-outlined">palette</span>
                                     </div>
-                                    Cores & Colorways
+                                    Cores & Padrões Visuais
                                 </h2>
-                                <p class="text-xs text-slate-400 mt-1">Cadastre as cores disponíveis deste calçado.</p>
+                                <p class="text-xs text-slate-400 mt-1">Cadastre as opções de cores ou camuflagens disponíveis deste produto.</p>
                             </div>
                             <button type="button" @click="addColor()"
                                 class="text-xs font-bold text-purple-600 hover:text-purple-700 bg-purple-50 dark:bg-purple-900/30 px-3 py-2 rounded-xl flex items-center gap-1 transition-colors">
@@ -204,37 +234,41 @@
                             </button>
                         </div>
 
-                        {{-- Presets de cores populares para tênis --}}
+                        {{-- Presets de cores populares --}}
                         <div>
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Cores Populares de Tênis:</span>
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">Cores & Padrões Populares:</span>
                             <div class="flex flex-wrap gap-2">
-                                <button type="button" @click="addPresetColor('#000000', 'All Black (Preto)')"
+                                <button type="button" @click="addPresetColor('#000000', 'Preto (Black)')"
                                     class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-black text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
-                                    <span class="size-2 rounded-full bg-white"></span> All Black
+                                    <span class="size-2 rounded-full bg-white"></span> Preto
                                 </button>
-                                <button type="button" @click="addPresetColor('#FFFFFF', 'Triple White (Branco)')"
+                                <button type="button" @click="addPresetColor('#C2A676', 'Tan / Coyote')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-[#C2A676] text-slate-900 text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> Tan / Coyote
+                                </button>
+                                <button type="button" @click="addPresetColor('#556B2F', 'Verde Oliva / Militar')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-[#556B2F] text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> Verde Oliva
+                                </button>
+                                <button type="button" @click="addPresetColor('#6B705C', 'Camuflado Multicam')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-[#6B705C] text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> Multicam
+                                </button>
+                                <button type="button" @click="addPresetColor('#FFFFFF', 'Branco (White)')"
                                     class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white text-slate-900 text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
-                                    <span class="size-2 rounded-full bg-slate-300"></span> Triple White
+                                    <span class="size-2 rounded-full bg-slate-300"></span> Branco
                                 </button>
-                                <button type="button" @click="addPresetColor('#1a1a1a', 'Panda (Preto e Branco)')"
-                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-900 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
-                                    <span class="size-2 rounded-full bg-white"></span> Panda (P&B)
-                                </button>
-                                <button type="button" @click="addPresetColor('#808080', 'Cinza / Prata')"
+                                <button type="button" @click="addPresetColor('#808080', 'Cinza / Chumbo')"
                                     class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-500 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
                                     <span class="size-2 rounded-full bg-white"></span> Cinza
                                 </button>
-                                <button type="button" @click="addPresetColor('#1E40AF', 'Azul Royal')"
-                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-blue-700 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
-                                    <span class="size-2 rounded-full bg-white"></span> Azul Royal
+                                <button type="button" @click="addPresetColor('#1E3A8A', 'Azul Marinho')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-blue-900 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> Azul Marinho
                                 </button>
-                                <button type="button" @click="addPresetColor('#DC2626', 'Vermelho')"
-                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-red-600 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
-                                    <span class="size-2 rounded-full bg-white"></span> Vermelho
-                                </button>
-                                <button type="button" @click="addPresetColor('#F5F5DC', 'Off-White / Gelo')"
-                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-amber-50 text-amber-900 text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
-                                    <span class="size-2 rounded-full bg-amber-200"></span> Off-White
+                                <button type="button" @click="addPresetColor('#EA580C', 'Laranja Resgate')"
+                                    class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-orange-600 text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5">
+                                    <span class="size-2 rounded-full bg-white"></span> Laranja
                                 </button>
                             </div>
                         </div>
@@ -389,7 +423,7 @@
                         </div>
                     </div>
 
-                    <!-- CARD 4: Galeria de Fotos do Tênis -->
+                    <!-- CARD 4: Galeria de Fotos do Produto -->
                     <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
                         <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                             <div>
@@ -397,7 +431,7 @@
                                     <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 flex items-center justify-center">
                                         <span class="material-symbols-outlined">photo_library</span>
                                     </div>
-                                    Fotos do Tênis
+                                    Fotos do Produto
                                 </h2>
                                 <p class="text-xs text-slate-400 mt-1">A primeira foto é a capa principal do anúncio. Arraste para reordenar.</p>
                             </div>
@@ -406,10 +440,10 @@
                             </span>
                         </div>
 
-                        {{-- Dica para lojas de calçados --}}
+                        {{-- Dica de fotografia universal --}}
                         <div class="p-3.5 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800/40 text-xs text-blue-800 dark:text-blue-300 flex items-start gap-2.5">
                             <span class="material-symbols-outlined text-base shrink-0 mt-0.5 text-blue-600">lightbulb</span>
-                            <p><strong>Dica de fotografia para tênis:</strong> Posições ideais: 1ª Lateral Externa (Capa), 2ª Lateral Interna, 3ª Vista Superior (Bico), 4ª Traseira e 5ª Solado.</p>
+                            <p><strong>Dica de imagem:</strong> Utilize fotos com fundo limpo e boa iluminação mostrando ângulos reais e detalhes do acabamento. A 1ª foto é a capa principal na vitrine.</p>
                         </div>
 
                         {{-- Upload Box --}}
@@ -420,8 +454,8 @@
                             <input type="file" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 @change="handleFileUpload($event)">
                             <span class="material-symbols-outlined text-4xl text-slate-400 mb-2 block">add_photo_alternate</span>
-                            <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Clique ou arraste novas fotos do tênis aqui</p>
-                            <p class="text-xs text-slate-400 mt-1">Suporta JPG, PNG, WEBP de alta qualidade</p>
+                            <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Clique ou arraste novas fotos do produto aqui</p>
+                            <p class="text-xs text-slate-400 mt-1">Suporta JPG, PNG, WEBP em alta definição</p>
                         </div>
 
                         {{-- Ou adicionar URL externa --}}
@@ -465,42 +499,42 @@
                         <div x-ref="fileInputs" class="hidden"></div>
                     </div>
 
-                    <!-- CARD 5: Ficha Técnica do Tênis -->
+                    <!-- CARD 5: Ficha Técnica & Especificações -->
                     <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                             <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
                                 <span class="material-symbols-outlined">tune</span>
                             </div>
-                            Ficha Técnica do Calçado
+                            Ficha Técnica & Especificações
                         </h2>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
-                                    Material do Cabedal
+                                    Material Principal / Composição
                                 </label>
                                 <input type="text" name="material" value="{{ old('material', $product->material) }}"
                                     class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-semibold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white"
-                                    placeholder="Ex: Mesh respirável / Couro Sintético">
+                                    placeholder="Ex: RipStop, Aço/Polímero, Alumínio CNC, Poliéster 190T...">
                             </div>
 
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
-                                    Solado & Amortecimento
+                                    Especificação Secundária / Mecanismo / Solado
                                 </label>
                                 <input type="text" name="sole_material" value="{{ old('sole_material', $product->sole_material) }}"
                                     class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-semibold py-3 px-4 border-2 text-sm text-slate-900 dark:text-white"
-                                    placeholder="Ex: Borracha antiderrapante com EVA">
+                                    placeholder="Ex: Gearbox V2, Drag 8kg, Coluna d'água 3000mm, EVA...">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-2">
-                                Outras Especificações (Pisada, Drop, Origem)
+                                Outras Especificações (FPS, Dimensões, Calibre, etc.)
                             </label>
                             <textarea name="technical_specifications" rows="3"
                                 class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-primary focus:border-primary transition-all font-medium p-4 border-2 text-sm text-slate-900 dark:text-white"
-                                placeholder="Indicação: Corrida e Treino&#10;Tipo de Pisada: Neutra&#10;Garantia do Fabricante: Contra defeito de fabricação">{{ old('technical_specifications', $product->technical_specifications) }}</textarea>
+                                placeholder="Velocidade/FPS: 380 FPS&#10;Capacidade / Lotação: 4 pessoas&#10;Garantia: 90 dias&#10;Origem: Importado / Nacional">{{ old('technical_specifications', $product->technical_specifications) }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -549,7 +583,7 @@
 
                             <div>
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1.5 flex items-center justify-between">
-                                    <span>Estoque Total (Pares) <span class="text-red-500">*</span></span>
+                                    <span>Estoque Total (Unidades) <span class="text-red-500">*</span></span>
                                     <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-0.5">
                                         <span class="material-symbols-outlined text-[11px]">sync</span> matriz ativa
                                     </span>
@@ -564,7 +598,7 @@
                                     <input type="checkbox" name="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }}
                                         class="rounded border-slate-300 text-primary focus:ring-primary size-5">
                                     <div>
-                                        <span class="text-xs font-bold text-slate-900 dark:text-white block">Tênis Ativo na Loja</span>
+                                        <span class="text-xs font-bold text-slate-900 dark:text-white block">Produto Ativo na Loja</span>
                                         <span class="text-[10px] text-slate-400">Visível no catálogo e buscas</span>
                                     </div>
                                 </label>
@@ -572,11 +606,11 @@
                         </div>
                     </div>
 
-                    <!-- CARD Categorias / Marcas -->
+                    <!-- CARD Categorias / Departamentos -->
                     <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
                         <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                             <span class="material-symbols-outlined text-blue-600">category</span>
-                            Categorias / Marcas <span class="text-red-500">*</span>
+                            Categorias / Departamentos <span class="text-red-500">*</span>
                         </h2>
 
                         <div class="space-y-2 max-h-56 overflow-y-auto custom-scrollbar pr-1">
@@ -595,22 +629,37 @@
                         @error('categories') <p class="text-xs text-red-500 font-bold">{{ $message }}</p> @enderror
                     </div>
 
-                    <!-- CARD Caixa de Envio / Frete (Melhor Envio) -->
+                    <!-- CARD Embalagem / Frete (Melhor Envio) -->
                     <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
-                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                        <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
                             <h2 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <span class="material-symbols-outlined text-amber-600">local_shipping</span>
-                                Dimensões da Caixa
+                                Dimensões do Pacote / Frete
                             </h2>
-                            <button type="button" @click="resetShoeBoxDimensions()"
-                                class="text-[10px] font-bold text-amber-700 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-md"
-                                title="Redefinir para medidas padrão de caixa de tênis">
-                                Padrão
+                            <p class="text-[11px] text-slate-400 mt-1">Medidas reais para cálculo de frete no Melhor Envio:</p>
+                        </div>
+
+                        {{-- Predefinições Rápidas de Frete --}}
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" @click="setPackageDimensions(0.3, 5, 20, 25)"
+                                class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 transition-colors">
+                                👕 Roupa (300g)
+                            </button>
+                            <button type="button" @click="setPackageDimensions(0.8, 12, 22, 34)"
+                                class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 transition-colors">
+                                👟 Calçado (800g)
+                            </button>
+                            <button type="button" @click="setPackageDimensions(1.5, 15, 25, 35)"
+                                class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 transition-colors">
+                                📦 Médio (1.5kg)
+                            </button>
+                            <button type="button" @click="setPackageDimensions(4.0, 20, 25, 75)"
+                                class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 transition-colors">
+                                ⛺ Grande/Barraca (4kg)
                             </button>
                         </div>
-                        <p class="text-[11px] text-slate-400">Medidas para cálculo no Melhor Envio / Correios:</p>
 
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-2 gap-3 pt-1">
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 mb-1">Peso (kg)</label>
                                 <input type="number" step="0.001" name="weight" x-model="boxWeight"
@@ -639,7 +688,7 @@
                         <button type="submit"
                             class="w-full py-4 bg-primary hover:opacity-95 text-white font-black text-base rounded-2xl transition-all shadow-xl shadow-primary/25 flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined">save</span>
-                            Atualizar Tênis
+                            Atualizar Produto
                         </button>
                         <a href="{{ route('admin.products.index') }}"
                             class="w-full py-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 font-bold rounded-2xl transition-all text-center text-xs">
@@ -654,23 +703,27 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
         <script>
-            function sneakerEditForm() {
+            function productEditForm() {
                 return {
                     brand: '{{ old('brand', $product->brand) }}',
                     gender: '{{ old('gender', $product->gender ?? 'Unissex') }}',
                     price: {{ old('price', $product->price) }},
                     comparePrice: {{ old('compare_price', $product->compare_price ?? 0) }},
                     
-                    // Shoe sizes (BR standard)
-                    allSizes: ['34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'],
-                    selectedSizes: {!! json_encode(old('sizes', $product->sizes ?? ['38', '39', '40', '41', '42', '43'])) !!},
+                    // Universal variation presets & active sizes
+                    allSizes: (function() {
+                        const defaultCommon = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'XXG', 'Único', '36', '37', '38', '39', '40', '41', '42', '43', '44', '0.20g', '0.25g', '0.28g', '6mm', 'Manivela Direita', 'Manivela Esquerda'];
+                        const current = {!! json_encode(old('sizes', $product->sizes ?? ['Único'])) !!};
+                        return Array.from(new Set([...current, ...defaultCommon]));
+                    })(),
+                    selectedSizes: {!! json_encode(old('sizes', $product->sizes ?? ['Único'])) !!},
                     customSizeInput: '',
 
-                    // Box dimensions (standard sneaker box)
-                    boxWeight: {{ old('weight', $product->weight ?: 0.8) }},
+                    // Box dimensions for Melhor Envio
+                    boxWeight: {{ old('weight', $product->weight ?: 0.5) }},
                     boxHeight: {{ old('height', $product->height ?: 12) }},
-                    boxWidth: {{ old('width', $product->width ?: 22) }},
-                    boxLength: {{ old('length', $product->length ?: 34) }},
+                    boxWidth: {{ old('width', $product->width ?: 20) }},
+                    boxLength: {{ old('length', $product->length ?: 30) }},
 
                     // Colors
                     colors: {!! json_encode(
@@ -714,7 +767,7 @@
                         if (index > -1) {
                             const sizeStock = this.getSizeTotalStock(size);
                             if (sizeStock > 0) {
-                                if (!confirm(`A numeração "${size}" possui ${sizeStock} pares cadastrados em estoque. Deseja realmente desativar este tamanho?`)) {
+                                if (!confirm(`A opção "${size}" possui ${sizeStock} unidades cadastradas em estoque. Deseja realmente desativar esta variação?`)) {
                                     return;
                                 }
                             }
@@ -748,7 +801,12 @@
                             this.selectedSizes.push(val);
                             if (!this.allSizes.includes(val)) {
                                 this.allSizes.push(val);
-                                this.allSizes.sort((a, b) => parseFloat(a) - parseFloat(b));
+                                this.allSizes.sort((a, b) => {
+                                    const numA = parseFloat(a);
+                                    const numB = parseFloat(b);
+                                    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+                                    return a.localeCompare(b);
+                                });
                             }
                             this.sortSizes();
                             this.customSizeInput = '';
@@ -756,14 +814,18 @@
                     },
 
                     resetShoeBoxDimensions() {
-                        this.boxWeight = 0.8;
-                        this.boxHeight = 12;
-                        this.boxWidth = 22;
-                        this.boxLength = 34;
+                        this.setPackageDimensions(0.8, 12, 22, 34);
+                    },
+
+                    setPackageDimensions(w, h, wi, l) {
+                        this.boxWeight = w;
+                        this.boxHeight = h;
+                        this.boxWidth = wi;
+                        this.boxLength = l;
                     },
 
                     addColor() {
-                        this.colors.push({ hex: '#FFFFFF', name: '' });
+                        this.colors.push({ hex: '#000000', name: '' });
                     },
 
                     addPresetColor(hex, name) {
@@ -774,7 +836,7 @@
                         const colorStock = this.getColorTotalStock(index);
                         const colorName = this.colors[index]?.name || this.colors[index]?.hex || `Cor ${index + 1}`;
                         if (colorStock > 0) {
-                            if (!confirm(`A cor "${colorName}" possui ${colorStock} pares cadastrados em estoque na matriz. Deseja realmente remover esta cor?`)) {
+                            if (!confirm(`A cor "${colorName}" possui ${colorStock} unidades cadastradas em estoque na matriz. Deseja realmente remover esta cor?`)) {
                                 return;
                             }
                         }
@@ -955,7 +1017,7 @@
                     validateAndSubmit(event) {
                         const form = (event && event.target && event.target.tagName === 'FORM')
                             ? event.target
-                            : (this.$refs.sneakerFormRef || this.$el.querySelector('form') || document.getElementById('sneakerFormTag'));
+                            : (this.$refs.productFormRef || this.$refs.sneakerFormRef || this.$el.querySelector('form') || document.getElementById('productFormTag') || document.getElementById('sneakerFormTag'));
 
                         if (!form) return;
 
@@ -963,11 +1025,11 @@
 
                         let errors = [];
 
-                        if (!formData.get('name')) errors.push("O nome do tênis é obrigatório.");
+                        if (!formData.get('name')) errors.push("O nome do produto é obrigatório.");
                         if (!formData.get('price')) errors.push("O preço de venda é obrigatório.");
-                        if (formData.getAll('categories[]').length === 0) errors.push("Selecione pelo menos uma categoria ou marca.");
-                        if (this.selectedSizes.length === 0) errors.push("Selecione pelo menos uma numeração/tamanho para o tênis.");
-                        if (this.images.length === 0) errors.push("O tênis precisa ter pelo menos uma imagem.");
+                        if (formData.getAll('categories[]').length === 0) errors.push("Selecione pelo menos uma categoria ou departamento.");
+                        if (this.selectedSizes.length === 0) errors.push("Selecione ou adicione pelo menos uma variação ou tamanho (ou 'Único').");
+                        if (this.images.length === 0) errors.push("O produto precisa ter pelo menos uma imagem.");
 
                         if (errors.length > 0) {
                             alert("Por favor, preencha os campos obrigatórios:\n\n- " + errors.join("\n- "));
@@ -978,6 +1040,7 @@
                     }
                 };
             }
+            window.sneakerEditForm = productEditForm;
         </script>
     @endpush
 </x-admin-layout>
