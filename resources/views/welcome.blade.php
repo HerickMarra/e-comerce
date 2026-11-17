@@ -53,13 +53,18 @@
             
             <!-- Placeholder / Image Banner: Permanece 100% visível cobrindo o player até o vídeo começar a rodar de verdade -->
             @if(!empty($heroSettings['image_fallback']))
-                <img alt="{{ $heroSettings['title'] ?? ($appSettings['store_name'] ?? 'Banner Promocional') }}"
-                    fetchpriority="high"
-                    loading="eager"
-                    decoding="async"
-                    class="absolute inset-0 w-full h-full object-cover z-[5] transition-opacity duration-700 ease-out"
-                    :class="(videoPlaying && '{{ !empty($heroSettings['video_url']) ? '1' : '' }}') ? 'opacity-0 pointer-events-none' : 'opacity-100'"
-                    src="{{ $heroSettings['image_fallback'] }}" />
+                <picture class="absolute inset-0 w-full h-full z-[5] pointer-events-none">
+                    @if(!empty($heroSettings['mobile_image_fallback']))
+                        <source media="(max-width: 640px)" srcset="{{ $heroSettings['mobile_image_fallback'] }}">
+                    @endif
+                    <img alt="{{ $heroSettings['title'] ?? ($appSettings['store_name'] ?? 'Banner Promocional') }}"
+                        fetchpriority="high"
+                        loading="eager"
+                        decoding="async"
+                        class="w-full h-full object-cover transition-opacity duration-700 ease-out"
+                        :class="(videoPlaying && '{{ !empty($heroSettings['video_url']) ? '1' : '' }}') ? 'opacity-0' : 'opacity-100'"
+                        src="{{ $heroSettings['image_fallback'] }}" />
+                </picture>
             @endif
 
             <!-- Video Background -->

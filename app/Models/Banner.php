@@ -13,6 +13,8 @@ class Banner extends Model
         'video_file',
         'image_url',
         'image_file',
+        'mobile_image_url',
+        'mobile_image_file',
         'btn_text',
         'btn_link',
         'is_active',
@@ -63,6 +65,24 @@ class Banner extends Model
         }
 
         return $this->image_url ?: '';
+    }
+
+    public function getEffectiveMobileImageUrlAttribute(): ?string
+    {
+        if (!empty($this->mobile_image_file)) {
+            return asset('storage/' . $this->mobile_image_file);
+        }
+
+        if (!empty($this->mobile_image_url)) {
+            return $this->mobile_image_url;
+        }
+
+        return null;
+    }
+
+    public function hasMobileImage(): bool
+    {
+        return !empty($this->mobile_image_file) || !empty($this->mobile_image_url);
     }
 
     public static function extractYoutubeId(?string $url): ?string

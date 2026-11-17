@@ -86,10 +86,18 @@
                                     Vídeo
                                 </span>
                             @else
-                                <span class="px-3 py-1 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-xs font-bold inline-flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">image</span>
-                                    Imagem
-                                </span>
+                                <div class="flex flex-col gap-1">
+                                    <span class="px-3 py-1 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-xs font-bold inline-flex items-center gap-1 w-fit">
+                                        <span class="material-symbols-outlined text-sm">image</span>
+                                        Imagem
+                                    </span>
+                                    @if($banner->hasMobileImage())
+                                        <span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 rounded text-[10px] font-bold inline-flex items-center gap-0.5 w-fit" title="Possui imagem específica para celulares">
+                                            <span class="material-symbols-outlined text-[11px]">smartphone</span>
+                                            + Mobile
+                                        </span>
+                                    @endif
+                                </div>
                             @endif
                         </td>
                         <td class="px-6 py-4 max-w-xs">

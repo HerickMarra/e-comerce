@@ -68,6 +68,7 @@ class HomeController extends Controller
             'image_fallback' => $randomBanner && $randomBanner->effective_image_url 
                 ? $randomBanner->effective_image_url 
                 : \App\Models\Setting::get('home_hero_image_fallback', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=2070'),
+            'mobile_image_fallback' => $randomBanner ? $randomBanner->effective_mobile_image_url : null,
             'banner_id' => $randomBanner?->id,
         ];
 

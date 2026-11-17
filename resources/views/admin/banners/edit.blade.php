@@ -144,34 +144,106 @@
                     </div>
                 </div>
 
-                {{-- Imagem de Fundo / Poster --}}
+                {{-- Imagem de Fundo / Banner Desktop e Mobile --}}
                 <div class="space-y-6 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                    <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">image</span>
-                        <span x-text="mediaType === 'video' ? 'Imagem de Capa (Placeholder enquanto o vídeo carrega)' : 'Imagem do Banner'"></span>
-                    </h3>
-
                     <div>
-                        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 block">
-                            Subir Nova Imagem
-                        </label>
-                        <input type="file" name="image_file" accept="image/*"
-                            class="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:opacity-90 cursor-pointer">
-                        @if($banner->image_file)
-                            <label class="inline-flex items-center gap-2 mt-2 text-xs text-red-500 cursor-pointer">
-                                <input type="checkbox" name="remove_image_file" value="1" class="rounded text-red-500">
-                                Remover imagem enviada ({{ basename($banner->image_file) }})
-                            </label>
-                        @endif
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">image</span>
+                            <span x-text="mediaType === 'video' ? 'Imagem de Capa (Placeholder do Vídeo)' : 'Imagens do Banner (Desktop & Mobile)'"></span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1">Configure imagens separadas para telas de computadores e smartphones se desejar enquadramento perfeito.</p>
                     </div>
 
-                    <div>
-                        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5 block">
-                            Ou URL Externa da Imagem
-                        </label>
-                        <input type="text" name="image_url" value="{{ old('image_url', $banner->image_url) }}"
-                            class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-primary focus:border-primary transition-all font-mono"
-                            placeholder="https://images.unsplash.com/...">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+                        {{-- 1. Desktop Image --}}
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-base text-slate-500">desktop_windows</span>
+                                    Imagem Desktop (Principal)
+                                </span>
+                                <span class="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500">1920x1080 (16:9)</span>
+                            </div>
+
+                            @if($banner->effective_image_url)
+                                <div class="relative w-full h-32 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
+                                    <img src="{{ $banner->effective_image_url }}" alt="Preview Desktop" class="w-full h-full object-cover">
+                                    <span class="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded bg-black/70 text-white text-[10px] font-bold">
+                                        {{ $banner->image_file ? 'Arquivo Local' : 'URL Externa' }}
+                                    </span>
+                                </div>
+                            @endif
+
+                            <div>
+                                <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5 block">
+                                    Subir Nova Imagem Desktop
+                                </label>
+                                <input type="file" name="image_file" accept="image/*"
+                                    class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-900 file:text-white hover:file:opacity-90 cursor-pointer">
+                                @if($banner->image_file)
+                                    <label class="inline-flex items-center gap-2 mt-2 text-xs text-red-500 cursor-pointer">
+                                        <input type="checkbox" name="remove_image_file" value="1" class="rounded text-red-500">
+                                        Remover arquivo atual ({{ basename($banner->image_file) }})
+                                    </label>
+                                @endif
+                            </div>
+
+                            <div>
+                                <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5 block">
+                                    Ou Link/URL Externa Desktop
+                                </label>
+                                <input type="text" name="image_url" value="{{ old('image_url', $banner->image_url) }}"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs focus:ring-primary focus:border-primary transition-all font-mono"
+                                    placeholder="https://images.unsplash.com/...">
+                            </div>
+                        </div>
+
+                        {{-- 2. Mobile Image --}}
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-base text-primary">smartphone</span>
+                                    Imagem Mobile (Celulares)
+                                </span>
+                                <span class="px-2 py-0.5 rounded-full bg-primary/10 text-[10px] font-bold text-primary">Opcional • 1080x1350 ou 800x800</span>
+                            </div>
+
+                            @if($banner->effective_mobile_image_url)
+                                <div class="relative w-full h-32 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
+                                    <img src="{{ $banner->effective_mobile_image_url }}" alt="Preview Mobile" class="w-full h-full object-cover">
+                                    <span class="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded bg-primary/90 text-white text-[10px] font-bold">
+                                        {{ $banner->mobile_image_file ? 'Arquivo Mobile' : 'URL Mobile' }}
+                                    </span>
+                                </div>
+                            @endif
+
+                            <div>
+                                <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5 block">
+                                    Subir Nova Imagem Mobile
+                                </label>
+                                <input type="file" name="mobile_image_file" accept="image/*"
+                                    class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary file:text-white hover:file:opacity-90 cursor-pointer">
+                                @if($banner->mobile_image_file)
+                                    <label class="inline-flex items-center gap-2 mt-2 text-xs text-red-500 cursor-pointer">
+                                        <input type="checkbox" name="remove_mobile_image_file" value="1" class="rounded text-red-500">
+                                        Remover arquivo mobile ({{ basename($banner->mobile_image_file) }})
+                                    </label>
+                                @endif
+                            </div>
+
+                            <div>
+                                <label class="text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1.5 block">
+                                    Ou Link/URL Externa Mobile
+                                </label>
+                                <input type="text" name="mobile_image_url" value="{{ old('mobile_image_url', $banner->mobile_image_url) }}"
+                                    class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs focus:ring-primary focus:border-primary transition-all font-mono"
+                                    placeholder="https://images.unsplash.com/...">
+                            </div>
+
+                            <p class="text-[11px] text-slate-400 italic">
+                                * Se você não definir uma imagem mobile, o sistema exibirá a imagem desktop adaptada no smartphone.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
