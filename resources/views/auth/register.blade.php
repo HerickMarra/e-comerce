@@ -1,20 +1,36 @@
 <x-guest-layout>
     <div class="flex min-h-screen">
         {{-- Side Image --}}
-        <div class="hidden lg:block lg:w-1/2 relative bg-slate-950">
-            <img alt="Tênis de Corrida e Maratona" class="absolute inset-0 w-full h-full object-cover"
-                src="https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=crop&q=80&w=2000">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20"></div>
-            <div class="absolute bottom-16 left-16 right-16 text-white z-20">
+        <div class="hidden lg:block lg:w-1/2 relative bg-slate-950 overflow-hidden">
+            @php
+                $loginImage = $appSettings['auth_login_image'] ?? null;
+                if ($loginImage) {
+                    $loginImageUrl = str_starts_with($loginImage, 'http') ? $loginImage : asset('storage/' . $loginImage);
+                } else {
+                    $loginImageUrl = 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&q=80&w=2000';
+                }
+                $loginBadge = $appSettings['auth_login_badge'] ?? 'Novo Cadastro';
+                $loginTitle = $appSettings['auth_login_title'] ?? 'Sua próxima missão começa aqui.';
+                $loginSubtitle = $appSettings['auth_login_subtitle'] ?? 'Junte-se a nós para ter acesso a ofertas e equipamentos exclusivos.';
+            @endphp
+            <img alt="{{ $appSettings['store_name'] ?? config('app.name') }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
+                src="{{ $loginImageUrl }}">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20"></div>
+            <div class="absolute bottom-16 left-12 right-12 text-white z-20">
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[11px] font-black uppercase tracking-widest mb-4">
-                    <span class="material-symbols-outlined text-sm text-primary">directions_run</span>
-                    Comunidade de Corredores
+                    <span class="material-symbols-outlined text-sm text-primary">verified</span>
+                    <span>{{ $loginBadge }}</span>
                 </div>
                 <blockquote class="text-3xl lg:text-4xl font-black leading-tight drop-shadow-md">
-                    "Acesso antecipado aos melhores tênis de corrida, maratona e treino diário."
+                    "{{ $loginTitle }}"
                 </blockquote>
+                @if($loginSubtitle)
+                    <p class="mt-3 text-sm text-slate-300 drop-shadow-sm font-medium leading-relaxed max-w-lg">
+                        {{ $loginSubtitle }}
+                    </p>
+                @endif
                 <p class="mt-4 font-bold uppercase tracking-[0.2em] text-xs opacity-80">
-                    — {{ $appSettings['store_name'] ?? 'DENNER Tênis' }} Running Club
+                    — {{ $appSettings['store_name'] ?? config('app.name') }}
                 </p>
             </div>
         </div>

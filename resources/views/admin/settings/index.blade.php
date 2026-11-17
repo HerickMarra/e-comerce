@@ -12,6 +12,12 @@
         logoSize: '{{ $settings['store_logo_size'] }}',
         storeIcon: '{{ $settings['store_icon'] }}',
         previewName: '{{ $settings['store_name'] }}',
+        loginImagePreview: '{{ $settings['auth_login_image'] ? (str_starts_with($settings['auth_login_image'], 'http') ? $settings['auth_login_image'] : asset('storage/' . $settings['auth_login_image'])) : 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&q=80&w=2000' }}',
+        hasCustomLoginImage: {{ !empty($settings['auth_login_image']) ? 'true' : 'false' }},
+        loginImageUrl: '{{ str_starts_with($settings['auth_login_image'] ?? '', 'http') ? $settings['auth_login_image'] : '' }}',
+        loginTitle: '{{ addslashes($settings['auth_login_title'] ?? 'Sua próxima missão começa aqui.') }}',
+        loginBadge: '{{ addslashes($settings['auth_login_badge'] ?? 'Acesso Exclusivo') }}',
+        loginSubtitle: '{{ addslashes($settings['auth_login_subtitle'] ?? 'Equipamentos de airsoft, pescaria, barracas e vestuário tático.') }}',
         showWebhookToken: false,
         storeZip: '{{ $settings['store_zip'] ?? '' }}',
         storeStreet: '{{ $settings['store_street'] ?? '' }}',
@@ -901,6 +907,153 @@
                                 :style="'border-color: ' + (footerBgColor === '#ffffff' ? '#e2e8f0' : 'rgba(255,255,255,0.1)')">
                                 <span>© {{ date('Y') }} {{ $settings['store_name'] ?? 'Denner Tênis' }}. Todos os direitos reservados.</span>
                                 <span>PIX • Cartão até 10x • Compra 100% Segura</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card: Imagem da Tela de Login & Autenticação --}}
+                <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+                    <div class="p-6 border-b border-slate-50 flex items-center justify-between gap-4 bg-slate-50/50">
+                        <div class="flex items-center gap-4">
+                            <div class="size-10 bg-amber-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-amber-500/20">
+                                <span class="material-symbols-outlined text-base">wallpaper</span>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-slate-900">Imagem da Tela de Login & Cadastro</h2>
+                                <p class="text-xs text-slate-500">Personalize o banner lateral e os textos exibidos aos clientes ao fazer login ou criar conta.</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('login') }}" target="_blank"
+                           class="px-3.5 py-1.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl text-xs hover:border-slate-400 transition-all flex items-center gap-1.5 shadow-2xs">
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+                            <span>Ver Login</span>
+                        </a>
+                    </div>
+
+                    <div class="p-5 sm:p-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            {{-- Coluna 1: Preview Realista da Tela de Login --}}
+                            <div class="lg:col-span-5 space-y-3">
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block">
+                                    Pré-visualização ao Vivo
+                                </label>
+                                <div class="relative w-full aspect-[4/5] rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-slate-950 flex flex-col justify-end p-6 select-none group">
+                                    {{-- Imagem de Fundo com Fade --}}
+                                    <img :src="loginImagePreview"
+                                         alt="Banner de Login"
+                                         class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                         onerror="this.src='https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&q=80&w=2000'">
+                                    
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20"></div>
+
+                                    {{-- Textos Sobrepostos Dinâmicos --}}
+                                    <div class="relative z-10 space-y-2.5 text-white">
+                                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-[10px] font-black uppercase tracking-widest">
+                                            <span class="material-symbols-outlined text-xs" :style="'color: ' + primaryColor">verified</span>
+                                            <span x-text="loginBadge || 'Acesso Exclusivo'"></span>
+                                        </div>
+                                        
+                                        <blockquote class="text-lg sm:text-xl font-black leading-snug drop-shadow-md">
+                                            "<span x-text="loginTitle || 'Sua próxima missão começa aqui.'"></span>"
+                                        </blockquote>
+
+                                        <p class="text-xs text-slate-300 font-medium leading-relaxed line-clamp-2"
+                                           x-text="loginSubtitle || 'Equipamentos táticos e artigos de aventura.'"></p>
+
+                                        <p class="pt-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                                            — <span x-text="previewName || '{{ $settings['store_name'] }}'"></span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between pt-1 text-xs">
+                                    <span class="text-[11px] text-slate-400">Resolução recomendada: <strong>1920x1080px</strong></span>
+                                    <template x-if="hasCustomLoginImage">
+                                        <button type="button" 
+                                                @click="loginImagePreview = 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&q=80&w=2000'; hasCustomLoginImage = false; loginImageUrl = ''; if($refs.loginFileInputSettings) $refs.loginFileInputSettings.value = ''; $refs.removeLoginImgSettings.value = '1'"
+                                                class="text-red-500 hover:text-red-700 font-bold text-xs flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-sm">restart_alt</span>
+                                            <span>Restaurar Padrão</span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+
+                            {{-- Coluna 2: Formulário de Configuração da Imagem e Textos --}}
+                            <div class="lg:col-span-7 space-y-6">
+                                {{-- Input de Upload de Imagem --}}
+                                <div>
+                                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">
+                                        Enviar Arquivo de Imagem (PNG, JPG, WEBP)
+                                    </label>
+                                    <div class="flex items-center gap-3">
+                                        <label class="flex-1 flex flex-col items-center justify-center p-5 border-2 border-dashed border-slate-200 hover:border-sidebar-dark rounded-2xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-all">
+                                            <span class="material-symbols-outlined text-3xl text-slate-400 mb-1">cloud_upload</span>
+                                            <span class="text-xs font-bold text-slate-700">Clique para selecionar imagem do seu computador</span>
+                                            <span class="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP (máx. 10MB)</span>
+                                            <input type="file" name="auth_login_image" x-ref="loginFileInputSettings" 
+                                                   @change="let f = $event.target.files[0]; if(f) { let r = new FileReader(); r.onload = e => { loginImagePreview = e.target.result; hasCustomLoginImage = true; $refs.removeLoginImgSettings.value = '0'; }; r.readAsDataURL(f); }" 
+                                                   accept="image/*" class="hidden">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {{-- Ou URL Externa --}}
+                                <div>
+                                    <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-2">
+                                        Ou informe uma URL Externa (Link de Imagem)
+                                    </label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="url" name="auth_login_image_url" x-model="loginImageUrl" 
+                                               @input="if(loginImageUrl.trim().length > 5) { loginImagePreview = loginImageUrl.trim(); hasCustomLoginImage = true; $refs.removeLoginImgSettings.value = '0'; }"
+                                               placeholder="https://images.unsplash.com/... ou link direto da imagem"
+                                               class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-xs sm:text-sm font-mono focus:ring-2 focus:ring-slate-900 outline-none transition-all">
+                                        <button type="button" 
+                                                @click="if(loginImageUrl.trim().length > 5) { loginImagePreview = loginImageUrl.trim(); hasCustomLoginImage = true; $refs.removeLoginImgSettings.value = '0'; }"
+                                                class="px-4 py-3 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors shrink-0">
+                                            Aplicar URL
+                                        </button>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1.5">Cole o link direto de uma imagem na internet.</p>
+                                </div>
+
+                                <input type="hidden" name="remove_auth_login_image" x-ref="removeLoginImgSettings" value="0">
+
+                                {{-- Textos Opcionais da Tela de Login --}}
+                                <div class="pt-4 border-t border-slate-100 space-y-4">
+                                    <span class="text-xs font-black uppercase tracking-wider text-slate-400 block">
+                                        Frases de Destaque no Login & Registro
+                                    </span>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-1.5">
+                                                Selo / Badge (Ex: Acesso Exclusivo)
+                                            </label>
+                                            <input type="text" name="auth_login_badge" x-model="loginBadge"
+                                                   value="{{ old('auth_login_badge', $settings['auth_login_badge'] ?? '') }}"
+                                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 outline-none">
+                                        </div>
+
+                                        <div>
+                                            <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-1.5">
+                                                Frase Principal / Título
+                                            </label>
+                                            <input type="text" name="auth_login_title" x-model="loginTitle"
+                                                   value="{{ old('auth_login_title', $settings['auth_login_title'] ?? '') }}"
+                                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-slate-900 outline-none">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 block mb-1.5">
+                                            Subtítulo / Mensagem Descritiva
+                                        </label>
+                                        <textarea name="auth_login_subtitle" x-model="loginSubtitle" rows="2"
+                                                  class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-slate-900 outline-none leading-relaxed">{{ old('auth_login_subtitle', $settings['auth_login_subtitle'] ?? '') }}</textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

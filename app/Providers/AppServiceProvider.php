@@ -49,6 +49,10 @@ class AppServiceProvider extends ServiceProvider
                 'store_tiktok' => Setting::get('store_tiktok', ''),
                 'store_youtube' => Setting::get('store_youtube', ''),
                 'store_footer_description' => Setting::get('store_footer_description', 'Sua loja especializada em tênis de corrida, treino e performance das melhores marcas mundiais, com envio rápido e garantia de originalidade.'),
+                'auth_login_image' => Setting::get('auth_login_image'),
+                'auth_login_title' => Setting::get('auth_login_title', 'Sua próxima missão começa aqui.'),
+                'auth_login_subtitle' => Setting::get('auth_login_subtitle', 'Equipamentos de airsoft, pescaria, barracas e vestuário tático.'),
+                'auth_login_badge' => Setting::get('auth_login_badge', 'Acesso Exclusivo'),
             ]);
         });
 

@@ -43,6 +43,10 @@ class SettingsController extends Controller
             'header_text_color' => Setting::get('header_text_color', '#0f172a'),
             'footer_bg_color' => Setting::get('footer_bg_color', '#ffffff'),
             'footer_text_color' => Setting::get('footer_text_color', '#0f172a'),
+            'auth_login_image' => Setting::get('auth_login_image'),
+            'auth_login_title' => Setting::get('auth_login_title', 'Sua próxima missão começa aqui.'),
+            'auth_login_subtitle' => Setting::get('auth_login_subtitle', 'Equipamentos de airsoft, pescaria, barracas e vestuário tático.'),
+            'auth_login_badge' => Setting::get('auth_login_badge', 'Acesso Exclusivo'),
 
             // Contact, Social & Customer Service
             'store_phone' => Setting::get('store_phone', ''),
@@ -252,6 +256,38 @@ class SettingsController extends Controller
 
             $path = $request->file('store_logo')->store('logos', 'public');
             Setting::set('store_logo', $path);
+        }
+
+        // Login Screen Presentation & Image
+        if ($request->has('auth_login_title')) {
+            Setting::set('auth_login_title', $request->auth_login_title);
+        }
+        if ($request->has('auth_login_subtitle')) {
+            Setting::set('auth_login_subtitle', $request->auth_login_subtitle);
+        }
+        if ($request->has('auth_login_badge')) {
+            Setting::set('auth_login_badge', $request->auth_login_badge);
+        }
+
+        if ($request->remove_auth_login_image === '1') {
+            $oldImage = Setting::get('auth_login_image');
+            if ($oldImage && !str_starts_with($oldImage, 'http')) {
+                Storage::disk('public')->delete($oldImage);
+            }
+            Setting::set('auth_login_image', null);
+        } elseif ($request->hasFile('auth_login_image') && $request->file('auth_login_image')->isValid()) {
+            $oldImage = Setting::get('auth_login_image');
+            if ($oldImage && !str_starts_with($oldImage, 'http')) {
+                Storage::disk('public')->delete($oldImage);
+            }
+            $path = $request->file('auth_login_image')->store('auth', 'public');
+            Setting::set('auth_login_image', $path);
+        } elseif ($request->filled('auth_login_image_url')) {
+            $oldImage = Setting::get('auth_login_image');
+            if ($oldImage && !str_starts_with($oldImage, 'http')) {
+                Storage::disk('public')->delete($oldImage);
+            }
+            Setting::set('auth_login_image', trim($request->auth_login_image_url));
         }
 
         return back()->with('success', 'Configurações atualizadas com sucesso!');
