@@ -116,4 +116,71 @@ class SearchController extends Controller
             'seo'
         ));
     }
+
+    /**
+     * Retorna sugestões rápidas de busca via AJAX para a barra de pesquisa da Home.
+     */
+    public function suggestions(Request $request)
+    {
+        $rawQuery = $request->input('q');
+        $query = is_string($rawQuery) ? trim($rawQuery) : '';
+
+        if (mb_strlen($query) < 2) {
+            return response()->json([
+                'products' => [],
+                'categories' => [],
+                'total' => 0,
+            ]);
+        }
+
+        $escapedQuery = addcslashes($query, '%_');
+
+        $products = Product::where('is_active', true)
+            ->where(function ($q) use ($escapedQuery) {
+                $q->where('name', 'like', "%{$escapedQuery}%")
+                    ->orWhere('brand', 'like', "%{$escapedQuery}%")
+                    ->orWhere('model_line', 'like', "%{$escapedQuery}%");
+            })
+            ->with(['images', 'categories'])
+            ->take(5)
+            ->get()
+            ->map(function ($product) {
+                $firstImage = $product->images->first();
+                $imageSrc = $firstImage ? (str_starts_with($firstImage->image_path, 'http') ? $firstImage->image_path : asset('storage/' . $firstImage->image_path)) : asset('images/placeholder.png');
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'brand' => $product->brand,
+                    'price_formatted' => 'R$ ' . number_format($product->price, 2, ',', '.'),
+                    'url' => route('product.show', $product->slug),
+                    'image' => $imageSrc,
+                    'category' => $product->categories->first()?->name,
+                ];
+            });
+
+        $categories = Category::where('name', 'like', "%{$escapedQuery}%")
+            ->take(3)
+            ->get(['id', 'name', 'slug'])
+            ->map(function ($cat) {
+                return [
+                    'id' => $cat->id,
+                    'name' => $cat->name,
+                    'url' => route('search', ['categories' => [$cat->id]]),
+                ];
+            });
+
+        $total = Product::where('is_active', true)
+            ->where(function ($q) use ($escapedQuery) {
+                $q->where('name', 'like', "%{$escapedQuery}%")
+                    ->orWhere('brand', 'like', "%{$escapedQuery}%")
+                    ->orWhere('model_line', 'like', "%{$escapedQuery}%");
+            })
+            ->count();
+
+        return response()->json([
+            'products' => $products,
+            'categories' => $categories,
+            'total' => $total,
+        ]);
+    }
 }

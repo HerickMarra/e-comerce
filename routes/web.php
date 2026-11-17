@@ -30,6 +30,7 @@ Route::post('/carrinho/add/{product}', [CartController::class, 'add'])->name('ca
 Route::post('/carrinho/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/carrinho/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
+Route::get('/busca/sugestoes', [\App\Http\Controllers\SearchController::class, 'suggestions'])->name('search.suggestions');
 Route::get('/busca', [\App\Http\Controllers\SearchController::class, 'index'])->name('search');
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 

@@ -110,44 +110,155 @@
             </div>
         </div>
 
-        {{-- Barra de Pesquisa Minimalista Flutuante (Estilo Cápsula Moderna) --}}
-        <section class="relative -mt-5 sm:-mt-8 mb-12 sm:mb-16 z-30 max-w-2xl sm:max-w-3xl mx-auto px-3 sm:px-4">
-            <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-full p-1.5 sm:p-2 pl-4 sm:pl-6 border border-slate-200/80 dark:border-slate-800 shadow-xl shadow-slate-900/5 hover:border-slate-300 dark:hover:border-slate-700 transition-all">
-                <form action="{{ route('search') }}" method="GET" class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-slate-400 text-xl sm:text-2xl shrink-0 select-none">search</span>
+        {{-- Barra de Pesquisa Flutuante Moderna com Busca Instantânea e Pills em Alta --}}
+        <section class="relative -mt-6 sm:-mt-9 mb-12 sm:mb-16 z-30 max-w-2xl sm:max-w-3xl mx-auto px-3 sm:px-4"
+                 x-data="{
+                     query: '{{ request('q') }}',
+                     focused: false,
+                     loading: false,
+                     suggestions: { products: [], categories: [], total: 0 },
+                     async fetchSuggestions() {
+                         const q = this.query.trim();
+                         if (q.length < 2) {
+                             this.suggestions = { products: [], categories: [], total: 0 };
+                             return;
+                         }
+                         this.loading = true;
+                         try {
+                             const res = await fetch(`{{ route('search.suggestions') }}?q=${encodeURIComponent(q)}`);
+                             if (res.ok) {
+                                 this.suggestions = await res.json();
+                             }
+                         } catch (e) {
+                             console.error('Erro ao buscar sugestões:', e);
+                         } finally {
+                             this.loading = false;
+                         }
+                     },
+                     clear() {
+                         this.query = '';
+                         this.suggestions = { products: [], categories: [], total: 0 };
+                         $refs.searchInput.focus();
+                     }
+                 }"
+                 @click.away="focused = false"
+                 @keydown.escape="focused = false">
+            
+            <div class="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-2xl sm:rounded-full p-2 sm:p-2.5 pl-4 sm:pl-6 border border-slate-200/90 dark:border-slate-800 shadow-2xl shadow-slate-900/10 hover:border-slate-300 dark:hover:border-slate-700 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+                <form action="{{ route('search') }}" method="GET" class="flex items-center gap-2.5 sm:gap-3">
+                    <div class="size-8 sm:size-9 rounded-xl sm:rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-lg sm:text-xl">search</span>
+                    </div>
                     
                     <input type="text"
                         name="q"
-                        value="{{ request('q') }}"
-                        placeholder="Buscar por modelo, marca (Nike, Adidas, Corre 3...), tamanho..."
+                        x-ref="searchInput"
+                        x-model="query"
+                        @focus="focused = true; if(query.trim().length >= 2) fetchSuggestions()"
+                        @input.debounce.250ms="fetchSuggestions()"
+                        placeholder="O que você procura hoje? (ex: Rifle M4, Carretilha, Barraca, Faca...)"
                         class="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm font-medium focus:outline-none border-none ring-0 focus:ring-0 p-0"
                         autocomplete="off" />
 
+                    {{-- Botão Limpar Texto --}}
+                    <button type="button"
+                        x-show="query.length > 0"
+                        x-cloak
+                        @click="clear()"
+                        class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full transition-colors"
+                        title="Limpar busca">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+
                     <button type="submit"
-                        class="bg-primary hover:bg-primary/95 text-white font-bold text-xs sm:text-sm px-5 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all shadow-md shadow-primary/20 flex items-center gap-1.5 shrink-0 uppercase tracking-wider select-none active:scale-[0.98]">
+                        class="bg-slate-950 dark:bg-primary hover:bg-primary text-white font-bold text-xs sm:text-sm px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl sm:rounded-full transition-all shadow-md hover:shadow-primary/20 flex items-center gap-1.5 shrink-0 uppercase tracking-wider select-none active:scale-[0.98]">
                         <span>Buscar</span>
                         <span class="material-symbols-outlined text-sm hidden sm:inline">arrow_forward</span>
                     </button>
                 </form>
+
+                {{-- Dropdown Flutuante de Sugestões Instantâneas --}}
+                <div x-show="focused && (loading || suggestions.products.length > 0 || suggestions.categories.length > 0)"
+                     x-cloak
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 -translate-y-2"
+                     class="absolute left-0 right-0 top-full mt-3 bg-white/98 dark:bg-slate-900/98 backdrop-blur-2xl rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xl overflow-hidden z-50 text-left">
+                    
+                    {{-- Loading Spinner --}}
+                    <div x-show="loading" class="p-6 flex items-center justify-center gap-2 text-slate-400 text-xs">
+                        <span class="size-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+                        Buscando no catálogo...
+                    </div>
+
+                    <div x-show="!loading" class="divide-y divide-slate-100 dark:divide-slate-800">
+                        {{-- Categorias Sugeridas --}}
+                        <div x-show="suggestions.categories.length > 0" class="p-3 bg-slate-50/60 dark:bg-slate-800/40">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 px-2 block mb-1.5">Categorias</span>
+                            <div class="flex flex-wrap gap-1.5 px-2">
+                                <template x-for="cat in suggestions.categories" :key="cat.id">
+                                    <a :href="cat.url"
+                                       class="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-primary dark:hover:text-primary transition-all">
+                                        <span class="material-symbols-outlined text-xs text-primary">category</span>
+                                        <span x-text="cat.name"></span>
+                                    </a>
+                                </template>
+                            </div>
+                        </div>
+
+                        {{-- Lista de Produtos Sugeridos --}}
+                        <div x-show="suggestions.products.length > 0" class="p-2">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 py-1 block">Produtos Encontrados</span>
+                            <div class="space-y-1">
+                                <template x-for="item in suggestions.products" :key="item.id">
+                                    <a :href="item.url"
+                                       class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group">
+                                        <img :src="item.image" :alt="item.name" class="size-12 rounded-xl object-cover bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200/60 dark:border-slate-700/60">
+                                        <div class="flex-grow min-w-0">
+                                            <p class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors" x-text="item.name"></p>
+                                            <p class="text-[11px] text-slate-400 truncate" x-text="item.category || item.brand || 'Equipamento'"></p>
+                                        </div>
+                                        <div class="text-right shrink-0">
+                                            <span class="text-xs sm:text-sm font-black text-slate-900 dark:text-white" x-text="item.price_formatted"></span>
+                                        </div>
+                                    </a>
+                                </template>
+                            </div>
+                        </div>
+
+                        {{-- Rodapé do Dropdown com link para todos os resultados --}}
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between px-4">
+                            <span class="text-xs text-slate-500">
+                                Total de <strong x-text="suggestions.total"></strong> resultados
+                            </span>
+                            <button type="button" @click="$el.closest('section').querySelector('form').submit()"
+                                class="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline">
+                                <span>Ver todos os resultados</span>
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {{-- Tags em linha sutil e discreta --}}
-            <div class="mt-3 flex items-center justify-center gap-2 text-[11px] text-slate-400 dark:text-slate-500 overflow-x-auto scrollbar-hide select-none">
-                <span class="font-semibold text-slate-500 dark:text-slate-400 shrink-0">Em alta:</span>
-                <div class="flex items-center gap-2 shrink-0">
-                    @php
-                        $trendingTags = ['Rifle M4A1', 'Pistola Glock G17', 'Vara de Carbono', 'Carretilha 11 Rolamentos', 'Barraca Indy GT', 'Colete Molle', 'BBs 0.25g'];
-                    @endphp
-                    @foreach($trendingTags as $tag)
-                        <a href="{{ route('search', ['q' => $tag]) }}"
-                           class="hover:text-primary transition-colors hover:underline">
-                           {{ $tag }}
-                        </a>
-                        @if(!$loop->last)
-                            <span class="text-slate-300 dark:text-slate-700 select-none">•</span>
-                        @endif
-                    @endforeach
-                </div>
+            {{-- Tags em Alta / Sugestões Populares (Pills Modernas sem barra cinza) --}}
+            <div class="mt-4 flex items-center justify-center flex-wrap gap-2 text-xs select-none">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-900/5 dark:bg-white/10 text-slate-600 dark:text-slate-300 font-bold text-[11px] uppercase tracking-wider">
+                    <span class="material-symbols-outlined text-sm text-amber-500">local_fire_department</span>
+                    Em alta:
+                </span>
+                @php
+                    $trendingTags = ['Rifle M4A1', 'Pistola Glock G17', 'Vara de Carbono', 'Carretilha 11 Rolamentos', 'Barraca Indy GT', 'Colete Molle', 'BBs 0.25g'];
+                @endphp
+                @foreach($trendingTags as $tag)
+                    <a href="{{ route('search', ['q' => $tag]) }}"
+                       class="inline-flex items-center px-3 py-1 rounded-full bg-white dark:bg-slate-900 hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-800 font-semibold text-xs transition-all shadow-2xs hover:shadow-sm hover:scale-105 active:scale-95">
+                        {{ $tag }}
+                    </a>
+                @endforeach
             </div>
         </section>
 
